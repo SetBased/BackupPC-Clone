@@ -1,0 +1,11 @@
+filter:
+    excluded_paths:
+        - test/*
+
+before_commands:
+  - sudo pip3 install cleo
+
+build:
+    dependencies:
+        before:
+        - pip3 install cleo
