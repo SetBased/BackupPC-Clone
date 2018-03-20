@@ -7,7 +7,7 @@ from one filesystem to another filesystem where ``rsync`` fails.
 Documentation
 =============
 
-Will be released after we have successfully migrated out BackupPC instance.
+Will be released after we have successfully migrated our BackupPC instance.
 
 Contributing
 ============
