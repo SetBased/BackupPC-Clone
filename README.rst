@@ -30,7 +30,7 @@ Support
 =======
 
 If you are having issues, please let us know. Contact us at `Gitter <https://gitter.im/SetBased/BackupPC-Clone>`_ or
-create an issue on `GitHub <https://github.com/SetBased/BackupPC-Clone/issues/new>`_.
+create an `issue <https://github.com/SetBased/BackupPC-Clone/issues/new>`_ on _GitHub.
 
 For commercial support, please contact us at info@setbased.nl.
 
