@@ -120,9 +120,9 @@ class AutoCommand(BaseCommand):
             try:
                 self.__resync_pool(backup)
                 self.__clone_backup(backup)
-            except FileNotFoundError as e:
-                self._io.error(str(e))
-                # Force resync of pool
+            except FileNotFoundError as error:
+                self._io.error(str(error))
+                # Force resync of pool.
                 Config.instance.last_pool_scan = -1
                 DataLayer.instance.commit()
 

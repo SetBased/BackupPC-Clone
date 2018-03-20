@@ -231,9 +231,18 @@ order by bbt.bbt_seq
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def dict_factory(cursor, row):
+        """
+        Dictionary factory for return results with dictionaries.
+
+        :param sqlite3.Cursor cursor: The cursor.
+        :param list row: A row from the result a a query.
+
+        :rtype: dict
+        """
         d = {}
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
+
         return d
 
     # ------------------------------------------------------------------------------------------------------------------

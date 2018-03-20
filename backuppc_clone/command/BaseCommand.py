@@ -128,8 +128,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
 
             return self._handle_command()
 
-        except BackupPcCloneException as e:
-            self._io.error(str(e))
+        except BackupPcCloneException as error:
+            self._io.error(str(error))
             return -1
 
 # ----------------------------------------------------------------------------------------------------------------------
