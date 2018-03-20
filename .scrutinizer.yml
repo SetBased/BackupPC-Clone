@@ -6,6 +6,9 @@ before_commands:
   - sudo pip3 install cleo
 
 build:
+    environment:
+        python: 3.6.0
+
     dependencies:
         before:
         - pip3 install cleo
