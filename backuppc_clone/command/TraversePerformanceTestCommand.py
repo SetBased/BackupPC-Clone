@@ -31,7 +31,7 @@ class TraversePerformanceTestCommand(Command):
 
         self._io = None
         """
-        The output style. 
+        The output style.
 
         :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
         """

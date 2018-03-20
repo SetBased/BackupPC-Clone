@@ -24,9 +24,9 @@ class AuxiliaryFiles:
 
         self.__io = io
         """
-        The output style. 
+        The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------

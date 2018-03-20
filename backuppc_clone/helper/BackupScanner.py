@@ -23,9 +23,9 @@ class BackupScanner:
 
         self.__io = io
         """
-        The output style. 
+        The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
         """
 
         self.__dir_count = 0
@@ -45,7 +45,7 @@ class BackupScanner:
         self.__entry_seq = 0
         """
         The entry sequence number.
-        
+
         :type: int
         """
 
