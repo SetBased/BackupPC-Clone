@@ -1,0 +1,9 @@
+**/__pycache__/
+/.idea/
+/BackupPC_Clone.egg-info
+/bin/phing
+/build/
+/clone.db
+/composer.lock
+/dist/
+/vendor/
