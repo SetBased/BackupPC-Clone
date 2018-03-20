@@ -2,7 +2,7 @@ BackupPC-Clone
 ##############
 
 BackupPC-Clone is a tool for cloning, copying, or syncing the data of `BackupPC <https://github.com/backuppc/backuppc>`_
-from one filesystem to another filesystem.
+from one filesystem to another filesystem where ``rsync`` fails.
 
 Documentation
 =============
