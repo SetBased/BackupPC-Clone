@@ -239,11 +239,11 @@ order by bbt.bbt_seq
 
         :rtype: dict
         """
-        d = {}
-        for idx, col in enumerate(cursor.description):
-            d[col[0]] = row[idx]
+        row = {}
+        for index, col in enumerate(cursor.description):
+            row[col[0]] = row[index]
 
-        return d
+        return row
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute_none(self, sql, *params):
@@ -462,7 +462,7 @@ order by hst.hst_name"""
                 default_values.append(defaults[column_name])
 
         place_holders = []
-        for i in range(0, len(column_names)):
+        for _ in range(0, len(column_names)):
             place_holders.append('?')
 
         sql = 'insert into {}({}) values ({})'.format(table_name, ', '.join(column_names), ', '.join(place_holders))

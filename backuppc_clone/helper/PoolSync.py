@@ -47,6 +47,7 @@ class PoolSync:
                     os.remove(path)
                     count += 1
                 except FileNotFoundError:
+                    # Nothing to do.
                     pass
 
                 DataLayer.instance.pool_delete_row(row['bpl_id'])
