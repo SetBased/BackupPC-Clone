@@ -33,7 +33,7 @@ class TraversePerformanceTestCommand(Command):
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
         """
 
         self.__dir_count = 0

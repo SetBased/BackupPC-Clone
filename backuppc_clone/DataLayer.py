@@ -32,7 +32,7 @@ class DataLayer:
         """
         The connection to the data_layer.
 
-        :type: 
+        :type: sqlite3.Connection
         """
 
         self.__last_rowid = -1

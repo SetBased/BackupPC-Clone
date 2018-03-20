@@ -188,7 +188,7 @@ class BackupClone:
             for row in rows:
                 if row['bbt_dir'] is None:
                     row['bbt_dir'] = ''
-                    
+
                 target_clone = os.path.join(backup_dir_clone, row['bbt_dir'], row['bbt_name'])
 
                 if row['bpl_inode_original']:

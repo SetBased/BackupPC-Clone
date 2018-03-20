@@ -101,8 +101,8 @@ class AuxiliaryFiles:
         Synchronizes the auxiliary file sof the Clone with the auxiliary files of the Original.
         """
         scanner = AuxiliaryFileScanner(self.__io)
-        files_original = scanner.scan(Config.instance.top_dir_original)
-        files_clone = scanner.scan(Config.instance.top_dir_clone)
+        files_original = scanner.scan(Config.instance.pc_dir_original)
+        files_clone = scanner.scan(Config.instance.pc_dir_clone)
 
         self.__io.writeln('')
 

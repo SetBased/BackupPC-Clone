@@ -29,7 +29,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle|None 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle|None
         """
 
     # ------------------------------------------------------------------------------------------------------------------
