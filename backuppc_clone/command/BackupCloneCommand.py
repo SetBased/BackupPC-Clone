@@ -3,16 +3,17 @@ BackupPC Clone
 """
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
-from backuppc_clone.helper.HostDelete import HostDelete
+from backuppc_clone.helper.BackupClone import BackupClone
 
 
-class DeleteHostCommand(BaseCommand):
+class BackupCloneCommand(BaseCommand):
     """
-    Delete entirely a host
+    Clones a single host backup
 
-    delete-host
+    backup-clone
         {clone.cfg : The configuration file of the clone}
         {host      : The name of the host}
+        {backup#   : The backup number}
     """
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -21,11 +22,12 @@ class DeleteHostCommand(BaseCommand):
         Executes the command.
         """
         host = self.argument('host')
+        backup_no = int(self.argument('backup#'))
 
-        self._io.title('Deleting Host {}'.format(host))
+        self._io.title('Cloning Backup {}/{}'.format(host, backup_no))
 
-        helper = HostDelete(self._io)
-        helper.delete_host(host)
+        helper = BackupClone(self._io)
+        helper.clone_backup(host, backup_no)
 
         DataLayer.instance.commit()
 

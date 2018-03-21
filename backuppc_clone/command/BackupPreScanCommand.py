@@ -3,15 +3,17 @@ BackupPC Clone
 """
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
-from backuppc_clone.helper.AuxiliaryFiles import AuxiliaryFiles
+from backuppc_clone.helper.BackupScanner import BackupScanner
 
 
-class AuxiliaryFilesCommand(BaseCommand):
+class BackupPreScanCommand(BaseCommand):
     """
-    Copies auxiliary files from original to clone.
+    Pre-scans a host backup
 
-    auxiliary-files
+    backup-pre-scan
         {clone.cfg : The configuration file of the clone}
+        {host      : The name of the host}
+        {backup#   : The backup number}
     """
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -19,10 +21,13 @@ class AuxiliaryFilesCommand(BaseCommand):
         """
         Executes the command.
         """
-        self._io.title('Synchronizing Auxiliary Files')
+        host = self.argument('host')
+        backup_no = int(self.argument('backup#'))
 
-        helper = AuxiliaryFiles(self._io)
-        helper.synchronize()
+        self._io.title('Pre-Scanning Backup {}/{}'.format(host, backup_no))
+
+        helper = BackupScanner(self._io)
+        helper.pre_scan_directory(host, backup_no)
 
         DataLayer.instance.commit()
 
