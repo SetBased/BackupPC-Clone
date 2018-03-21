@@ -230,20 +230,20 @@ order by bbt.bbt_seq
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def dict_factory(cursor, row):
+    def dict_factory(cursor, old_row):
         """
         Dictionary factory for return results with dictionaries.
 
         :param sqlite3.Cursor cursor: The cursor.
-        :param list row: A row from the result a a query.
+        :param list old_row: A row from the result a a query.
 
         :rtype: dict
         """
-        row = {}
+        new_row = {}
         for index, col in enumerate(cursor.description):
-            row[col[0]] = row[index]
+            new_row[col[0]] = old_row[index]
 
-        return row
+        return new_row
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute_none(self, sql, *params):
