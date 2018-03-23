@@ -62,6 +62,24 @@ and   bpl.bpl_inode_clone is null"""
         return self.execute_singleton1(sql, (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
+    def backup_count_tree(self, bck_id):
+        """
+        Selects the file entries of a host backup.
+
+        :param int bck_id: The ID of the host backup.
+
+        :rtype: int
+        """
+        self.__connection.row_factory = DataLayer.dict_factory
+
+        sql = """
+select count(*)
+from   BKC_BACKUP_TREE bbt
+where  bbt.bck_id = ?"""
+
+        return self.execute_singleton1(sql, (bck_id,))
+
+    # ------------------------------------------------------------------------------------------------------------------
     def backup_delete(self, bck_id):
         """
         Deletes cascading a host backup.
@@ -543,6 +561,24 @@ from   BKC_ORIGINAL_BACKUP"""
         return self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
 
     # ------------------------------------------------------------------------------------------------------------------
+    def pool_count_obsolete_clone_files(self):
+        """
+        Selects the number of clone pool files that are obsolete (i.e. not longer in the original pool).
+        """
+        self.__connection.row_factory = DataLayer.dict_factory
+
+        sql = """
+select count(*)
+from            BKC_POOL bpl
+left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
+                                  imp.imp_dir   = bpl.bpl_dir            and
+                                  imp.imp_name  = bpl.bpl_name
+where  bpl.bpl_inode_clone is not null
+and    imp.rowid is null"""
+
+        return self.execute_singleton1(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self):
         """
         Deletes rows (i.e. files) from BKC_POOL that are not longer in the actual original pool.
@@ -626,7 +662,7 @@ from   TMP_POOL"""
     # ------------------------------------------------------------------------------------------------------------------
     def pool_update_by_inode_original(self, bpl_inode_original, bpl_inode_clone, pbl_size, pbl_mtime):
         """
-        Sets the inode number of the clone, mtime and size of a file in the pool given a indoe number of a file the the
+        Sets the inode number of the clone, mtime and size of a file in the pool given a inode number of a file the the
         original pool.
 
         :param int bpl_inode_original: The inode number of a file file in the original pool.
@@ -646,7 +682,7 @@ where bpl_inode_original = ?"""
     # ------------------------------------------------------------------------------------------------------------------
     def pool_yield_obsolete_clone_files(self):
         """
-        Selects the clone pool files that are obsolete (i.e. not longer in the original pool)
+        Selects the clone pool files that are obsolete (i.e. not longer in the original pool).
         """
         self.__connection.row_factory = DataLayer.dict_factory
 

@@ -6,6 +6,7 @@ import time
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
+from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.PoolScanner import PoolScanner
 
 
@@ -36,6 +37,10 @@ class PoolSync:
         """
         self.__io.writeln('')
         self.__io.section('Clone pool')
+        self.__io.writeln('')
+
+        file_count = DataLayer.instance.pool_count_obsolete_clone_files()
+        progress = ProgressBar(self.__io.output, file_count)
 
         top_dir_clone = Config.instance.top_dir_clone
         count = 0
@@ -51,7 +56,11 @@ class PoolSync:
                     pass
 
                 DataLayer.instance.pool_delete_row(row['bpl_id'])
+                progress.advance()
 
+        progress.finish()
+
+        self.__io.writeln('')
         self.__io.writeln(' Files removed: {}'.format(count))
         self.__io.writeln('')
 

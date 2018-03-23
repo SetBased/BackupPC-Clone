@@ -6,6 +6,7 @@ import shutil
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
+from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupScanner import BackupScanner
 from backuppc_clone.misc import sizeof_fmt
 
@@ -150,12 +151,18 @@ class BackupClone:
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, self.__backup_no)
 
+        file_count = DataLayer.instance.backup_count_required_clone_pool_files(bck_id)
+        progress = ProgressBar(self.__io.output, file_count)
+
         total_size = 0
         file_count = 0
         for rows in DataLayer.instance.backup_yield_required_clone_pool_files(bck_id):
             for row in rows:
                 total_size += self.__copy_pool_file(row['bpl_dir'], row['bpl_name'], row['bpl_inode_original'])
                 file_count += 1
+                progress.advance()
+
+        progress.finish()
 
         self.__io.writeln('')
         self.__io.writeln(' Number of files copied: {}'.format(file_count))
@@ -169,6 +176,7 @@ class BackupClone:
         """
         self.__io.section('Clone backup')
         self.__io.writeln(' Populating ...')
+        self.__io.writeln('')
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
@@ -180,6 +188,9 @@ class BackupClone:
 
         backup_dir_original = Config.instance.backup_dir_original(self.__host, self.__backup_no)
         top_dir_clone = Config.instance.top_dir_clone
+
+        file_count = DataLayer.instance.backup_count_tree(bck_id)
+        progress = ProgressBar(self.__io.output, file_count)
 
         file_count = 0
         link_count = 0
@@ -210,6 +221,10 @@ class BackupClone:
                     # Entry is a directory
                     os.mkdir(target_clone)
                     dir_count += 1
+
+                progress.advance()
+
+        progress.finish()
 
         self.__io.writeln('')
         self.__io.writeln(' Number of files copied       : {}'.format(file_count))
