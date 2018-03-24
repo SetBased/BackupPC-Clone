@@ -128,8 +128,7 @@ from            BKC_ORIGINAL_BACKUP bob
 left outer join BKC_HOST            hst  on  hst.hst_name = bob.bob_host
 left outer join BKC_BACKUP          bck  on  bck.hst_id     = hst.hst_id and
                                              bck.bck_number = bob.bob_number
-where hst.hst_id is null 
-and   bck.bck_id is null 
+where bck.bck_id is null 
 and   bob.bob_version like '3.%'
 and   bob.bob_type in ('full', 'incr')
 and   bob.bob_end_time is not null
