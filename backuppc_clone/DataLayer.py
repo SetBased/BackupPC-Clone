@@ -156,7 +156,7 @@ where bob.rowid is null
 order by hst.hst_name
 ,        bck.bck_number"""
 
-        self.execute_rows(sql)
+        return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_get_stats(self, bck_id):
@@ -456,7 +456,7 @@ left outer join BKC_ORIGINAL_BACKUP bob  on  bob.bob_host = hst.hst_name
 where bob.rowid is null 
 order by hst.hst_name"""
 
-        self.execute_rows(sql)
+        return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
     def import_csv(self, table_name, column_names, path, truncate=True, defaults=None):
