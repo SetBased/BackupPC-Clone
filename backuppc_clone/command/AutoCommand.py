@@ -1,13 +1,15 @@
 """
 BackupPC Clone
 """
+from cleo import Output
+
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.helper.AuxiliaryFiles import AuxiliaryFiles
+from backuppc_clone.helper.BackupClone import BackupClone
 from backuppc_clone.helper.BackupDelete import BackupDelete
 from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
-from backuppc_clone.helper.BackupClone import BackupClone
 from backuppc_clone.helper.HostDelete import HostDelete
 from backuppc_clone.helper.PoolSync import PoolSync
 
@@ -41,10 +43,14 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Hosts')
 
             for host in hosts:
+                self._io.section('Removing host {}'.format(host['hst_name']))
+
                 helper = HostDelete(self._io)
                 helper.delete_host(host['hst_name'])
 
                 DataLayer.instance.commit()
+
+                self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __remove_obsolete_backups(self):
@@ -56,10 +62,14 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Host Backups')
 
             for backup in backups:
+                self._io.section('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
 
                 DataLayer.instance.commit()
+
+                self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __get_next_clone_target(self):
@@ -104,6 +114,29 @@ class AutoCommand(BaseCommand):
         DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
+    def __handle_file_not_found(self, backup, error):
+        """
+        Handles a FileNotFoundError exception.
+
+        :param dict backup: The metadata of the backup.
+        :param FileNotFoundError error: The exception.
+        """
+        if self._io.get_verbosity() >= Output.VERBOSITY_VERBOSE:
+            self._io.warning(str(error))
+
+        self._io.block('Resynchronization of the pool is required')
+
+        # The host backup might been partially cloned.
+        helper = BackupDelete(self._io)
+        helper.delete_backup(backup['hst_name'], backup['bck_number'])
+
+        # Force resynchronization of pool.
+        Config.instance.last_pool_scan = -1
+
+        # Commit the transaction.
+        DataLayer.instance.commit()
+
+    # ------------------------------------------------------------------------------------------------------------------
     def _handle_command(self):
         """
         Executes the command.
@@ -121,10 +154,7 @@ class AutoCommand(BaseCommand):
                 self.__resync_pool(backup)
                 self.__clone_backup(backup)
             except FileNotFoundError as error:
-                self._io.error(str(error))
-                # Force resync of pool.
-                Config.instance.last_pool_scan = -1
-                DataLayer.instance.commit()
+                self.__handle_file_not_found(backup, error)
 
         helper = AuxiliaryFiles(self._io)
         helper.synchronize()
