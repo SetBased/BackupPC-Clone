@@ -11,6 +11,12 @@ class ProgressBar(CleoProgressBar):
     """
     Customized version of Cleo's ProgressBar.
     """
+    refresh_interval = 10
+    """
+    The refresh interval in seconds.
+
+    :type: int
+    """
 
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, output, maximum=0):
@@ -22,12 +28,16 @@ class ProgressBar(CleoProgressBar):
         """
         CleoProgressBar.__init__(self, output, maximum)
 
-        self.__last_display = 0
+        self.__last_display = -1
         """
         The last epoch the progress bar was printed.
 
         :type: int
         """
+
+        # Show now "0/max [>------] ) 0%" (instead of after step 1: "1/max [>------] 0% very long time".
+        self.set_format(' %current%/%max% [%bar%] %percent:3s%%')
+        self.set_progress(0)
 
         # Display the remaining time.
         self.set_format(' %current%/%max% [%bar%] %percent:3s%% %remaining%')
@@ -38,7 +48,7 @@ class ProgressBar(CleoProgressBar):
         Finish the progress output.
         """
         # Force set_progress to call the parent method.
-        self.__last_display = 0
+        self.__last_display = -1
 
         # No more remaining time, display the total elapsed time.
         self.set_format(' %current%/%max% [%bar%] %percent:3s%% %elapsed%')
@@ -72,9 +82,9 @@ class ProgressBar(CleoProgressBar):
         """
         if self._should_overwrite:
             now = time.time()
-            if now - self.__last_display > 10:
+            if self.__last_display == -1 or (now - self.__last_display) > ProgressBar.refresh_interval:
                 CleoProgressBar.set_progress(self, step)
-                self.__last_display = time.time()
+                self.__last_display = now
             else:
                 if self._max and step > self._max:
                     self._max = step
