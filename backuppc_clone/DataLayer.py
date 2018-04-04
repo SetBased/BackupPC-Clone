@@ -614,7 +614,7 @@ where bpl_id in (select tmp_id from TMP_ID)"""
     # ------------------------------------------------------------------------------------------------------------------
     def pool_insert_new_original(self):
         """
-        Inserts new row into BKC_POOL based ona import from the original pool.
+        Inserts new row into BKC_POOL based on an import from the original pool.
         """
         self.execute_none('delete from TMP_POOL')
 
