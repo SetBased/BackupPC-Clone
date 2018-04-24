@@ -19,15 +19,18 @@ class AuxiliaryFileScanner:
 
         self.__io = io
         """
-        The output style. 
+        The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan(self, top_dir):
+    def scan(self, pc_dir):
+        """
+        Scans recursively a directory for auxiliary of hosts.
 
-        pc_dir = os.path.join(top_dir, 'pc')
+        :param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
+        """
 
         self.__io.writeln(' Scanning <fso>{}</fso>'.format(pc_dir))
 

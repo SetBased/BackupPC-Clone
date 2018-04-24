@@ -2,12 +2,12 @@ BackupPC-Clone
 ##############
 
 BackupPC-Clone is a tool for cloning, copying, or syncing the data of `BackupPC <https://github.com/backuppc/backuppc>`_
-from one filesystem to another filesystem.
+from one filesystem to another filesystem where ``rsync`` fails.
 
 Documentation
 =============
 
-Will be released soon ...
+Will be released after we have successfully migrated our BackupPC instance.
 
 Contributing
 ============
@@ -30,7 +30,7 @@ Support
 =======
 
 If you are having issues, please let us know. Contact us at `Gitter <https://gitter.im/SetBased/BackupPC-Clone>`_ or
-create an issue on `GitHub <https://github.com/SetBased/BackupPC-Clone/issues/new>`_.
+create an `issue <https://github.com/SetBased/BackupPC-Clone/issues/new>`_ on _GitHub.
 
 For commercial support, please contact us at info@setbased.nl.
 

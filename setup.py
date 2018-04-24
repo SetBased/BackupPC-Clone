@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='BackupPC-Clone',
 
-    version='0.0.3',
+    version='0.9.2',
 
     description='A tool for cloning the data of a BackupPC instance',
     long_description=long_description,
@@ -32,7 +32,6 @@ setup(
         'License :: OSI Approved :: MIT License',
 
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],

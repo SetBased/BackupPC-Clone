@@ -27,25 +27,10 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
 
         self._io = None
         """
-        The output style. 
+        The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle|None 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle|None
         """
-
-    # ------------------------------------------------------------------------------------------------------------------
-    def execute(self, i, o):
-        """
-        Executes the command.
-
-        :param cleo.inputs.input.Input i: The input.
-        :param cleo.outputs.output.Output o: The output.
-
-        :rtype: int
-        """
-        self.input = i
-        self.output = o
-
-        return self.handle()
 
     # ------------------------------------------------------------------------------------------------------------------
     def __validate_user(self):
@@ -128,8 +113,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
 
             return self._handle_command()
 
-        except BackupPcCloneException as e:
-            self._io.error(str(e))
+        except BackupPcCloneException as error:
+            self._io.error(str(error))
             return -1
 
 # ----------------------------------------------------------------------------------------------------------------------

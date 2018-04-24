@@ -58,6 +58,13 @@ class Config:
         :type: str|None
         """
 
+        self.__pc_dir_clone = None
+        """
+        The pc dir of the clone.
+
+        :type: str|None
+        """
+
         self.__pc_dir_original = None
         """
         The pc dir of the original.
@@ -87,45 +94,16 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_dir_clone(self):
+    def pc_dir_clone(self):
         """
-        Gives the top dir of the clone.
+        Gives the pc dir of the clone.
 
         :rtype: str
         """
-        if self.__top_dir_clone is None:
-            self.__top_dir_clone = os.path.realpath(os.path.dirname(self.__config_filename))
+        if self.__pc_dir_clone is None:
+            self.__pc_dir_clone = os.path.join(self.top_dir_clone, 'pc')
 
-        return self.__top_dir_clone
-
-    # ------------------------------------------------------------------------------------------------------------------
-    @property
-    def tmp_dir_clone(self):
-        """
-        Gives the temp dir of the clone.
-
-        :rtype: str
-        """
-        if self.__tmp_dir_clone is None:
-            self.__tmp_dir_clone = os.path.join(self.top_dir_clone, 'tmp')
-
-        return self.__tmp_dir_clone
-
-    # ------------------------------------------------------------------------------------------------------------------
-    @property
-    def top_dir_original(self):
-        """
-        Gives the top dir of the original.
-
-        :rtype: str
-        """
-        if self.__top_dir_original is None:
-            config_clone = configparser.ConfigParser()
-            config_clone.read(self.__config_filename)
-
-            self.__top_dir_original = os.path.realpath(os.path.dirname(config_clone['Original']['config']))
-
-        return self.__top_dir_original
+        return self.__pc_dir_clone
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
@@ -145,6 +123,48 @@ class Config:
             self.__pc_dir_original = os.path.realpath(config_original['Original']['pc_dir'])
 
         return self.__pc_dir_original
+
+    # ------------------------------------------------------------------------------------------------------------------
+    @property
+    def tmp_dir_clone(self):
+        """
+        Gives the temp dir of the clone.
+
+        :rtype: str
+        """
+        if self.__tmp_dir_clone is None:
+            self.__tmp_dir_clone = os.path.join(self.top_dir_clone, 'tmp')
+
+        return self.__tmp_dir_clone
+
+    # ------------------------------------------------------------------------------------------------------------------
+    @property
+    def top_dir_clone(self):
+        """
+        Gives the top dir of the clone.
+
+        :rtype: str
+        """
+        if self.__top_dir_clone is None:
+            self.__top_dir_clone = os.path.realpath(os.path.dirname(self.__config_filename))
+
+        return self.__top_dir_clone
+
+    # ------------------------------------------------------------------------------------------------------------------
+    @property
+    def top_dir_original(self):
+        """
+        Gives the top dir of the original.
+
+        :rtype: str
+        """
+        if self.__top_dir_original is None:
+            config_clone = configparser.ConfigParser()
+            config_clone.read(self.__config_filename)
+
+            self.__top_dir_original = os.path.realpath(os.path.dirname(config_clone['Original']['config']))
+
+        return self.__top_dir_original
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_dir_clone(self, host, backup_no):

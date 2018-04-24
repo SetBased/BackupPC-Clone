@@ -5,7 +5,7 @@
 /*  FileName : backuppc-clone.ecm                                                 */
 /*  Platform : SQLite 3                                                           */
 /*  Version  :                                                                    */
-/*  Date     : dinsdag 20 maart 2018                                              */
+/*  Date     : dinsdag 24 april 2018                                              */
 /*================================================================================*/
 /*================================================================================*/
 /* CREATE TABLES                                                                  */
@@ -70,6 +70,28 @@ CREATE TABLE IMP_POOL (
   imp_dir TEXT NOT NULL,
   imp_name TEXT NOT NULL,
   PRIMARY KEY (imp_inode)
+);
+
+CREATE TABLE TMP_BACKUP_TREE (
+  bpl_inode_original INTEGER,
+  bpl_dir TEXT,
+  bpl_name TEXT,
+  bbt_seq INTEGER,
+  bbt_inode_original INTEGER,
+  bbt_dir TEXT,
+  bbt_name TEXT
+);
+
+CREATE TABLE TMP_CLONE_POOL_OBSOLETE (
+  bpl_id INTEGER NOT NULL,
+  bpl_dir TEXT NOT NULL,
+  bpl_name TEXT NOT NULL
+);
+
+CREATE TABLE TMP_CLONE_POOL_REQUIRED (
+  bpl_inode_original INTEGER,
+  bpl_dir TEXT,
+  bpl_name TEXT
 );
 
 CREATE TABLE TMP_ID (

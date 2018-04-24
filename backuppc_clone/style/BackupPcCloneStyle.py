@@ -11,33 +11,45 @@ class BackupPcCloneStyle(CleoStyle):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, input, output):
+    def __init__(self, input_object, output_object):
         """
         Object constructor.
 
-        :param cleo.inputs.input.Input input: The input object.
-        :param cleo.outputs.output.Output output: The output object.
+        :param cleo.inputs.input.Input input_object: The input object.
+        :param cleo.outputs.output.Output output_object: The output_object object.
         """
-        CleoStyle.__init__(self, input, output)
+        CleoStyle.__init__(self, input_object, output_object)
 
         # Create style notes.
-        output.get_formatter().add_style('note', 'yellow', None, ['bold'])
+        output_object.get_formatter().add_style('note', 'yellow', None, ['bold'])
 
         # Create style for data_layer objects.
-        output.get_formatter().add_style('dbo', 'green', None, ['bold'])
+        output_object.get_formatter().add_style('dbo', 'green', None, ['bold'])
 
         # Create style for file and directory names.
-        output.get_formatter().add_style('fso', 'white', None, ['bold'])
+        output_object.get_formatter().add_style('fso', 'white', None, ['bold'])
 
         # Create style for SQL statements.
-        output.get_formatter().add_style('sql', 'magenta', None, ['bold'])
+        output_object.get_formatter().add_style('sql', 'magenta', None, ['bold'])
 
     # ------------------------------------------------------------------------------------------------------------------
     def warning(self, message):
+        """
+        Writes a waring message.
+
+        :param str|list[str] message: The message or list of messages.
+
+        :return:
+        """
         self.block(message, 'WARNING', 'fg=white;bg=red', padding=True)
 
     # ------------------------------------------------------------------------------------------------------------------
     def text(self, message):
+        """
+        Formats informational text.
+
+        :param str|list[str] message: The message or list of messages.
+        """
         if isinstance(message, list):
             messages = message
         else:

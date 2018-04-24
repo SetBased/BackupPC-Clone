@@ -31,9 +31,9 @@ class TraversePerformanceTestCommand(Command):
 
         self._io = None
         """
-        The output style. 
+        The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle 
+        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyleG57G
         """
 
         self.__dir_count = 0
@@ -54,7 +54,7 @@ class TraversePerformanceTestCommand(Command):
         """
         The timestamp of the start of the performance test.
 
-        :type: int 
+        :type: int
         """
 
     # ------------------------------------------------------------------------------------------------------------------
