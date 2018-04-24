@@ -43,43 +43,6 @@ class DataLayer:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_count_required_clone_pool_files(self, bck_id):
-        """
-        Selects the number of pool files required for a host backup that are not yet copied from the original pool to
-        the clon  pool.
-
-        :param int bck_id: The ID of the host backup.
-
-        :rtype: int
-        """
-        sql = """
-select count(distinct bpl.bpl_inode_original)
-from       BKC_BACKUP_TREE bbt
-inner join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
-where bbt.bck_id = ?
-and   bpl.bpl_inode_clone is null"""
-
-        return self.execute_singleton1(sql, (bck_id,))
-
-    # ------------------------------------------------------------------------------------------------------------------
-    def backup_count_tree(self, bck_id):
-        """
-        Selects the file entries of a host backup.
-
-        :param int bck_id: The ID of the host backup.
-
-        :rtype: int
-        """
-        self.__connection.row_factory = DataLayer.dict_factory
-
-        sql = """
-select count(*)
-from   BKC_BACKUP_TREE bbt
-where  bbt.bck_id = ?"""
-
-        return self.execute_singleton1(sql, (bck_id,))
-
-    # ------------------------------------------------------------------------------------------------------------------
     def backup_delete(self, bck_id):
         """
         Deletes cascading a host backup.
@@ -176,28 +139,94 @@ where bck_id = ?"""
         return self.execute_row1(sql, (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_yield_required_clone_pool_files(self, bck_id):
+    def backup_prepare_required_clone_pool_files(self, bck_id):
         """
-        Selects the pool files required for a host backup that are not yet copied from the original pool to the clone
-        pool.
+        Prepares the files required for a host backup that are not yet copied from the original pool to the clone pool.
 
         :param int bck_id: The ID of the host backup.
+
+        :rtype: int
         """
-        self.__connection.row_factory = DataLayer.dict_factory
+        self.execute_none('delete from TMP_CLONE_POOL_REQUIRED')
 
         sql = """
+insert into TMP_CLONE_POOL_REQUIRED( bpl_inode_original
+,                                    bpl_dir
+,                                    bpl_name )
 select distinct bpl_inode_original
 ,               bpl_dir
 ,               bpl_name
 from       BKC_BACKUP_TREE bbt
 inner join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
 where bbt.bck_id = ?
-and   bpl.bpl_inode_clone is null
-order by bpl.bpl_dir
-,        bpl.bpl_name"""
+and   bpl.bpl_inode_clone is null"""
+
+        self.execute_none(sql, (bck_id,))
+
+        sql = """
+select count(distinct bpl_inode_original)
+from   TMP_CLONE_POOL_REQUIRED"""
+
+        return self.execute_singleton1(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def backup_prepare_tree(self, bck_id):
+        """
+        Selects the file entries of a host backup.
+
+        :param int bck_id: The ID of the host backup.
+
+        :rtype: int
+        """
+        self.execute_none('delete from TMP_BACKUP_TREE')
+
+        sql = """
+insert into TMP_BACKUP_TREE( bpl_inode_original
+,                            bpl_dir
+,                            bpl_name   
+
+,                            bbt_seq                             
+,                            bbt_inode_original
+,                            bbt_dir
+,                            bbt_name )
+select bpl.bpl_inode_original
+,      bpl.bpl_dir
+,      bpl.bpl_name
+
+,      bbt.bbt_seq
+,      bbt.bbt_inode_original
+,      bbt.bbt_dir
+,      bbt.bbt_name
+from            BKC_BACKUP_TREE bbt
+left outer join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
+where bbt.bck_id = ?"""
+
+        self.execute_none(sql, (bck_id,))
+
+        sql = """
+select count(*)
+from   TMP_BACKUP_TREE"""
+
+        return self.execute_singleton1(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def backup_yield_required_clone_pool_files(self):
+        """
+        Selects the pool files required for a host backup that are not yet copied from the original pool to the clone
+        pool.
+        """
+        self.__connection.row_factory = DataLayer.dict_factory
+
+        sql = """
+select bpl_inode_original
+,      bpl_dir
+,      bpl_name
+from   TMP_CLONE_POOL_REQUIRED
+order by bpl_dir
+,        bpl_name"""
 
         cursor = self.__connection.cursor()
-        cursor.execute(sql, (bck_id,))
+        cursor.execute(sql)
         while True:
             rows = cursor.fetchmany(10000)
             if not rows:
@@ -206,31 +235,27 @@ order by bpl.bpl_dir
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_yield_tree(self, bck_id):
+    def backup_yield_tree(self):
         """
         Selects the file entries of a host backup.
-
-        :param int bck_id: The ID of the host backup.
         """
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select bpl.bpl_inode_original
-,      bpl.bpl_dir
-,      bpl.bpl_name
+select bpl_inode_original
+,      bpl_dir
+,      bpl_name
 
-,      bbt.bbt_inode_original
-,      bbt.bbt_dir
-,      bbt.bbt_name
-from            BKC_BACKUP_TREE bbt
-left outer join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
-where bbt.bck_id = ?
-order by bbt.bbt_seq
-,        bpl.bpl_dir
-,        bpl.bpl_name"""
+,      bbt_inode_original
+,      bbt_dir
+,      bbt_name
+from   TMP_BACKUP_TREE
+order by bbt_seq
+,        bpl_dir
+,        bpl_name"""
 
         cursor = self.__connection.cursor()
-        cursor.execute(sql, (bck_id,))
+        cursor.execute(sql)
         while True:
             rows = cursor.fetchmany(10000)
             if not rows:
@@ -560,24 +585,6 @@ from   BKC_ORIGINAL_BACKUP"""
         return self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_count_obsolete_clone_files(self):
-        """
-        Selects the number of clone pool files that are obsolete (i.e. not longer in the original pool).
-        """
-        self.__connection.row_factory = DataLayer.dict_factory
-
-        sql = """
-select count(*)
-from            BKC_POOL bpl
-left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
-                                  imp.imp_dir   = bpl.bpl_dir            and
-                                  imp.imp_name  = bpl.bpl_name
-where  bpl.bpl_inode_clone is not null
-and    imp.rowid is null"""
-
-        return self.execute_singleton1(sql)
-
-    # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self):
         """
         Deletes rows (i.e. files) from BKC_POOL that are not longer in the actual original pool.
@@ -659,6 +666,37 @@ from   TMP_POOL"""
         self.execute_none(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
+    def pool_prepare_obsolete_clone_files(self):
+        """
+        Prepares the clone pool files that are obsolete (i.e. not longer in the original pool).
+
+        :rtype: int
+        """
+        self.execute_none('delete from TMP_CLONE_POOL_OBSOLETE')
+
+        sql = """
+insert into TMP_CLONE_POOL_OBSOLETE( bpl_id
+,                                    bpl_dir
+,                                    bpl_name )
+select bpl.bpl_id
+,      bpl.bpl_dir
+,      bpl.bpl_name
+from            BKC_POOL bpl
+left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
+                                  imp.imp_dir   = bpl.bpl_dir            and
+                                  imp.imp_name  = bpl.bpl_name
+where  bpl.bpl_inode_clone is not null
+and    imp.rowid is null"""
+
+        self.execute_none(sql)
+
+        sql = """
+select count(*)
+from   TMP_CLONE_POOL_OBSOLETE"""
+
+        return self.execute_singleton1(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
     def pool_update_by_inode_original(self, bpl_inode_original, bpl_inode_clone, pbl_size, pbl_mtime):
         """
         Sets the inode number of the clone, mtime and size of a file in the pool given a inode number of a file the the
@@ -686,15 +724,10 @@ where bpl_inode_original = ?"""
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select bpl.bpl_id
-,      bpl.bpl_dir
-,      bpl.bpl_name
-from            BKC_POOL bpl
-left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
-                                  imp.imp_dir   = bpl.bpl_dir            and
-                                  imp.imp_name  = bpl.bpl_name
-where  bpl.bpl_inode_clone is not null
-and    imp.rowid is null"""
+select bpl_id
+,      bpl_dir
+,      bpl_name
+from   TMP_CLONE_POOL_OBSOLETE"""
 
         cursor = self.__connection.cursor()
         cursor.execute(sql)

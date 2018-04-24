@@ -39,7 +39,7 @@ class PoolSync:
         self.__io.section('Clone pool')
         self.__io.writeln('')
 
-        file_count = DataLayer.instance.pool_count_obsolete_clone_files()
+        file_count = DataLayer.instance.pool_prepare_obsolete_clone_files()
         progress = ProgressBar(self.__io.output, file_count)
 
         top_dir_clone = Config.instance.top_dir_clone
@@ -76,7 +76,6 @@ class PoolSync:
         scanner = PoolScanner(self.__io)
         scanner.scan_directory(Config.instance.top_dir_original, ['pool', 'cpool'], csv_filename)
 
-        self.__io.writeln('')
         self.__io.writeln(' Files found: {}'.format(scanner.count))
         self.__io.writeln('')
 

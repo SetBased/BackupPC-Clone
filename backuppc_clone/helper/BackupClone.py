@@ -151,12 +151,12 @@ class BackupClone:
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, self.__backup_no)
 
-        file_count = DataLayer.instance.backup_count_required_clone_pool_files(bck_id)
+        file_count = DataLayer.instance.backup_prepare_required_clone_pool_files(bck_id)
         progress = ProgressBar(self.__io.output, file_count)
 
         total_size = 0
         file_count = 0
-        for rows in DataLayer.instance.backup_yield_required_clone_pool_files(bck_id):
+        for rows in DataLayer.instance.backup_yield_required_clone_pool_files():
             for row in rows:
                 total_size += self.__copy_pool_file(row['bpl_dir'], row['bpl_name'], row['bpl_inode_original'])
                 file_count += 1
@@ -189,13 +189,13 @@ class BackupClone:
         backup_dir_original = Config.instance.backup_dir_original(self.__host, self.__backup_no)
         top_dir_clone = Config.instance.top_dir_clone
 
-        file_count = DataLayer.instance.backup_count_tree(bck_id)
+        file_count = DataLayer.instance.backup_prepare_tree(bck_id)
         progress = ProgressBar(self.__io.output, file_count)
 
         file_count = 0
         link_count = 0
         dir_count = 0
-        for rows in DataLayer.instance.backup_yield_tree(bck_id):
+        for rows in DataLayer.instance.backup_yield_tree():
             for row in rows:
                 if row['bbt_dir'] is None:
                     row['bbt_dir'] = ''
