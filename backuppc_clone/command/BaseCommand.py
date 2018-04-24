@@ -33,21 +33,6 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute(self, i, o):
-        """
-        Executes the command.
-
-        :param cleo.inputs.input.Input i: The input.
-        :param cleo.outputs.output.Output o: The output.
-
-        :rtype: int
-        """
-        self.input = i
-        self.output = o
-
-        return self.handle()
-
-    # ------------------------------------------------------------------------------------------------------------------
     def __validate_user(self):
         """
         Validates that this command is not run under root.
