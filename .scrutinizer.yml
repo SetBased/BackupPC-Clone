@@ -16,7 +16,5 @@ build:
   nodes:
     analysis:
       tests:
-        analysis:
-          tests:
-            override:
-              - py-scrutinizer-run
+        override:
+          - py-scrutinizer-run
