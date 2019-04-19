@@ -2,6 +2,7 @@
 BackupPC Clone
 """
 import csv
+import os
 import sqlite3
 
 
@@ -21,16 +22,23 @@ class DataLayer:
         """
         Object constructor.
 
-        :param str database: Path to the SQLite data_layer.
+        :param str database: Path to the SQLite database.
         """
         if DataLayer.instance is not None:
             raise Exception("This class is a singleton!")
         else:
             DataLayer.instance = self
 
+        self.__database = database
+        """
+        The path to the SQLite database.
+        
+        :type: str
+        """
+
         self.__connection = sqlite3.connect(database, isolation_level="EXCLUSIVE")
         """
-        The connection to the data_layer.
+        The connection to the database.
 
         :type: sqlite3.Connection
         """
@@ -41,6 +49,29 @@ class DataLayer:
 
         :type: int
         """
+
+        tmp_dir = os.path.join(os.path.dirname(database), 'tmp')
+        self.execute_none('pragma temp_store = 1')
+        self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def disconnect(self):
+        """
+        Disconnects from the SQLite database.
+        """
+        self.__connection.commit()
+        self.__connection.close()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def connect(self):
+        """
+        Connects to the SQLite database.
+        """
+        self.__connection = sqlite3.connect(self.__database, isolation_level="EXCLUSIVE")
+
+        tmp_dir = os.path.join(os.path.dirname(self.__database), 'tmp')
+        self.execute_none('pragma temp_store = 1')
+        self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_delete(self, bck_id):
@@ -96,7 +127,8 @@ and   bob.bob_version like '3.%'
 and   bob.bob_type in ('full', 'incr')
 and   bob.bob_end_time is not null
 and  (bob.bob_end_time < ? or ? = -1)
-order by bob.bob_end_time desc
+order by bob.bob_type 
+,        bob.bob_end_time desc
 limit 0, 1"""
 
         return self.execute_row0(sql, (end_time, end_time))
@@ -120,6 +152,43 @@ order by hst.hst_name
 ,        bck.bck_number"""
 
         return self.execute_rows(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def backup_partially_cloned(self):
+        """
+        Selects partially cloned host backups.
+
+        :rtype: list[dict]
+        """
+        sql = """
+select hst.hst_name
+,      bck.bck_number
+from            BKC_HOST   hst
+inner join      BKC_BACKUP bck  on  bck.hst_id = hst.hst_id
+where bck.bck_in_progress = 1
+order by hst.hst_name
+,        bck.bck_number"""
+
+        return self.execute_rows(sql)
+
+        # ------------------------------------------------------------------------------------------------------------------
+
+    def backup_set_in_progress(self, bck_id, bck_in_progress):
+        """
+        Updates the in progress flag of a host backup.
+
+        :param int bck_id: The ID of the host backup.
+        :param int bck_in_progress: The in progress flag.
+        """
+        if bck_in_progress != 0:
+            bck_in_progress = 1
+
+        sql = """
+update BKC_BACKUP
+set    bck_in_progress = ? 
+where  bck_id = ?"""
+
+        return self.execute_none(sql, (bck_in_progress, bck_id))
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_get_stats(self, bck_id):

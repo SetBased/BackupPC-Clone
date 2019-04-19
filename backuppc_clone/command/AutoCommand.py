@@ -1,6 +1,8 @@
 """
 BackupPC Clone
 """
+import os
+
 from cleo import Output
 
 from backuppc_clone.Config import Config
@@ -72,6 +74,25 @@ class AutoCommand(BaseCommand):
                 self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
+    def __remove_partially_cloned_backups(self):
+        """
+        Removes backups that are still marked "in progress" (and hence cloned partially).
+        """
+        backups = DataLayer.instance.backup_partially_cloned()
+        if backups:
+            self._io.title('Removing Partially Cloned Host Backups')
+
+            for backup in backups:
+                self._io.section('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+
+                helper = BackupDelete(self._io)
+                helper.delete_backup(backup['hst_name'], backup['bck_number'])
+
+                DataLayer.instance.commit()
+
+                self._io.writeln('')
+
+    # ------------------------------------------------------------------------------------------------------------------
     def __get_next_clone_target(self):
         """
         Returns the metadata of the host backup that needs to be cloned.
@@ -128,7 +149,7 @@ class AutoCommand(BaseCommand):
 
         # The host backup might been partially cloned.
         helper = BackupDelete(self._io)
-        helper.delete_backup(backup['hst_name'], backup['bck_number'])
+        helper.delete_backup(backup['bob_host'], backup['bob_number'])
 
         # Force resynchronization of pool.
         Config.instance.last_pool_scan = -1
@@ -141,20 +162,34 @@ class AutoCommand(BaseCommand):
         """
         Executes the command.
         """
+        DataLayer.instance.disconnect()
+
         while True:
-            self.__scan_original_backups()
-            self.__remove_obsolete_hosts()
-            self.__remove_obsolete_backups()
+            pid = os.fork()
 
-            backup = self.__get_next_clone_target()
-            if backup is None:
+            if pid == 0:
+                DataLayer.instance.connect()
+
+                self.__remove_partially_cloned_backups()
+                self.__scan_original_backups()
+                self.__remove_obsolete_hosts()
+                self.__remove_obsolete_backups()
+
+                backup = self.__get_next_clone_target()
+                if backup is None:
+                    exit(1)
+
+                try:
+                    self.__resync_pool(backup)
+                    self.__clone_backup(backup)
+                except FileNotFoundError as error:
+                    self.__handle_file_not_found(backup, error)
+
+                exit(0)
+
+            pid, status = os.wait()
+            if status != 0:
                 break
-
-            try:
-                self.__resync_pool(backup)
-                self.__clone_backup(backup)
-            except FileNotFoundError as error:
-                self.__handle_file_not_found(backup, error)
 
         helper = AuxiliaryFiles(self._io)
         helper.synchronize()
