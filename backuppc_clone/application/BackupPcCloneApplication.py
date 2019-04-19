@@ -26,7 +26,7 @@ class BackupPcCloneApplication(Application):
         """
         Object constructor
         """
-        Application.__init__(self, 'backuppc-clone', '0.9.2')
+        Application.__init__(self, 'backuppc-clone', '0.9.3')
 
     # ------------------------------------------------------------------------------------------------------------------
     def get_default_commands(self):
