@@ -1,14 +1,20 @@
 filter:
-    excluded_paths:
-        - test/*
+  excluded_paths:
+    - test/*
 
 before_commands:
   - sudo pip3 install cleo
 
 build:
-    environment:
-        python: 3.6.0
+  environment:
+    python: 3.6.0
 
-    dependencies:
-        before:
-        - pip3 install cleo
+  dependencies:
+    before:
+      - pip3 install cleo
+
+  nodes:
+    analysis:
+      tests:
+        override:
+          - py-scrutinizer-run

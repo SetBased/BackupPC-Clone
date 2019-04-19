@@ -180,6 +180,7 @@ class BackupClone:
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
+        DataLayer.instance.backup_set_in_progress(bck_id, 1)
 
         backup_dir_clone = Config.instance.backup_dir_clone(self.__host, self.__backup_no)
         if os.path.exists(backup_dir_clone):
@@ -206,7 +207,7 @@ class BackupClone:
                     # Entry is a file linked to the pool.
                     source_clone = os.path.join(top_dir_clone, row['bpl_dir'], row['bpl_name'])
                     self.__io.log_very_verbose(
-                        'Linking to <fso>{}</fso> from <fso>{}</fso>'.format(source_clone, target_clone))
+                            'Linking to <fso>{}</fso> from <fso>{}</fso>'.format(source_clone, target_clone))
                     os.link(source_clone, target_clone)
                     link_count += 1
 
@@ -225,6 +226,8 @@ class BackupClone:
                 progress.advance()
 
         progress.finish()
+
+        DataLayer.instance.backup_set_in_progress(bck_id, 0)
 
         self.__io.writeln('')
         self.__io.writeln(' Number of files copied       : {}'.format(file_count))
