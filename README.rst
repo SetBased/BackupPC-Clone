@@ -4,6 +4,16 @@ BackupPC-Clone
 BackupPC-Clone is a tool for cloning, copying, or syncing the data of `BackupPC <https://github.com/backuppc/backuppc>`_
 from one filesystem to another filesystem where ``rsync`` fails.
 
++---------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+| Social                                                                                                                          | Release                                                 | Code                                                                                                   |
++=================================================================================================================================+=========================================================+========================================================================================================+
+| .. image:: https://badges.gitter.im/SetBased/BackupPC-Clone.svg                                                                 | .. image:: https://badge.fury.io/py/BackupPC-Clone.svg  | .. image:: https://scrutinizer-ci.com/g/SetBased/BackupPC-Clone/badges/quality-score.png?b=master      |
+|   :target: https://gitter.im/SetBased/BackupPC-Clone?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge  |   :target: https://badge.fury.io/py/BackupPC-Clone      |   :target: https://scrutinizer-ci.com/g/SetBased/BackupPC-Clone/?branch=master                         |
+|                                                                                                                                 |                                                         |                                                                                                        |
+|                                                                                                                                 |                                                         |                                                                                                        |
++---------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+
+
 Documentation
 =============
 
