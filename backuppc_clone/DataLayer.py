@@ -171,8 +171,7 @@ order by hst.hst_name
 
         return self.execute_rows(sql)
 
-        # ------------------------------------------------------------------------------------------------------------------
-
+    # ------------------------------------------------------------------------------------------------------------------
     def backup_set_in_progress(self, bck_id, bck_in_progress):
         """
         Updates the in progress flag of a host backup.
