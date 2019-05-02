@@ -165,7 +165,7 @@ select hst.hst_name
 ,      bck.bck_number
 from            BKC_HOST   hst
 inner join      BKC_BACKUP bck  on  bck.hst_id = hst.hst_id
-where bck.bck_in_progress = 1
+where ifnull(bck.bck_in_progress, 1) = 1
 order by hst.hst_name
 ,        bck.bck_number"""
 

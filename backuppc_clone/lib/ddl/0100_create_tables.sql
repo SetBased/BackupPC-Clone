@@ -5,7 +5,7 @@
 /*  FileName : backuppc-clone.ecm                                                 */
 /*  Platform : SQLite 3                                                           */
 /*  Version  :                                                                    */
-/*  Date     : woensdag 17 april 2019                                             */
+/*  Date     : donderdag 2 mei 2019                                               */
 /*================================================================================*/
 /*================================================================================*/
 /* CREATE TABLES                                                                  */
@@ -21,7 +21,7 @@ CREATE TABLE BKC_BACKUP (
   bck_id INTEGER NOT NULL,
   hst_id INTEGER NOT NULL,
   bck_number INTEGER NOT NULL,
-  bck_in_progress INTEGER NOT NULL,
+  bck_in_progress INTEGER DEFAULT NULL,
   PRIMARY KEY (bck_id)
 );
 
