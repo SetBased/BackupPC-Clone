@@ -29,7 +29,8 @@ class BackupInfoScanner:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __get_backup_info(self, backup_dir, param_name):
+    @staticmethod
+    def get_backup_info(backup_dir, param_name):
         """
         Extracts info about a backup from file backupInfo.
 
@@ -39,6 +40,7 @@ class BackupInfoScanner:
         :rtype: str|None
         """
         ret = None
+
         path = os.path.join(backup_dir, 'backupInfo')
         if os.path.isfile(path):
             with open(path) as file:
@@ -72,10 +74,10 @@ class BackupInfoScanner:
                         backup_dir = os.path.join(host_dir, backup.name)
                         backups.append({'bob_host':     host.name,
                                         'bob_number':   int(backup.name),
-                                        'bob_end_time': self.__get_backup_info(backup_dir, 'endTime'),
-                                        'bob_version':  self.__get_backup_info(backup_dir, 'version'),
-                                        'bob_level':    self.__get_backup_info(backup_dir, 'level'),
-                                        'bob_type':     self.__get_backup_info(backup_dir, 'type')})
+                                        'bob_end_time': self.get_backup_info(backup_dir, 'endTime'),
+                                        'bob_version':  self.get_backup_info(backup_dir, 'version'),
+                                        'bob_level':    self.get_backup_info(backup_dir, 'level'),
+                                        'bob_type':     self.get_backup_info(backup_dir, 'type')})
 
         return backups
 

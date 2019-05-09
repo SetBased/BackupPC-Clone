@@ -6,6 +6,8 @@ import os
 import shutil
 
 from backuppc_clone.Config import Config
+from backuppc_clone.ProgressBar import ProgressBar
+from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
 
 
 class BackupScanner:
@@ -49,6 +51,13 @@ class BackupScanner:
         :type: int
         """
 
+        self.progress = None
+        """
+        The progress counter.
+        
+        :type: backuppc_clone.ProgressBar.ProgressBar
+        """
+
     # ------------------------------------------------------------------------------------------------------------------
     @property
     def dir_count(self):
@@ -90,6 +99,9 @@ class BackupScanner:
                     self.__entry_seq += 1
                 csv_writer.writerow((self.__entry_seq, entry.inode(), dir_name, entry.name))
 
+                if entry.name not in ['attrib', 'backupInfo', 'backuppc-clone.csv']:
+                    self.progress.advance()
+
             elif entry.is_dir():
                 sub_dir_names.append(entry.name)
 
@@ -114,10 +126,15 @@ class BackupScanner:
 
         backup_dir = Config.instance.backup_dir_original(host, backup_no)
 
+        file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
+        self.progress = ProgressBar(self.__io.output, file_count)
+
         with open(csv_filename, 'wt') as csv_file:
             csv_writer = csv.writer(csv_file)
             self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.writeln('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
+            self.progress.finish()
 
     # ------------------------------------------------------------------------------------------------------------------
     def pre_scan_directory(self, host, backup_no):
@@ -136,12 +153,18 @@ class BackupScanner:
         csv_filename1 = os.path.join(Config.instance.tmp_dir_clone, '.backup-{}-{}.csv'.format(host, backup_no))
         csv_filename2 = os.path.join(backup_dir, 'backuppc-clone.csv')
 
+        file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
+        self.progress = ProgressBar(self.__io.output, file_count)
+
         with open(csv_filename1, 'wt') as csv_file:
             csv_writer = csv.writer(csv_file)
             self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.writeln('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
+            self.progress.finish()
 
         shutil.move(csv_filename1, csv_filename2)
+        self.__io.writeln('')
         self.__io.writeln(' Wrote <fso>{}</fso>'.format(csv_filename2))
         self.__io.writeln('')
 
