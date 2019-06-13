@@ -632,6 +632,42 @@ from   BKC_ORIGINAL_BACKUP"""
         self.execute_none('delete from BKC_ORIGINAL_BACKUP')
 
     # ------------------------------------------------------------------------------------------------------------------
+    def overview_get_stats(self):
+        """
+        Select statistics of the original backups and cloned backups.
+
+        :rtype: dict
+        """
+        sql = """
+select sum(case when cnt1=1 then 1 else 0 end)            n_backups
+,      sum(case when cnt1=1 and cnt2=1 then 1 else 0 end) n_cloned_backups
+,      sum(case when cnt1=1 and cnt2=0 then 1 else 0 end) n_not_cloned_backups
+,      sum(case when cnt1=0 and cnt2=1 then 1 else 0 end) n_obsolete_cloned_backups
+from
+(
+  select sum(case when src=1 then 1 else 0 end) cnt1
+  ,      sum(case when src=2 then 1 else 0 end) cnt2
+  from (
+         select bob_host
+         ,      bob_number
+         ,      1 src
+         from BKC_ORIGINAL_BACKUP
+
+         union all
+
+         select hst.hst_name
+         ,      bck.bck_number
+         ,      2  src
+         from BKC_BACKUP    bck
+         join BKC_HOST hst on hst.hst_id = bck.hst_id
+       ) t
+  group by bob_host
+  ,        bob_number
+)"""
+
+        return self.execute_row1(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
     def parameter_get_value(self, prm_code):
         """
         Select the value of a parameter.

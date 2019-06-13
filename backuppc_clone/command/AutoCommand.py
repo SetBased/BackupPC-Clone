@@ -36,6 +36,29 @@ class AutoCommand(BaseCommand):
         DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
+    def __sync_auxiliary_files(self):
+        """
+        Synchronises auxiliary files (i.e. files directly under a host directory but not part of a backup).
+        """
+        self._io.title('Synchronizing Auxiliary Files')
+
+        helper = AuxiliaryFiles(self._io)
+        helper.synchronize()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def __show_overview_stats(self):
+        """
+        Shows the number of backups, cloned backups, backups to clone, and number of obsolete cloned backups.
+        """
+        stats = DataLayer.instance.overview_get_stats()
+
+        self._io.writeln(' # backups                : {}'.format(stats['n_backups']))
+        self._io.writeln(' # cloned backups         : {}'.format(stats['n_cloned_backups']))
+        self._io.writeln(' # backups still to clone : {}'.format(stats['n_not_cloned_backups']))
+        self._io.writeln(' # obsolete cloned backups: {}'.format(stats['n_obsolete_cloned_backups']))
+        self._io.writeln('')
+
+    # ------------------------------------------------------------------------------------------------------------------
     def __remove_obsolete_hosts(self):
         """
         Removes obsolete hosts.
@@ -172,6 +195,7 @@ class AutoCommand(BaseCommand):
 
                 self.__remove_partially_cloned_backups()
                 self.__scan_original_backups()
+                self.__show_overview_stats()
                 self.__remove_obsolete_hosts()
                 self.__remove_obsolete_backups()
 
@@ -191,7 +215,6 @@ class AutoCommand(BaseCommand):
             if status != 0:
                 break
 
-        helper = AuxiliaryFiles(self._io)
-        helper.synchronize()
+        self.__sync_auxiliary_files()
 
 # ----------------------------------------------------------------------------------------------------------------------
