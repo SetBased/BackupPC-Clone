@@ -19,7 +19,7 @@ class InitCloneCommand(BaseCommand):
                   ('LAST_POOL_SYNC', 'timestamp of last original pool scan', '-1')]
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __create_dirs(self, top_dir_clone):
+    def __create_dirs(self, top_dir_clone: str) -> None:
         """
         Creates required directories under the top dir of the clone.
 
@@ -37,7 +37,7 @@ class InitCloneCommand(BaseCommand):
                 os.mkdir(path, 0o700)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __create_database(self, db_path):
+    def __create_database(self, db_path: str) -> None:
         """
         Creates the metadata database.
 
@@ -66,7 +66,11 @@ class InitCloneCommand(BaseCommand):
         connection.close()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __writing_config_clone(self, config_filename_clone, config_filename_original, name_clone, name_master):
+    def __writing_config_clone(self,
+                               config_filename_clone: str,
+                               config_filename_original: str,
+                               name_clone: str,
+                               name_master: str) -> None:
         """
         Creates the config file for the clone.
 
@@ -86,14 +90,14 @@ class InitCloneCommand(BaseCommand):
             config.write(config_file)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _init_singletons(self):
+    def _init_singletons(self) -> None:
         """
         Omits the creating of singleton objects.
         """
         pass
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _handle_command(self):
+    def _handle_command(self) -> None:
         """
         Executes the command.
         """

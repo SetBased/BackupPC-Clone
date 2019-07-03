@@ -4,6 +4,7 @@ BackupPC Clone
 import abc
 import configparser
 import os
+from typing import Optional
 
 from cleo import Command
 
@@ -19,7 +20,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, name=None):
+    def __init__(self, name: Optional[str] = None) -> None:
         """
         Object constructor.
         """
@@ -33,7 +34,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __validate_user(self):
+    def __validate_user(self) -> None:
         """
         Validates that this command is not run under root.
         """
@@ -43,7 +44,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
             raise BackupPcCloneException('Will not run this command under root')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __validate_config(self):
+    def __validate_config(self) -> None:
         """
         Validates the configuration files.
         """
@@ -59,11 +60,11 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
 
             if config_clone['Original']['name'] != config_original['BackupPC Clone']['name']:
                 raise BackupPcCloneException(
-                    'Clone {} is not a clone of original {}'.format(config_clone['Original']['name'],
-                                                                    config_original['BackupPC Clone']['name']))
+                        'Clone {} is not a clone of original {}'.format(config_clone['Original']['name'],
+                                                                        config_original['BackupPC Clone']['name']))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def ask(self, question, default=None):
+    def ask(self, question: str, default: Optional[str] = None) -> Optional[str]:
         """
         Prompt the user for input.
 
@@ -82,7 +83,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         return answer
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _init_singletons(self):
+    def _init_singletons(self) -> None:
         """
         Initializes the singleton objects.
         """
@@ -91,7 +92,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
 
     # ------------------------------------------------------------------------------------------------------------------
     @abc.abstractmethod
-    def _handle_command(self):
+    def _handle_command(self) -> int:
         """
         Executes the command.
 
@@ -100,7 +101,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def handle(self):
+    def handle(self) -> int:
         """
         Executes the command.
         """

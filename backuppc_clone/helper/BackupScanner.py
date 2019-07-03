@@ -8,6 +8,7 @@ import shutil
 from backuppc_clone.Config import Config
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class BackupScanner:
@@ -16,18 +17,18 @@ class BackupScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
         self.__dir_count = 0
@@ -60,7 +61,7 @@ class BackupScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def dir_count(self):
+    def dir_count(self) -> int:
         """
         Returns the number of found directories.
 
@@ -70,7 +71,7 @@ class BackupScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def file_count(self):
+    def file_count(self) -> int:
         """
         Returns the number of found files.
 
@@ -79,7 +80,7 @@ class BackupScanner:
         return self.__file_count
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper(self, parent_dir, dir_name, csv_writer):
+    def __scan_directory_helper(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
@@ -112,7 +113,7 @@ class BackupScanner:
             self.__scan_directory_helper(parent_dir, os.path.join(dir_name, sub_dir_name), csv_writer)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan_directory(self, host, backup_no, csv_filename):
+    def scan_directory(self, host: str, backup_no: int, csv_filename: str) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
@@ -137,7 +138,7 @@ class BackupScanner:
             self.progress.finish()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pre_scan_directory(self, host, backup_no):
+    def pre_scan_directory(self, host: str, backup_no: int) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 

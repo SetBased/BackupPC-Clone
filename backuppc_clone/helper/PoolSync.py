@@ -8,6 +8,7 @@ from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.PoolScanner import PoolScanner
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class PoolSync:
@@ -16,22 +17,22 @@ class PoolSync:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __clean_clone_pool(self):
+    def __clean_clone_pool(self) -> None:
         """
         Removes obsolete files from pool of clone.
         """
@@ -65,7 +66,7 @@ class PoolSync:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_original_pool(self, csv_filename):
+    def __scan_original_pool(self, csv_filename: str) -> None:
         """
         Scans the pool of the original and stores the data into a CSV file.
 
@@ -80,7 +81,7 @@ class PoolSync:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_csv(self, csv_filename):
+    def __import_csv(self, csv_filename: str) -> None:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
@@ -91,7 +92,7 @@ class PoolSync:
         DataLayer.instance.import_csv('IMP_POOL', ['imp_inode', 'imp_dir', 'imp_name'], csv_filename)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __update_database(self):
+    def __update_database(self) -> None:
         """
         Updates the database.
         """
@@ -102,7 +103,7 @@ class PoolSync:
         DataLayer.instance.pool_insert_new_original()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def synchronize(self):
+    def synchronize(self) -> None:
         """
         Inventories the original pool, prunes the clone pool and maintains the database.
         """

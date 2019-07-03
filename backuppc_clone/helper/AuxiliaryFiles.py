@@ -3,10 +3,12 @@ BackupPC Clone
 """
 import os
 import shutil
+from typing import List
 
 from backuppc_clone.Config import Config
 from backuppc_clone.helper.AuxiliaryFileScanner import AuxiliaryFileScanner
 from backuppc_clone.misc import sizeof_fmt
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class AuxiliaryFiles:
@@ -15,22 +17,22 @@ class AuxiliaryFiles:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __remove_obsolete_files(self, files_original, files_clone):
+    def __remove_obsolete_files(self, files_original: List, files_clone: List) -> None:
         """
         Removes obsolete auxiliary files of the Clone.
 
@@ -58,7 +60,7 @@ class AuxiliaryFiles:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __copy_new_files(self, files_original, files_clone):
+    def __copy_new_files(self, files_original: List, files_clone: List) -> None:
         """
         Copies new auxiliary files from the Original to Clone.
 
@@ -96,7 +98,7 @@ class AuxiliaryFiles:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def synchronize(self):
+    def synchronize(self) -> None:
         """
         Synchronizes the auxiliary file sof the Clone with the auxiliary files of the Original.
         """

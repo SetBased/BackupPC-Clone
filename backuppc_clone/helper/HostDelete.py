@@ -6,6 +6,7 @@ import shutil
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class HostDelete:
@@ -14,18 +15,18 @@ class HostDelete:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
         self.__host = ''
@@ -36,7 +37,7 @@ class HostDelete:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __delete_files(self, ):
+    def __delete_files(self) -> None:
         """
         Removes the host from the clone file system.
         """
@@ -47,7 +48,7 @@ class HostDelete:
             shutil.rmtree(host_dir_clone)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __delete_metadata(self):
+    def __delete_metadata(self) -> None:
         """
         Removes the metadata from the database.
         """
@@ -56,7 +57,7 @@ class HostDelete:
         DataLayer.instance.host_delete(self.__host)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def delete_host(self, host):
+    def delete_host(self, host: str) -> None:
         """
         Deletes a backup of a host.
 

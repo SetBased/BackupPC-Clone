@@ -3,9 +3,11 @@ BackupPC Clone
 """
 import os
 import re
+from typing import Optional, Dict, List
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class BackupInfoScanner:
@@ -14,23 +16,23 @@ class BackupInfoScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_backup_info(backup_dir, param_name):
+    def get_backup_info(backup_dir: str, param_name: str) -> Optional[str]:
         """
         Extracts info about a backup from file backupInfo.
 
@@ -55,7 +57,7 @@ class BackupInfoScanner:
         return ret
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_for_backups(self):
+    def __scan_for_backups(self) -> List[Dict]:
         """
         Scans for host backups and returns the metadata of the host backups.
 
@@ -82,7 +84,7 @@ class BackupInfoScanner:
         return backups
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_backups(self, backups):
+    def __import_backups(self, backups: List[Dict]) -> None:
         """
         Imports the original host backups info into the SQLite database.
 
@@ -105,7 +107,7 @@ class BackupInfoScanner:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan(self):
+    def scan(self) -> None:
         """
         Scans information about backups.
         """

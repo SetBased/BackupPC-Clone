@@ -17,7 +17,7 @@ class BackupCloneCommand(BaseCommand):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _handle_command(self):
+    def _handle_command(self) -> None:
         """
         Executes the command.
         """

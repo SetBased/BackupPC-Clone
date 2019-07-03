@@ -17,7 +17,7 @@ class InitOriginalCommand(BaseCommand):
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __get_parameter(perl, backuppc_config_filename, parameter_name):
+    def __get_parameter(perl: str, backuppc_config_filename: str, parameter_name: str) -> str:
         """
         Extracts a parameter for BackupPCs configuration file.
 
@@ -39,14 +39,14 @@ class InitOriginalCommand(BaseCommand):
         return str(value[0], 'utf-8')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _init_singletons(self):
+    def _init_singletons(self) -> None:
         """
         Omits the creating of singleton objects.
         """
         pass
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _handle_command(self):
+    def _handle_command(self) -> None:
         """
         Executes the command.
         """

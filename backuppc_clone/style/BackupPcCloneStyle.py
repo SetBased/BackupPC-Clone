@@ -1,7 +1,9 @@
 """
 BackupPC Clone
 """
-from cleo import Output
+from typing import Union, List
+
+from cleo import Output, Input
 from cleo.styles import CleoStyle
 
 
@@ -11,12 +13,12 @@ class BackupPcCloneStyle(CleoStyle):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, input_object, output_object):
+    def __init__(self, input_object: Input, output_object: Output):
         """
         Object constructor.
 
-        :param cleo.inputs.input.Input input_object: The input object.
-        :param cleo.outputs.output.Output output_object: The output_object object.
+        :param Input input_object: The input object.
+        :param Output output_object: The output_object object.
         """
         CleoStyle.__init__(self, input_object, output_object)
 
@@ -33,7 +35,7 @@ class BackupPcCloneStyle(CleoStyle):
         output_object.get_formatter().add_style('sql', 'magenta', None, ['bold'])
 
     # ------------------------------------------------------------------------------------------------------------------
-    def warning(self, message):
+    def warning(self, message: Union[str, List]) -> None:
         """
         Writes a waring message.
 
@@ -44,7 +46,7 @@ class BackupPcCloneStyle(CleoStyle):
         self.block(message, 'WARNING', 'fg=white;bg=red', padding=True)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def text(self, message):
+    def text(self, message: Union[str, List]) -> None:
         """
         Formats informational text.
 
@@ -59,7 +61,7 @@ class BackupPcCloneStyle(CleoStyle):
             self.writeln(' {0}'.format(line))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def log_verbose(self, message):
+    def log_verbose(self, message: Union[str, List]) -> None:
         """
         Logs a message only when logging level is verbose.
 
@@ -69,7 +71,7 @@ class BackupPcCloneStyle(CleoStyle):
             self.writeln(message)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def log_very_verbose(self, message):
+    def log_very_verbose(self, message: Union[str, List]) -> None:
         """
         Logs a message only when logging level is very verbose.
 

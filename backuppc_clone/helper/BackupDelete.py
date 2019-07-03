@@ -6,6 +6,7 @@ import shutil
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class BackupDelete:
@@ -14,18 +15,18 @@ class BackupDelete:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
         self.__host = ''
@@ -43,7 +44,7 @@ class BackupDelete:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __delete_files(self):
+    def __delete_files(self) -> None:
         """
         Removes the backup from the cone file system.
         """
@@ -54,7 +55,7 @@ class BackupDelete:
             shutil.rmtree(backup_dir_clone)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __delete_metadata(self):
+    def __delete_metadata(self) -> None:
         """
         Removes the metadata from the database.
         """
@@ -66,12 +67,12 @@ class BackupDelete:
         DataLayer.instance.backup_delete(bck_id)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def delete_backup(self, host, backup_no):
+    def delete_backup(self, host: str, backup_no: int) -> None:
         """
         Deletes a backup of a host.
 
         :param str host: The host of the backup.
-        :param int|str backup_no: The number of the backup.
+        :param int backup_no: The number of the backup.
         """
         self.__host = host
         self.__backup_no = backup_no

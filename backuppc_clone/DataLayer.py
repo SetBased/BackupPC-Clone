@@ -4,6 +4,7 @@ BackupPC Clone
 import csv
 import os
 import sqlite3
+from typing import List, Dict, Optional
 
 
 class DataLayer:
@@ -18,7 +19,7 @@ class DataLayer:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, database):
+    def __init__(self, database: str):
         """
         Object constructor.
 
@@ -55,7 +56,7 @@ class DataLayer:
         self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def disconnect(self):
+    def disconnect(self) -> None:
         """
         Disconnects from the SQLite database.
         """
@@ -63,7 +64,7 @@ class DataLayer:
         self.__connection.close()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def connect(self):
+    def connect(self) -> None:
         """
         Connects to the SQLite database.
         """
@@ -74,7 +75,7 @@ class DataLayer:
         self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_delete(self, bck_id):
+    def backup_delete(self, bck_id: int) -> None:
         """
         Deletes cascading a host backup.
 
@@ -84,7 +85,7 @@ class DataLayer:
         self.execute_none('delete from BKC_BACKUP where bck_id=?', (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_empty(self, bck_id):
+    def backup_empty(self, bck_id: int) -> None:
         """
         Removes the tree from a host backup.
 
@@ -93,7 +94,7 @@ class DataLayer:
         self.execute_none('delete from BKC_BACKUP_TREE where bck_id=?', (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_get_all(self):
+    def backup_get_all(self) -> List[Dict]:
         """
         Selects all cloned backups.
         """
@@ -106,7 +107,7 @@ inner join BKC_BACKUP bck  on  bck.hst_id = hst.hst_id"""
         return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_get_next(self, end_time):
+    def backup_get_next(self, end_time: int) -> Dict:
         """
         Selects the next backup to clone.
 
@@ -134,7 +135,7 @@ limit 0, 1"""
         return self.execute_row0(sql, (end_time, end_time))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_get_obsolete(self):
+    def backup_get_obsolete(self) -> List[Dict]:
         """
         Selects obsolete host backups.
 
@@ -154,7 +155,7 @@ order by hst.hst_name
         return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_partially_cloned(self):
+    def backup_partially_cloned(self) -> List[Dict]:
         """
         Selects partially cloned host backups.
 
@@ -172,7 +173,7 @@ order by hst.hst_name
         return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_set_in_progress(self, bck_id, bck_in_progress):
+    def backup_set_in_progress(self, bck_id: int, bck_in_progress: int) -> None:
         """
         Updates the in progress flag of a host backup.
 
@@ -187,10 +188,10 @@ update BKC_BACKUP
 set    bck_in_progress = ? 
 where  bck_id = ?"""
 
-        return self.execute_none(sql, (bck_in_progress, bck_id))
+        self.execute_none(sql, (bck_in_progress, bck_id))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_get_stats(self, bck_id):
+    def backup_get_stats(self, bck_id: int) -> Dict:
         """
         Selects the statistics of a host backup.
 
@@ -199,15 +200,15 @@ where  bck_id = ?"""
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select count(bbt_inode_original)                                   '#files'
-,      sum(case when bbt_inode_original is null then 1 else 0 end) '#dirs'
+select count(bbt_inode_original)                                   as '#files'
+,      sum(case when bbt_inode_original is null then 1 else 0 end) as '#dirs'
 from BKC_BACKUP_TREE
 where bck_id = ?"""
 
         return self.execute_row1(sql, (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_prepare_required_clone_pool_files(self, bck_id):
+    def backup_prepare_required_clone_pool_files(self, bck_id: int) -> int:
         """
         Prepares the files required for a host backup that are not yet copied from the original pool to the clone pool.
 
@@ -238,7 +239,7 @@ from   TMP_CLONE_POOL_REQUIRED"""
         return self.execute_singleton1(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_prepare_tree(self, bck_id):
+    def backup_prepare_tree(self, bck_id: int) -> int:
         """
         Selects the file entries of a host backup.
 
@@ -332,7 +333,7 @@ order by bbt_seq
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
-    def commit(self):
+    def commit(self) -> None:
         """
         Commits the current transaction.
         """
@@ -340,11 +341,11 @@ order by bbt_seq
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def dict_factory(cursor, old_row):
+    def dict_factory(cursor: sqlite3.Cursor, old_row: List) -> Dict:
         """
         Dictionary factory for return results with dictionaries.
 
-        :param sqlite3.Cursor cursor: The cursor.
+        :param Cursor cursor: The cursor.
         :param list old_row: A row from the result a a query.
 
         :rtype: dict
@@ -356,7 +357,7 @@ order by bbt_seq
         return new_row
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_none(self, sql, *params):
+    def execute_none(self, sql: str, *params) -> None:
         """
         Executes a SQL statement that does not select any rows
 
@@ -371,7 +372,7 @@ order by bbt_seq
         cursor.close()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_row0(self, sql, *params):
+    def execute_row0(self, sql: str, *params) -> Optional[Dict]:
         """
         Executes a SQL statement that selects 0 or 1 row.
 
@@ -394,7 +395,7 @@ order by bbt_seq
         return rows[0]
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_row1(self, sql, *params):
+    def execute_row1(self, sql: str, *params) -> Dict:
         """
         Executes a SQL statement that selects 1 row.
 
@@ -414,7 +415,7 @@ order by bbt_seq
         return rows[0]
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_rows(self, sql, *params):
+    def execute_rows(self, sql: str, *params) -> List[Dict]:
         """
         Executes a SQL statement that selects 0, 1, or more rows.
 
@@ -434,7 +435,7 @@ order by bbt_seq
         return rows
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_singleton0(self, sql, *params):
+    def execute_singleton0(self, sql: str, *params):
         """
         Executes a SQL statement that selects 0 or 1 row with 1 column. Returns the value of selected column or None.
 
@@ -458,7 +459,7 @@ order by bbt_seq
         return ret
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_singleton1(self, sql, *params):
+    def execute_singleton1(self, sql: str, *params):
         """
         Executes a SQL statement that selects 1 row with 1 column. Returns the value of selected column.
 
@@ -478,7 +479,7 @@ order by bbt_seq
         return ret
 
     # ------------------------------------------------------------------------------------------------------------------
-    def get_host_id(self, hostname):
+    def get_host_id(self, hostname: str) -> int:
         """
         Returns the ID of a host. If the host does not exists it will be inserted.
 
@@ -494,7 +495,7 @@ order by bbt_seq
         return hst_id
 
     # ------------------------------------------------------------------------------------------------------------------
-    def get_bck_id(self, hst_id, bck_number):
+    def get_bck_id(self, hst_id: int, bck_number: int) -> int:
         """
         Returns the ID of a host backup. If the backup does not exists it will be inserted.
 
@@ -517,7 +518,7 @@ and    bck_number = ?"""
         return bck_id
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_delete(self, host):
+    def host_delete(self, host: str) -> None:
         """
         Deletes cascading a host.
 
@@ -536,7 +537,7 @@ where hst.hst_name = ?"""
         self.execute_none('delete from BKC_HOST where hst_name=?', (host,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_get_obsolete(self):
+    def host_get_obsolete(self) -> List[Dict]:
         """
         Selects host that are cloned but not longer in original.
 
@@ -552,7 +553,12 @@ order by hst.hst_name"""
         return self.execute_rows(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def import_csv(self, table_name, column_names, path, truncate=True, defaults=None):
+    def import_csv(self,
+                   table_name: str,
+                   column_names: List[str],
+                   path: str,
+                   truncate: bool = True,
+                   defaults: Dict = None):
         """
         Import a CSV file into a table.
 
@@ -591,7 +597,13 @@ order by hst.hst_name"""
         cursor.close()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def original_backup_insert(self, bob_host, bob_number, bob_end_time, bob_version, bob_level, bob_type):
+    def original_backup_insert(self,
+                               bob_host: str,
+                               bob_number: int,
+                               bob_end_time: str,
+                               bob_version: int,
+                               bob_level: int,
+                               bob_type: str) -> None:
         """
         Inserts an original host backup.
         """
@@ -611,28 +623,28 @@ values( ?
         self.execute_none(sql, (bob_host, bob_number, bob_end_time, bob_version, bob_level, bob_type))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def original_backup_get_stats(self):
+    def original_backup_get_stats(self) -> Dict:
         """
         Select statistics of the original backups.
 
         :rtype: dict
         """
         sql = """
-select count(distinct bob_host) '#hosts'
-,      count(*)                 '#backups'
+select count(distinct bob_host) as '#hosts'
+,      count(*)                 as '#backups'
 from   BKC_ORIGINAL_BACKUP"""
 
         return self.execute_row1(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def original_backup_truncate(self):
+    def original_backup_truncate(self) -> None:
         """
         Truncates table BKC_ORIGINAL_BACKUP.
         """
         self.execute_none('delete from BKC_ORIGINAL_BACKUP')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def overview_get_stats(self):
+    def overview_get_stats(self) -> Dict:
         """
         Select statistics of the original backups and cloned backups.
 
@@ -668,7 +680,7 @@ from
         return self.execute_row1(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def parameter_get_value(self, prm_code):
+    def parameter_get_value(self, prm_code: str) -> str:
         """
         Select the value of a parameter.
 
@@ -679,17 +691,17 @@ from
         return self.execute_singleton1('select prm_value from BKC_PARAMETER where prm_code = ?', (prm_code,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def parameter_update_value(self, prm_code, prm_value):
+    def parameter_update_value(self, prm_code: str, prm_value: str) -> None:
         """
         Sets the value of a parameter.
 
         :param str prm_code: The code of the parameter.
         :param str prm_value: The value of the parameter.
         """
-        return self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
+        self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_delete_obsolete_original_rows(self):
+    def pool_delete_obsolete_original_rows(self) -> int:
         """
         Deletes rows (i.e. files) from BKC_POOL that are not longer in the actual original pool.
         """
@@ -714,7 +726,7 @@ where bpl_id in (select tmp_id from TMP_ID)"""
         return self.execute_singleton1('select count(*) from TMP_ID')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_delete_row(self, bpl_id):
+    def pool_delete_row(self, bpl_id: int) -> None:
         """
         Deletes a row from the pool metadata.
 
@@ -723,7 +735,7 @@ where bpl_id in (select tmp_id from TMP_ID)"""
         self.execute_none('delete from BKC_POOL where bpl_id=?', (bpl_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_insert_new_original(self):
+    def pool_insert_new_original(self) -> None:
         """
         Inserts new row into BKC_POOL based on an import from the original pool.
         """
@@ -738,10 +750,10 @@ select tmp_inode
 ,      tmp_name
 from
 (
-  select bpl_inode_original tmp_inode
-  ,      bpl_dir            tmp_dir
-  ,      bpl_name           tmp_name
-  ,      1                  src
+  select bpl_inode_original as tmp_inode
+  ,      bpl_dir            as tmp_dir
+  ,      bpl_name           as tmp_name
+  ,      1                  as src
   from   BKC_POOL
 
   union all
@@ -749,7 +761,7 @@ from
   select imp_inode
   ,      imp_dir
   ,      imp_name
-  ,      2                  src
+  ,      2                  as src
   from   IMP_POOL
 ) t
 group by tmp_inode
@@ -770,7 +782,7 @@ from   TMP_POOL"""
         self.execute_none(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_prepare_obsolete_clone_files(self):
+    def pool_prepare_obsolete_clone_files(self) -> int:
         """
         Prepares the clone pool files that are obsolete (i.e. not longer in the original pool).
 
@@ -801,7 +813,11 @@ from   TMP_CLONE_POOL_OBSOLETE"""
         return self.execute_singleton1(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_update_by_inode_original(self, bpl_inode_original, bpl_inode_clone, pbl_size, pbl_mtime):
+    def pool_update_by_inode_original(self,
+                                      bpl_inode_original: int,
+                                      bpl_inode_clone: int,
+                                      pbl_size: int,
+                                      pbl_mtime: int) -> None:
         """
         Sets the inode number of the clone, mtime and size of a file in the pool given a inode number of a file the the
         original pool.
@@ -843,7 +859,7 @@ from   TMP_CLONE_POOL_OBSOLETE"""
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
-    def vacuum(self):
+    def vacuum(self) -> None:
         """
         Executes the vacuum command.
         """

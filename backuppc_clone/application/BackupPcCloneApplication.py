@@ -1,7 +1,9 @@
 """
 BackupPC Clone
 """
-from cleo import Application
+from typing import List
+
+from cleo import Application, Command
 
 from backuppc_clone.command.AutoCommand import AutoCommand
 from backuppc_clone.command.BackupCloneCommand import BackupCloneCommand
@@ -29,11 +31,11 @@ class BackupPcCloneApplication(Application):
         Application.__init__(self, 'backuppc-clone', '1.0.1')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def get_default_commands(self):
+    def get_default_commands(self) -> List[Command]:
         """
         Returns the default commands of this application.
 
-        :rtype: list[cleo.Command]
+        :rtype: list[Command]
         """
         commands = Application.get_default_commands(self)
 

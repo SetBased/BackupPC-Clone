@@ -19,7 +19,7 @@ class Config:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, config_filename):
+    def __init__(self, config_filename: str):
         """
         Object constructor.
 
@@ -84,7 +84,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @last_pool_scan.setter
-    def last_pool_scan(self, value):
+    def last_pool_scan(self, value: int) -> None:
         """
         Saves the timestamp of the last original pool scan.
 
@@ -94,7 +94,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def pc_dir_clone(self):
+    def pc_dir_clone(self) -> str:
         """
         Gives the pc dir of the clone.
 
@@ -107,7 +107,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def pc_dir_original(self):
+    def pc_dir_original(self) -> str:
         """
         Gives the pc dir of the original.
 
@@ -126,7 +126,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def tmp_dir_clone(self):
+    def tmp_dir_clone(self) -> str:
         """
         Gives the temp dir of the clone.
 
@@ -139,7 +139,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_dir_clone(self):
+    def top_dir_clone(self) -> str:
         """
         Gives the top dir of the clone.
 
@@ -152,7 +152,7 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_dir_original(self):
+    def top_dir_original(self) -> str:
         """
         Gives the top dir of the original.
 
@@ -167,31 +167,31 @@ class Config:
         return self.__top_dir_original
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_dir_clone(self, host, backup_no):
+    def backup_dir_clone(self, host: str, backup_no: int) -> str:
         """
         Returns the path to a host backup of the clone.
 
         :param str host: The name of the host.
-        :param str|int backup_no: The backup number.
+        :param int backup_no: The backup number.
 
         :rtype: str
         """
         return os.path.join(self.top_dir_clone, 'pc', host, str(backup_no))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_dir_original(self, host, backup_no):
+    def backup_dir_original(self, host: str, backup_no: int) -> str:
         """
         Returns the path to a host backup of the original.
 
         :param str host: The name of the host.
-        :param str|int backup_no: The backup number.
+        :param int backup_no: The backup number.
 
         :rtype: str
         """
         return os.path.join(self.pc_dir_original, host, str(backup_no))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_dir_clone(self, host):
+    def host_dir_clone(self, host: str) -> str:
         """
         Returns the path to host of the clone.
 
@@ -202,7 +202,7 @@ class Config:
         return os.path.join(self.top_dir_clone, 'pc', host)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_dir_original(self, host):
+    def host_dir_original(self, host: str) -> str:
         """
         Returns the path to host of the original.
 

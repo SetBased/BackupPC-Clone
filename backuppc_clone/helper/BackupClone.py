@@ -9,6 +9,7 @@ from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupScanner import BackupScanner
 from backuppc_clone.misc import sizeof_fmt
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class BackupClone:
@@ -17,18 +18,18 @@ class BackupClone:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
         self.__host = ''
@@ -46,7 +47,7 @@ class BackupClone:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_host_backup(self, csv_filename):
+    def __scan_host_backup(self, csv_filename: str) -> None:
         """
         Scans the backup of a host.
 
@@ -63,7 +64,7 @@ class BackupClone:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_host_scan_csv(self, csv_filename):
+    def __import_host_scan_csv(self, csv_filename: str) -> None:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
@@ -82,7 +83,7 @@ class BackupClone:
                                       {'bck_id': bck_id})
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_pre_scan_csv(self, csv_filename):
+    def __import_pre_scan_csv(self, csv_filename: str) -> None:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
@@ -102,7 +103,7 @@ class BackupClone:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __copy_pool_file(self, dir_name, file_name, bpl_inode_original):
+    def __copy_pool_file(self, dir_name: str, file_name: str, bpl_inode_original: int) -> int:
         """
         Copies a pool file from the Original pool to the clone pool. Returns the size eof the file.
 
@@ -140,7 +141,7 @@ class BackupClone:
         return stats_original.st_size
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __update_clone_pool(self):
+    def __update_clone_pool(self) -> None:
         """
         Copies required pool files from the original pool to the clone pool.
         """
@@ -170,7 +171,7 @@ class BackupClone:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __clone_backup(self):
+    def __clone_backup(self) -> None:
         """
         Clones the backup.
         """
@@ -236,7 +237,7 @@ class BackupClone:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def clone_backup(self, host, backup_no):
+    def clone_backup(self, host: str, backup_no: int) -> None:
         """
         Clones a backup of a host.
         """

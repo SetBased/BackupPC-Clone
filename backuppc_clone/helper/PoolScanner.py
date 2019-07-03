@@ -3,8 +3,10 @@ BackupPC Clone
 """
 import csv
 import os
+from typing import List
 
 from backuppc_clone.ProgressBar import ProgressBar
+from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class PoolScanner:
@@ -13,18 +15,18 @@ class PoolScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io):
+    def __init__(self, io: BackupPcCloneStyle):
         """
         Object constructor.
 
-        :param backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle io: The output style.
+        :param BackupPcCloneStyle io: The output style.
         """
 
         self.__io = io
         """
         The output style.
 
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle
+        :type: BackupPcCloneStyle
         """
 
         self.__count = 0
@@ -43,7 +45,7 @@ class PoolScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def count(self):
+    def count(self) -> int:
         """
         Returns the number of found files.
 
@@ -53,7 +55,7 @@ class PoolScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __get_number_of_pool_dirs(dir_name):
+    def __get_number_of_pool_dirs(dir_name: str) -> int:
         """
         Returns the (estimate) number of directories in a pool.
 
@@ -68,7 +70,7 @@ class PoolScanner:
         return 1
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper2(self, parent_dir, dir_name, csv_writer):
+    def __scan_directory_helper2(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
@@ -91,7 +93,7 @@ class PoolScanner:
         self.__progress.advance()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper1(self, parent_dir, dir_name, csv_writer):
+    def __scan_directory_helper1(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
@@ -113,7 +115,7 @@ class PoolScanner:
         self.__io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan_directory(self, parent_dir, dir_names, csv_filename):
+    def scan_directory(self, parent_dir: str, dir_names: List[str], csv_filename: str) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 

@@ -2,6 +2,7 @@
 BackupPC Clone
 """
 import os
+from typing import Dict, Optional
 
 from cleo import Output
 
@@ -25,7 +26,7 @@ class AutoCommand(BaseCommand):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_original_backups(self):
+    def __scan_original_backups(self) -> None:
         """
         Scans the original hosts backups.
         """
@@ -36,7 +37,7 @@ class AutoCommand(BaseCommand):
         DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __sync_auxiliary_files(self):
+    def __sync_auxiliary_files(self) -> None:
         """
         Synchronises auxiliary files (i.e. files directly under a host directory but not part of a backup).
         """
@@ -46,7 +47,7 @@ class AutoCommand(BaseCommand):
         helper.synchronize()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __show_overview_stats(self):
+    def __show_overview_stats(self) -> None:
         """
         Shows the number of backups, cloned backups, backups to clone, and number of obsolete cloned backups.
         """
@@ -59,7 +60,7 @@ class AutoCommand(BaseCommand):
         self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __remove_obsolete_hosts(self):
+    def __remove_obsolete_hosts(self) -> None:
         """
         Removes obsolete hosts.
         """
@@ -78,7 +79,7 @@ class AutoCommand(BaseCommand):
                 self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __remove_obsolete_backups(self):
+    def __remove_obsolete_backups(self) -> None:
         """
         Removes obsolete host backups.
         """
@@ -97,7 +98,7 @@ class AutoCommand(BaseCommand):
                 self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __remove_partially_cloned_backups(self):
+    def __remove_partially_cloned_backups(self) -> None:
         """
         Removes backups that are still marked "in progress" (and hence cloned partially).
         """
@@ -116,7 +117,8 @@ class AutoCommand(BaseCommand):
                 self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __get_next_clone_target(self):
+    @staticmethod
+    def __get_next_clone_target() -> Optional[Dict]:
         """
         Returns the metadata of the host backup that needs to be cloned.
 
@@ -129,7 +131,7 @@ class AutoCommand(BaseCommand):
         return backup
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __resync_pool(self, backup):
+    def __resync_pool(self, backup: Dict) -> None:
         """
         Resyncs the pool if required for cloning a backup.
 
@@ -144,7 +146,7 @@ class AutoCommand(BaseCommand):
             DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __clone_backup(self, backup):
+    def __clone_backup(self, backup: Dict) -> None:
         """
         Clones a backup.
 
@@ -158,7 +160,7 @@ class AutoCommand(BaseCommand):
         DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __handle_file_not_found(self, backup, error):
+    def __handle_file_not_found(self, backup: Dict, error: FileNotFoundError) -> None:
         """
         Handles a FileNotFoundError exception.
 
@@ -181,7 +183,7 @@ class AutoCommand(BaseCommand):
         DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _handle_command(self):
+    def _handle_command(self) -> None:
         """
         Executes the command.
         """

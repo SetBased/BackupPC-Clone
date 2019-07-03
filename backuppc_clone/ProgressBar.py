@@ -3,7 +3,7 @@ BackupPC Clone
 """
 import time
 
-from cleo import ProgressBar as CleoProgressBar, Helper
+from cleo import ProgressBar as CleoProgressBar, Helper, Output
 from cleo.exceptions import CleoException
 
 
@@ -19,11 +19,11 @@ class ProgressBar(CleoProgressBar):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, output, maximum=0):
+    def __init__(self, output: Output, maximum: int = 0):
         """
         Constructor.
 
-        :param cleo.outputs.output.Output output: The output object.
+        :param Output output: The output object.
         :param int maximum: Maximum steps (0 if unknown).
         """
         CleoProgressBar.__init__(self, output, maximum)
@@ -43,7 +43,7 @@ class ProgressBar(CleoProgressBar):
         self.set_format(' %current%/%max% [%bar%] %percent:3s%% %remaining%')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def finish(self):
+    def finish(self) -> None:
         """
         Finish the progress output.
         """
@@ -57,7 +57,7 @@ class ProgressBar(CleoProgressBar):
         self._output.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def _formatter_remaining(self):
+    def _formatter_remaining(self) -> str:
         """
         Bug fix, see https://github.com/sdispater/cleo/pull/53.
 
@@ -74,7 +74,7 @@ class ProgressBar(CleoProgressBar):
         return Helper.format_time(remaining)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def set_progress(self, step):
+    def set_progress(self, step: int) -> None:
         """
         Sets the current progress.
 
