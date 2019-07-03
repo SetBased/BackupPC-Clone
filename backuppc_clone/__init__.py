@@ -4,7 +4,7 @@ BackupPC Clone
 from backuppc_clone.application.BackupPcCloneApplication import BackupPcCloneApplication
 
 
-def main():
+def main() -> int:
     application = BackupPcCloneApplication()
     ret = application.run()
 

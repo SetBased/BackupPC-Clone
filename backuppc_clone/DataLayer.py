@@ -30,25 +30,19 @@ class DataLayer:
         else:
             DataLayer.instance = self
 
-        self.__database = database
+        self.__database: str = database
         """
         The path to the SQLite database.
-        
-        :type: str
         """
 
-        self.__connection = sqlite3.connect(database, isolation_level="EXCLUSIVE")
+        self.__connection: sqlite3.Connection = sqlite3.connect(database, isolation_level="EXCLUSIVE")
         """
         The connection to the database.
-
-        :type: sqlite3.Connection
         """
 
-        self.__last_rowid = -1
+        self.__last_rowid: int = -1
         """
         The last rowid as returns by the last used cursor.
-
-        :type: int
         """
 
         tmp_dir = os.path.join(os.path.dirname(database), 'tmp')

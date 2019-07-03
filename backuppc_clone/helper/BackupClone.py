@@ -25,25 +25,19 @@ class BackupClone:
         :param BackupPcCloneStyle io: The output style.
         """
 
-        self.__io = io
+        self.__io: BackupPcCloneStyle = io
         """
         The output style.
-
-        :type: BackupPcCloneStyle
         """
 
-        self.__host = ''
+        self.__host: str = ''
         """
         The host of the backup.
-
-        :type: str
         """
 
-        self.__backup_no = 0
+        self.__backup_no: int = 0
         """
         The number of the backup.
-
-        :type: int
         """
 
     # ------------------------------------------------------------------------------------------------------------------

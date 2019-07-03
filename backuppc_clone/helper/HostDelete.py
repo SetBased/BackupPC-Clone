@@ -22,18 +22,14 @@ class HostDelete:
         :param BackupPcCloneStyle io: The output style.
         """
 
-        self.__io = io
+        self.__io: BackupPcCloneStyle = io
         """
         The output style.
-
-        :type: BackupPcCloneStyle
         """
 
-        self.__host = ''
+        self.__host: str = ''
         """
         The host of the backup.
-
-        :type: str
         """
 
     # ------------------------------------------------------------------------------------------------------------------

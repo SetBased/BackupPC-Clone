@@ -4,6 +4,7 @@ BackupPC Clone
 import csv
 import os
 import shutil
+from typing import Optional
 
 from backuppc_clone.Config import Config
 from backuppc_clone.ProgressBar import ProgressBar
@@ -24,39 +25,29 @@ class BackupScanner:
         :param BackupPcCloneStyle io: The output style.
         """
 
-        self.__io = io
+        self.__io: BackupPcCloneStyle = io
         """
         The output style.
-
-        :type: BackupPcCloneStyle
         """
 
-        self.__dir_count = 0
+        self.__dir_count: int = 0
         """
         The file count.
-
-        :type: int
         """
 
-        self.__file_count = 0
+        self.__file_count: int = 0
         """
         The file count.
-
-        :type: int
         """
 
-        self.__entry_seq = 0
+        self.__entry_seq: int = 0
         """
         The entry sequence number.
-
-        :type: int
         """
 
-        self.progress = None
+        self.progress: Optional[ProgressBar] = None
         """
         The progress counter.
-        
-        :type: backuppc_clone.ProgressBar.ProgressBar
         """
 
     # ------------------------------------------------------------------------------------------------------------------

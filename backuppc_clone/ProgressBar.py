@@ -28,11 +28,9 @@ class ProgressBar(CleoProgressBar):
         """
         CleoProgressBar.__init__(self, output, maximum)
 
-        self.__last_display = -1
+        self.__last_display: int = -1
         """
         The last epoch the progress bar was printed.
-
-        :type: int
         """
 
         # Show now "0/max [>------] ) 0%" (instead of after step 1: "1/max [>------] 0% very long time".

@@ -26,11 +26,9 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         Command.__init__(self, name)
 
-        self._io = None
+        self._io: Optional[BackupPcCloneStyle] = None
         """
         The output style.
-
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyle|None
         """
 
     # ------------------------------------------------------------------------------------------------------------------

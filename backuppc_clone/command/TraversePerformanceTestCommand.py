@@ -3,6 +3,7 @@ BackupPC Clone
 """
 import os
 import time
+from typing import Optional
 
 from cleo import Command, Input, Output
 
@@ -25,39 +26,29 @@ class TraversePerformanceTestCommand(Command):
         """
         Command.__init__(self)
 
-        self.__stat = False
+        self.__stat: bool = False
         """
         If True stat must be called for each file.
-
-        :type: bool
         """
 
-        self._io = None
+        self._io: Optional[BackupPcCloneStyle] = None
         """
         The output style.
-
-        :type: backuppc_clone.style.BackupPcCloneStyle.BackupPcCloneStyleG57G
         """
 
-        self.__dir_count = 0
+        self.__dir_count: int = 0
         """
         The number of directories counted.
-
-        :type: int
         """
 
-        self.__file_count = 0
+        self.__file_count: int = 0
         """
         The number of file counted.
-
-        :type: int
         """
 
-        self.__start_time = 0
+        self.__start_time: float = 0
         """
         The timestamp of the start of the performance test.
-
-        :type: float
         """
 
     # ------------------------------------------------------------------------------------------------------------------

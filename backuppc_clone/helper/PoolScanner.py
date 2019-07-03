@@ -3,7 +3,7 @@ BackupPC Clone
 """
 import csv
 import os
-from typing import List
+from typing import List, Optional
 
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
@@ -13,7 +13,6 @@ class PoolScanner:
     """
     Helper class for scanning pool and backup directories.
     """
-
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, io: BackupPcCloneStyle):
         """
@@ -21,26 +20,19 @@ class PoolScanner:
 
         :param BackupPcCloneStyle io: The output style.
         """
-
-        self.__io = io
+        self.__io: BackupPcCloneStyle = io
         """
         The output style.
-
-        :type: BackupPcCloneStyle
         """
 
-        self.__count = 0
+        self.__count: int = 0
         """
         The file count.
-
-        :type: int
         """
 
-        self.__progress = None
+        self.__progress: Optional[ProgressBar] = None
         """
         The progress bar.
-
-        :type: backuppc_clone.ProgressBar.ProgressBar|None
         """
 
     # ------------------------------------------------------------------------------------------------------------------

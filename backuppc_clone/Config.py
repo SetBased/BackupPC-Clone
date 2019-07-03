@@ -3,6 +3,7 @@ BackupPC Clone
 """
 import configparser
 import os
+from typing import Optional
 
 from backuppc_clone.DataLayer import DataLayer
 
@@ -30,51 +31,39 @@ class Config:
         else:
             Config.instance = self
 
-        self.__config_filename = config_filename
+        self.__config_filename: str = config_filename
         """
         The path to the configuration file of the clone.
-
-        :type: str
         """
 
-        self.__top_dir_clone = None
+        self.__top_dir_clone: Optional[str] = None
         """
         The top dir of the clone.
-
-        :type: str|None
         """
 
-        self.__tmp_dir_clone = None
+        self.__tmp_dir_clone: Optional[str] = None
         """
         The temp dir of the clone.
-
-        :type: str|None
         """
 
-        self.__top_dir_original = None
+        self.__top_dir_original: Optional[str] = None
         """
         The top dir of the original.
-
-        :type: str|None
         """
 
-        self.__pc_dir_clone = None
+        self.__pc_dir_clone: Optional[str] = None
         """
         The pc dir of the clone.
-
-        :type: str|None
         """
 
-        self.__pc_dir_original = None
+        self.__pc_dir_original: Optional[str] = None
         """
         The pc dir of the original.
-
-        :type: str|None
         """
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def last_pool_scan(self):
+    def last_pool_scan(self) -> int:
         """
         Returns the timestamp of the last original pool scan.
 

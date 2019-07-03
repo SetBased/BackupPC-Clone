@@ -20,11 +20,9 @@ class AuxiliaryFileScanner:
         :param BackupPcCloneStyle io: The output style.
         """
 
-        self.__io = io
+        self.__io: BackupPcCloneStyle = io
         """
         The output style.
-
-        :type: BackupPcCloneStyle
         """
 
     # ------------------------------------------------------------------------------------------------------------------
