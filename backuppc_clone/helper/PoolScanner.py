@@ -125,7 +125,7 @@ class PoolScanner:
         """
         self.__count = 0
 
-        with open(csv_filename, 'wt') as csv_file:
+        with open(csv_filename, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
             if not dir_names:
                 self.__scan_directory_helper1(parent_dir, '', csv_writer)

@@ -130,7 +130,7 @@ class BackupScanner:
         file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
         self.progress = ProgressBar(self.__io.output, file_count)
 
-        with open(csv_filename, 'wt') as csv_file:
+        with open(csv_filename, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
             self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
             self.__io.writeln('')
@@ -157,7 +157,7 @@ class BackupScanner:
         file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
         self.progress = ProgressBar(self.__io.output, file_count)
 
-        with open(csv_filename1, 'wt') as csv_file:
+        with open(csv_filename1, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
             self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
             self.__io.writeln('')

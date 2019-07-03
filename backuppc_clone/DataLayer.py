@@ -583,7 +583,7 @@ order by hst.hst_name"""
 
         sql = 'insert into {}({}) values ({})'.format(table_name, ', '.join(column_names), ', '.join(place_holders))
         cursor = self.__connection.cursor()
-        with open(path, 'rt') as csv_file:
+        with open(path, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 # Replace empty string with None.
