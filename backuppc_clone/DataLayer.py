@@ -294,7 +294,7 @@ order by bpl_dir
             rows = cursor.fetchmany(10000)
             if not rows:
                 cursor.close()
-                raise StopIteration()
+                return
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ order by bbt_seq
             rows = cursor.fetchmany(10000)
             if not rows:
                 cursor.close()
-                raise StopIteration()
+                return
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -849,7 +849,7 @@ from   TMP_CLONE_POOL_OBSOLETE"""
             rows = cursor.fetchmany(10000)
             if not rows:
                 cursor.close()
-                raise StopIteration()
+                return
             yield rows
 
     # ------------------------------------------------------------------------------------------------------------------
