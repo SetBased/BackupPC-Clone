@@ -110,7 +110,7 @@ class InitCloneCommand(BaseCommand):
 
         if not os.path.isfile(config_filename_original):
             raise BackupPcCloneException(
-                'Configuration file <fso>{}</fso> of original not found'.format(config_filename_original))
+                'Configuration file {} of original not found'.format(config_filename_original))
 
         config_original = configparser.ConfigParser()
         config_original.read(config_filename_original)
