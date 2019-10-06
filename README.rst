@@ -16,7 +16,7 @@ from one filesystem to another filesystem where ``rsync`` fails.
 Documentation
 =============
 
-The Documentation of BackupPC-Clone can be found at _`Read the Docs <https://backuppc-clone.readthedocs.io/>`_.
+The Documentation of BackupPC-Clone can be found at `Read the Docs <https://backuppc-clone.readthedocs.io/>`_.
 
 Contributing
 ============
