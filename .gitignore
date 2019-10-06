@@ -2,8 +2,8 @@
 /.idea/
 /BackupPC_Clone.egg-info
 /bin/phing
-/build/
 /clone.db
 /composer.lock
 /dist/
+/docs/_build/
 /vendor/
