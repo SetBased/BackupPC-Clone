@@ -8,6 +8,10 @@ In this chapter we discuss all steps for installing, configuring, and running Ba
 In this chapter we assume that the data directory of BackupPC is ``/var/lib/BackupPC`` and the data directory of
 BackupPC-Clone is ``/var/lib/BackupPC-Clone`` and BackupPC is running under user ``backuppc``.
 
+The commands in section :ref:`installing` must be executed under ``root`` and all other commands under user ``backuppc``.
+
+.. _installing:
+
 Installing BackupPC-Clone
 -------------------------
 
@@ -94,3 +98,6 @@ disk):
 
 .. image:: _static/auto.png
    :align: center
+
+Depending on the size and number of files in data directory of BackupPC and the speed of your hardware this command will
+take some time to complete.
