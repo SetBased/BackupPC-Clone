@@ -100,4 +100,8 @@ disk):
    :align: center
 
 Depending on the size and number of files in data directory of BackupPC and the speed of your hardware this command will
-take some time to complete.
+take some time to complete. Use the following command to monitor the progress of the ``auto`` command:
+
+.. code-block:: sh
+
+  tail -f auto.log
