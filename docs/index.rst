@@ -11,4 +11,5 @@ from one filesystem to another filesystem where ``rsync`` fails.
    introduction
    getting-started
    miscellaneous
+   limitations
    license
