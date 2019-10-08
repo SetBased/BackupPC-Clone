@@ -70,3 +70,21 @@ In this section we give an example how to create a filesystem for a clone of Bac
 
 See :ref:`cryptsetup` for more information about the `cryptsetup` commands, see :ref:`ext4-inodes` and
 :ref:`reserved-blocks` for more information on the ``-i`` and ``-m`` options of the ``mke2fs`` command.
+
+Verifying a Clone Backup
+------------------------
+
+A backup paramount for your company regardless of its size ans you must not trust BackupPC-Clone blindly.
+
+You can verify BackupPC-Clone has created a correct clone of a host backup simply with the following command (replace
+``host`` and ``num`` with the actual hostname and backup number):
+
+.. code-block:: sh
+
+  diff --recursive --brief /var/lib/BackupPC/pc/host/num/ /var/lib/BackupPC-Clone/clone/pc/host/num/
+
+You can ignore the following message:
+
+.. code-block:: text
+
+  Only in /var/lib/BackupPC/pc/host/num/: backuppc-clone.csv
