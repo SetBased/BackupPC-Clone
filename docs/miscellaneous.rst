@@ -74,7 +74,7 @@ See :ref:`cryptsetup` for more information about the `cryptsetup` commands, see 
 Verifying a Clone Backup
 ------------------------
 
-A backup paramount for your company regardless of its size ans you must not trust BackupPC-Clone blindly.
+A backup is paramount for your company regardless of its size and you should not trust BackupPC-Clone blindly.
 
 You can verify BackupPC-Clone has created a correct clone of a host backup simply with the following command (replace
 ``host`` and ``num`` with the actual hostname and backup number):
