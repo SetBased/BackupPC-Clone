@@ -28,7 +28,7 @@ Clone on Removable Media
 ------------------------
 
 When creating a clone on removable media it is recommended to encrypt the filesystem such that in case of loss or theft
-your data is still save.
+your data is still safe.
 
 Suppose your external disk is available under ``/dev/sdh1`` you can encrypt your external disk with the following
 commands:
