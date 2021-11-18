@@ -577,6 +577,7 @@ order by hst.hst_name"""
 
         sql = 'insert into {}({}) values ({})'.format(table_name, ', '.join(column_names), ', '.join(place_holders))
         cursor = self.__connection.cursor()
+        rows = []
         with open(path, 'r') as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
@@ -587,7 +588,16 @@ order by hst.hst_name"""
 
                 if defaults:
                     row.extend(default_values)
-                cursor.execute(sql, row)
+
+                rows.append(row)
+
+                if len(rows) == 1000:
+                    cursor.executemany(sql, rows)
+                    rows = []
+
+        if rows:
+            cursor.executemany(sql, rows)
+
         cursor.close()
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -645,25 +655,25 @@ from   BKC_ORIGINAL_BACKUP"""
         :rtype: dict
         """
         sql = """
-select sum(case when cnt1=1 then 1 else 0 end)            n_backups
-,      sum(case when cnt1=1 and cnt2=1 then 1 else 0 end) n_cloned_backups
-,      sum(case when cnt1=1 and cnt2=0 then 1 else 0 end) n_not_cloned_backups
-,      sum(case when cnt1=0 and cnt2=1 then 1 else 0 end) n_obsolete_cloned_backups
+select sum(case when cnt1=1 then 1 else 0 end)            as n_backups
+,      sum(case when cnt1=1 and cnt2=1 then 1 else 0 end) as n_cloned_backups
+,      sum(case when cnt1=1 and cnt2=0 then 1 else 0 end) as n_not_cloned_backups
+,      sum(case when cnt1=0 and cnt2=1 then 1 else 0 end) as n_obsolete_cloned_backups
 from
 (
-  select sum(case when src=1 then 1 else 0 end) cnt1
-  ,      sum(case when src=2 then 1 else 0 end) cnt2
+  select sum(case when src=1 then 1 else 0 end) as cnt1
+  ,      sum(case when src=2 then 1 else 0 end) as cnt2
   from (
          select bob_host
          ,      bob_number
-         ,      1 src
+         ,      1 as src
          from BKC_ORIGINAL_BACKUP
 
          union all
 
          select hst.hst_name
          ,      bck.bck_number
-         ,      2  src
+         ,      2  as src
          from BKC_BACKUP    bck
          join BKC_HOST hst on hst.hst_id = bck.hst_id
        ) t
