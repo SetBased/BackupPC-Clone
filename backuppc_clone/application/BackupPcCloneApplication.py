@@ -12,6 +12,7 @@ from backuppc_clone.command.BackupPreScanCommand import BackupPreScanCommand
 from backuppc_clone.command.HostDeleteCommand import HostDeleteCommand
 from backuppc_clone.command.InitCloneCommand import InitCloneCommand
 from backuppc_clone.command.InitOriginalCommand import InitOriginalCommand
+from backuppc_clone.command.NagiosCommand import NagiosCommand
 from backuppc_clone.command.PoolCommand import PoolCommand
 from backuppc_clone.command.SyncAuxiliaryCommand import SyncAuxiliaryCommand
 from backuppc_clone.command.TraversePerformanceTestCommand import TraversePerformanceTestCommand
@@ -46,6 +47,7 @@ class BackupPcCloneApplication(Application):
         commands.append(HostDeleteCommand())
         commands.append(InitCloneCommand())
         commands.append(InitOriginalCommand())
+        commands.append(NagiosCommand())
         commands.append(PoolCommand())
         commands.append(SyncAuxiliaryCommand())
         commands.append(TraversePerformanceTestCommand())

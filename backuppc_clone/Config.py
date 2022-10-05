@@ -1,11 +1,12 @@
 """
 BackupPC Clone
 """
-import configparser
-import os
+from backuppc_clone.DataLayer import DataLayer
+
 from typing import Optional
 
-from backuppc_clone.DataLayer import DataLayer
+import configparser
+import os
 
 
 class Config:
@@ -36,6 +37,11 @@ class Config:
         The path to the configuration file of the clone.
         """
 
+        self.__stats_filename: Optional[str] = None
+        """
+        The path to the stats file.
+        """
+
         self.__top_dir_clone: Optional[str] = None
         """
         The top dir of the clone.
@@ -60,6 +66,19 @@ class Config:
         """
         The pc dir of the original.
         """
+
+    # ------------------------------------------------------------------------------------------------------------------
+    @property
+    def stats_file(self) -> str:
+        """
+        Returns the path to the stats file.
+
+        :rtype: str
+        """
+        if self.__stats_filename is None:
+            self.__stats_filename = os.path.join(os.path.dirname(self.__config_filename), 'status.json')
+
+        return self.__stats_filename
 
     # ------------------------------------------------------------------------------------------------------------------
     @property

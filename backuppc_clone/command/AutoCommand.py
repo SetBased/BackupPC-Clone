@@ -2,6 +2,8 @@
 BackupPC Clone
 """
 import os
+import json
+from pathlib import Path
 from typing import Dict, Optional
 
 from cleo import Output
@@ -35,6 +37,7 @@ class AutoCommand(BaseCommand):
         helper = BackupInfoScanner(self._io)
         helper.scan()
         DataLayer.instance.commit()
+        self.__write_stats()
 
     # ------------------------------------------------------------------------------------------------------------------
     def __sync_auxiliary_files(self) -> None:
@@ -60,6 +63,15 @@ class AutoCommand(BaseCommand):
         self._io.writeln('')
 
     # ------------------------------------------------------------------------------------------------------------------
+    def __write_stats(self) -> None:
+        """
+        Writes the stats to the stats file.
+        """
+        stats = DataLayer.instance.overview_get_stats()
+        text = json.dumps(stats, indent=4)
+        Path(Config.instance.stats_file).write_text(text)
+
+    # ------------------------------------------------------------------------------------------------------------------
     def __remove_obsolete_hosts(self) -> None:
         """
         Removes obsolete hosts.
@@ -75,6 +87,7 @@ class AutoCommand(BaseCommand):
                 helper.delete_host(host['hst_name'])
 
                 DataLayer.instance.commit()
+                self.__write_stats()
 
                 self._io.writeln('')
 
@@ -93,7 +106,7 @@ class AutoCommand(BaseCommand):
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
 
-                DataLayer.instance.commit()
+                self.__write_stats()
 
                 self._io.writeln('')
 
@@ -112,7 +125,7 @@ class AutoCommand(BaseCommand):
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
 
-                DataLayer.instance.commit()
+                self.__write_stats()
 
                 self._io.writeln('')
 
@@ -158,6 +171,7 @@ class AutoCommand(BaseCommand):
         helper.clone_backup(backup['bob_host'], backup['bob_number'])
 
         DataLayer.instance.commit()
+        self.__write_stats()
 
     # ------------------------------------------------------------------------------------------------------------------
     def __handle_file_not_found(self, backup: Dict, error: FileNotFoundError) -> None:
