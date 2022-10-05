@@ -28,7 +28,7 @@ Clone on Removable Media
 ------------------------
 
 When creating a clone on removable media it is recommended to encrypt the filesystem such that in case of loss or theft
-your data is still save.
+your data is still safe.
 
 Suppose your external disk is available under ``/dev/sdh1`` you can encrypt your external disk with the following
 commands:
@@ -74,7 +74,7 @@ See :ref:`cryptsetup` for more information about the `cryptsetup` commands, see 
 Verifying a Clone Backup
 ------------------------
 
-A backup paramount for your company regardless of its size ans you must not trust BackupPC-Clone blindly.
+A backup is paramount for your company regardless of its size and you should not trust BackupPC-Clone blindly.
 
 You can verify BackupPC-Clone has created a correct clone of a host backup simply with the following command (replace
 ``host`` and ``num`` with the actual hostname and backup number):
