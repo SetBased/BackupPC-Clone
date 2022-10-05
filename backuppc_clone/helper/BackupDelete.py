@@ -46,7 +46,7 @@ class BackupDelete:
 
         backup_dir_clone = Config.instance.backup_dir_clone(self.__host, self.__backup_no)
         if os.path.isdir(backup_dir_clone):
-            shutil.rmtree(backup_dir_clone)
+            os.system('rm -fr "%s"' % backup_dir_clone)
 
     # ------------------------------------------------------------------------------------------------------------------
     def __delete_metadata(self) -> None:
@@ -59,6 +59,7 @@ class BackupDelete:
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
 
         DataLayer.instance.backup_delete(bck_id)
+        DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
     def delete_backup(self, host: str, backup_no: int) -> None:

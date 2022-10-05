@@ -41,7 +41,7 @@ class HostDelete:
 
         host_dir_clone = Config.instance.host_dir_clone(self.__host)
         if os.path.isdir(host_dir_clone):
-            shutil.rmtree(host_dir_clone)
+            os.system('rm -fr "%s"' % host_dir_clone)
 
     # ------------------------------------------------------------------------------------------------------------------
     def __delete_metadata(self) -> None:
@@ -51,6 +51,7 @@ class HostDelete:
         self.__io.writeln(' Removing metadata')
 
         DataLayer.instance.host_delete(self.__host)
+        DataLayer.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
     def delete_host(self, host: str) -> None:
