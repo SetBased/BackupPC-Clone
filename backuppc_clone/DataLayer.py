@@ -336,7 +336,7 @@ order by bbt_seq
         Dictionary factory for return results with dictionaries.
 
         @param Cursor cursor: The cursor.
-        @param list old_row: A row from the result a a query.
+        @param list old_row: A row from the result a query.
 
         :rtype: dict
         """
@@ -487,7 +487,7 @@ order by bbt_seq
     # ------------------------------------------------------------------------------------------------------------------
     def get_bck_id(self, hst_id: int, bck_number: int) -> int:
         """
-        Returns the ID of a host backup. If the backup does not exists it will be inserted.
+        Returns the ID of a host backup. If the backup does not exist it will be inserted.
 
         @param int hst_id: The ID of the host.
         @param int bck_number: The number of the backup.
@@ -529,7 +529,7 @@ where hst.hst_name = ?"""
     # ------------------------------------------------------------------------------------------------------------------
     def host_get_obsolete(self) -> List[Dict]:
         """
-        Selects host that are cloned but not longer in original.
+        Selects hosts that are cloned but no longer in the original pool.
 
         :rtype: list[dict]
         """
@@ -555,7 +555,7 @@ order by hst.hst_name"""
         @param str table_name: The name of the table.
         @param list column_names: The columns names.
         @param str path: The path to the CSV file.
-        @param bool truncate:" If True the table will be truncated first.
+        @param bool truncate: If True the table will be truncated first.
         @param dict[str,*]|None defaults: The default values for columns not in the CSV file.
         """
         if truncate:
@@ -703,7 +703,7 @@ from
     # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self) -> int:
         """
-        Deletes rows (i.e. files) from BKC_POOL that are not longer in the actual original pool.
+        Deletes rows (i.e. files) from BKC_POOL that are no longer in the actual original pool.
         """
         self.execute_none('delete from TMP_ID')
 
@@ -784,7 +784,7 @@ from   TMP_POOL"""
     # ------------------------------------------------------------------------------------------------------------------
     def pool_prepare_obsolete_clone_files(self) -> int:
         """
-        Prepares the clone pool files that are obsolete (i.e. not longer in the original pool).
+        Prepares the clone pool files that are obsolete (i.e. no longer in the original pool).
 
         :rtype: int
         """
@@ -819,10 +819,10 @@ from   TMP_CLONE_POOL_OBSOLETE"""
                                       pbl_size: int,
                                       pbl_mtime: int) -> None:
         """
-        Sets the inode number of the clone, mtime and size of a file in the pool given a inode number of a file the the
+        Sets the inode number of the clone, mtime and size of a file in the pool given an inode number of a file the
         original pool.
 
-        @param int bpl_inode_original: The inode number of a file file in the original pool.
+        @param int bpl_inode_original: The inode number of a file in the original pool.
         @param int bpl_inode_clone: The inode number of the pool file in the clone.
         @param int pbl_size: The size of the pool file.
         @param int pbl_mtime: The mtime of the pool file.
@@ -839,7 +839,7 @@ where bpl_inode_original = ?"""
     # ------------------------------------------------------------------------------------------------------------------
     def pool_yield_obsolete_clone_files(self):
         """
-        Selects the clone pool files that are obsolete (i.e. not longer in the original pool).
+        Selects the clone pool files that are obsolete (i.e. no longer in the original pool).
         """
         self.__connection.row_factory = DataLayer.dict_factory
 
