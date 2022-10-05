@@ -17,7 +17,7 @@ class BackupInfoScanner:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -31,8 +31,8 @@ class BackupInfoScanner:
         """
         Extracts info about a backup from file backupInfo.
 
-        :param str backup_dir: The path to the host backup.
-        :param str param_name: The name of the info parameter.
+        @param str backup_dir: The path to the host backup.
+        @param str param_name: The name of the info parameter.
 
         :rtype: str|None
         """
@@ -83,7 +83,7 @@ class BackupInfoScanner:
         """
         Imports the original host backups info into the SQLite database.
 
-        :param list[dict] backups: The metadata of the original backups.
+        @param list[dict] backups: The metadata of the original backups.
         """
         DataLayer.instance.original_backup_truncate()
 

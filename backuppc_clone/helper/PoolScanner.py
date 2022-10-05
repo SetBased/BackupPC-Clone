@@ -15,7 +15,7 @@ class PoolScanner:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
         self.__io: BackupPcCloneStyle = io
         """
@@ -37,8 +37,6 @@ class PoolScanner:
     def count(self) -> int:
         """
         Returns the number of found files.
-
-        :return: int
         """
         return self.__count
 
@@ -48,7 +46,7 @@ class PoolScanner:
         """
         Returns the (estimate) number of directories in a pool.
 
-        :param str dir_name: The name of the directory.
+        @param str dir_name: The name of the directory.
 
         :rtype: int
         """
@@ -63,9 +61,9 @@ class PoolScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str parent_dir: The name of the parent directory.
-        :param str dir_name: The name of the directory.
-        :param csv.writer csv_writer: The CSV writer.
+        @param str parent_dir: The name of the parent directory.
+        @param str dir_name: The name of the directory.
+        @param csv.writer csv_writer: The CSV writer.
         """
         sub_dir_names = []
         for entry in os.scandir(os.path.join(parent_dir, dir_name)):
@@ -86,9 +84,9 @@ class PoolScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str parent_dir: The name of the parent directory.
-        :param str dir_name: The name of the directory.
-        :param csv.writer csv_writer: The CSV writer.
+        @param str parent_dir: The name of the parent directory.
+        @param str dir_name: The name of the directory.
+        @param csv.writer csv_writer: The CSV writer.
         """
         dir_target = os.path.join(parent_dir, dir_name)
 
@@ -108,9 +106,9 @@ class PoolScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str parent_dir: The name of the parent dir.
-        :param list[str] dir_names: The list of directories to scan.
-        :param str csv_filename: The filename of the CSV file.
+        @param str parent_dir: The name of the parent dir.
+        @param list[str] dir_names: The list of directories to scan.
+        @param str csv_filename: The filename of the CSV file.
         """
         self.__count = 0
 

@@ -18,9 +18,9 @@ class InitOriginalCommand(BaseCommand):
         """
         Extracts a parameter for BackupPCs configuration file.
 
-        :param str perl: Path to the perl executable.
-        :param str backuppc_config_filename: Path to BackupPC config file.
-        :param parameter_name: The name of the parameter.
+        @param str perl: Path to the perl executable.
+        @param str backuppc_config_filename: Path to BackupPC config file.
+        @param parameter_name: The name of the parameter.
 
         :rtype: str
         """

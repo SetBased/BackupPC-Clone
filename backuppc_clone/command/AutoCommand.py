@@ -143,9 +143,9 @@ class AutoCommand(BaseCommand):
     # ------------------------------------------------------------------------------------------------------------------
     def __resync_pool(self, backup: Dict) -> None:
         """
-        Resyncs the pool if required for cloning a backup.
+        Re-syncs the pool if required for cloning a backup.
 
-        :param dict backup: The metadata of the backup.
+        @param dict backup: The metadata of the backup.
         """
         if Config.instance.last_pool_scan < backup['bob_end_time']:
             self._io.title('Maintaining Clone Pool and Pool Metadata')
@@ -160,7 +160,7 @@ class AutoCommand(BaseCommand):
         """
         Clones a backup.
 
-        :param dict backup: The metadata of the backup.
+        @param dict backup: The metadata of the backup.
         """
         self._io.title('Cloning Backup {}/{}'.format(backup['bob_host'], backup['bob_number']))
 
@@ -175,15 +175,15 @@ class AutoCommand(BaseCommand):
         """
         Handles a FileNotFoundError exception.
 
-        :param dict backup: The metadata of the backup.
-        :param FileNotFoundError error: The exception.
+        @param dict backup: The metadata of the backup.
+        @param FileNotFoundError error: The exception.
         """
         if self._io.get_verbosity() >= Output.VERBOSITY_VERBOSE:
             self._io.warning(str(error))
 
         self._io.block('Resynchronization of the pool is required')
 
-        # The host backup might been partially cloned.
+        # The host backup might have been partially cloned.
         helper = BackupDelete(self._io)
         helper.delete_backup(backup['bob_host'], backup['bob_number'])
 

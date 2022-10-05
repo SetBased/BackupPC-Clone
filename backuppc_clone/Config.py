@@ -22,7 +22,7 @@ class Config:
         """
         Object constructor.
 
-        :param str config_filename: The path to the configuration file of the clone.
+        @param str config_filename: The path to the configuration file of the clone.
         """
         if Config.instance is not None:
             raise Exception("This class is a singleton!")
@@ -93,7 +93,7 @@ class Config:
         """
         Saves the timestamp of the last original pool scan.
 
-        :param int value: The timestamp.
+        @param int value: The timestamp.
         """
         DataLayer.instance.parameter_update_value('LAST_POOL_SYNC', str(value))
 
@@ -176,8 +176,8 @@ class Config:
         """
         Returns the path to a host backup of the clone.
 
-        :param str host: The name of the host.
-        :param int backup_no: The backup number.
+        @param str host: The name of the host.
+        @param int backup_no: The backup number.
 
         :rtype: str
         """
@@ -188,8 +188,8 @@ class Config:
         """
         Returns the path to a host backup of the original.
 
-        :param str host: The name of the host.
-        :param int backup_no: The backup number.
+        @param str host: The name of the host.
+        @param int backup_no: The backup number.
 
         :rtype: str
         """
@@ -200,7 +200,7 @@ class Config:
         """
         Returns the path to host of the clone.
 
-        :param str host: The name of the host.
+        @param str host: The name of the host.
 
         :rtype: str
         """
@@ -211,7 +211,7 @@ class Config:
         """
         Returns the path to host of the original.
 
-        :param str host: The name of the host.
+        @param str host: The name of the host.
 
         :rtype: str
         """

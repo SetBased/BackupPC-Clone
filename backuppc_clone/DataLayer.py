@@ -20,7 +20,7 @@ class DataLayer:
         """
         Object constructor.
 
-        :param str database: Path to the SQLite database.
+        @param str database: Path to the SQLite database.
         """
         if DataLayer.instance is not None:
             raise Exception("This class is a singleton!")
@@ -69,7 +69,7 @@ class DataLayer:
         """
         Deletes cascading a host backup.
 
-        :param int bck_id: The ID of the host backup.
+        @param int bck_id: The ID of the host backup.
         """
         self.backup_empty(bck_id)
         self.execute_none('delete from BKC_BACKUP where bck_id=?', (bck_id,))
@@ -79,7 +79,7 @@ class DataLayer:
         """
         Removes the tree from a host backup.
 
-        :param int bck_id: The ID of the host backup.
+        @param int bck_id: The ID of the host backup.
         """
         self.execute_none('delete from BKC_BACKUP_TREE where bck_id=?', (bck_id,))
 
@@ -167,8 +167,8 @@ order by hst.hst_name
         """
         Updates the in progress flag of a host backup.
 
-        :param int bck_id: The ID of the host backup.
-        :param int bck_in_progress: The in progress flag.
+        @param int bck_id: The ID of the host backup.
+        @param int bck_in_progress: The in progress flag.
         """
         if bck_in_progress != 0:
             bck_in_progress = 1
@@ -185,7 +185,7 @@ where  bck_id = ?"""
         """
         Selects the statistics of a host backup.
 
-        :param int bck_id: The ID of the host backup.
+        @param int bck_id: The ID of the host backup.
         """
         self.__connection.row_factory = DataLayer.dict_factory
 
@@ -202,7 +202,7 @@ where bck_id = ?"""
         """
         Prepares the files required for a host backup that are not yet copied from the original pool to the clone pool.
 
-        :param int bck_id: The ID of the host backup.
+        @param int bck_id: The ID of the host backup.
 
         :rtype: int
         """
@@ -233,7 +233,7 @@ from   TMP_CLONE_POOL_REQUIRED"""
         """
         Selects the file entries of a host backup.
 
-        :param int bck_id: The ID of the host backup.
+        @param int bck_id: The ID of the host backup.
 
         :rtype: int
         """
@@ -335,8 +335,8 @@ order by bbt_seq
         """
         Dictionary factory for return results with dictionaries.
 
-        :param Cursor cursor: The cursor.
-        :param list old_row: A row from the result a a query.
+        @param Cursor cursor: The cursor.
+        @param list old_row: A row from the result a a query.
 
         :rtype: dict
         """
@@ -351,8 +351,8 @@ order by bbt_seq
         """
         Executes a SQL statement that does not select any rows
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
         """
         self.__connection.row_factory = None
 
@@ -366,8 +366,8 @@ order by bbt_seq
         """
         Executes a SQL statement that selects 0 or 1 row.
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
 
         :rtype: dict
         """
@@ -389,8 +389,8 @@ order by bbt_seq
         """
         Executes a SQL statement that selects 1 row.
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
 
         :rtype: dict
         """
@@ -409,8 +409,8 @@ order by bbt_seq
         """
         Executes a SQL statement that selects 0, 1, or more rows.
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
 
         :rtype: list[dict]
         """
@@ -429,8 +429,8 @@ order by bbt_seq
         """
         Executes a SQL statement that selects 0 or 1 row with 1 column. Returns the value of selected column or None.
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
 
         :rtype: *
         """
@@ -453,8 +453,8 @@ order by bbt_seq
         """
         Executes a SQL statement that selects 1 row with 1 column. Returns the value of selected column.
 
-        :param str sql: The SQL calling the stored procedure.
-        :param iterable params: The arguments for the stored procedure.
+        @param str sql: The SQL calling the stored procedure.
+        @param iterable params: The arguments for the stored procedure.
 
         :rtype: *
         """
@@ -473,7 +473,7 @@ order by bbt_seq
         """
         Returns the ID of a host. If the host does not exists it will be inserted.
 
-        :param str hostname: The name of the host.
+        @param str hostname: The name of the host.
 
         :rtype: int
         """
@@ -489,8 +489,8 @@ order by bbt_seq
         """
         Returns the ID of a host backup. If the backup does not exists it will be inserted.
 
-        :param int hst_id: The ID of the host.
-        :param int bck_number: The number of the backup.
+        @param int hst_id: The ID of the host.
+        @param int bck_number: The number of the backup.
 
         :rtype: int
         """
@@ -512,7 +512,7 @@ and    bck_number = ?"""
         """
         Deletes cascading a host.
 
-        :param str host: The name of the host.
+        @param str host: The name of the host.
         """
         sql = """
 select bck_id
@@ -552,11 +552,11 @@ order by hst.hst_name"""
         """
         Import a CSV file into a table.
 
-        :param str table_name: The name of the table.
-        :param list column_names: The columns names.
-        :param str path: The path to the CSV file.
-        :param bool truncate:" If True the table will be truncated first.
-        :param dict[str,*]|None defaults: The default values for columns not in the CSV file.
+        @param str table_name: The name of the table.
+        @param list column_names: The columns names.
+        @param str path: The path to the CSV file.
+        @param bool truncate:" If True the table will be truncated first.
+        @param dict[str,*]|None defaults: The default values for columns not in the CSV file.
         """
         if truncate:
             self.execute_none('delete from {}'.format(table_name))
@@ -684,7 +684,7 @@ from
         """
         Select the value of a parameter.
 
-        :param str prm_code: The code of the parameter.
+        @param str prm_code: The code of the parameter.
 
         :rtype: *
         """
@@ -695,8 +695,8 @@ from
         """
         Sets the value of a parameter.
 
-        :param str prm_code: The code of the parameter.
-        :param str prm_value: The value of the parameter.
+        @param str prm_code: The code of the parameter.
+        @param str prm_value: The value of the parameter.
         """
         self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
 
@@ -730,7 +730,7 @@ where bpl_id in (select tmp_id from TMP_ID)"""
         """
         Deletes a row from the pool metadata.
 
-        :param int bpl_id: The rowid.
+        @param int bpl_id: The rowid.
         """
         self.execute_none('delete from BKC_POOL where bpl_id=?', (bpl_id,))
 
@@ -822,10 +822,10 @@ from   TMP_CLONE_POOL_OBSOLETE"""
         Sets the inode number of the clone, mtime and size of a file in the pool given a inode number of a file the the
         original pool.
 
-        :param int bpl_inode_original: The inode number of a file file in the original pool.
-        :param int bpl_inode_clone: The inode number of the pool file in the clone.
-        :param int pbl_size: The size of the pool file.
-        :param int pbl_mtime: The mtime of the pool file.
+        @param int bpl_inode_original: The inode number of a file file in the original pool.
+        @param int bpl_inode_clone: The inode number of the pool file in the clone.
+        @param int pbl_size: The size of the pool file.
+        @param int pbl_mtime: The mtime of the pool file.
         """
         sql = """
 update BKC_POOL

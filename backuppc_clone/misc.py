@@ -2,8 +2,8 @@ def sizeof_fmt(num: int, suffix: str = 'B') -> str:
     """
     Returns the size in bytes in human-readable format.
 
-    :param int num: The number of bytes.
-    :param str suffix: The suffix.
+    @param int num: The number of bytes.
+    @param str suffix: The suffix.
 
     :rtype: str
     """

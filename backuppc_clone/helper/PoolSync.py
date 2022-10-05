@@ -18,7 +18,7 @@ class PoolSync:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -65,7 +65,7 @@ class PoolSync:
         """
         Scans the pool of the original and stores the data into a CSV file.
 
-        :param str csv_filename: The name of the CSV file.
+        @param str csv_filename: The name of the CSV file.
         """
         self.__io.section('Original pool')
 
@@ -80,7 +80,7 @@ class PoolSync:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
-        :param str csv_filename: The name of the CSV file.
+        @param str csv_filename: The name of the CSV file.
         """
         self.__io.log_verbose(' Importing <fso>{}</fso> into <dbo>IMP_POOL</dbo>'.format(csv_filename))
 

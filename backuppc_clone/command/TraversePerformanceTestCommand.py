@@ -53,7 +53,7 @@ class TraversePerformanceTestCommand(Command):
         """
         Traverse recursively a directory.
 
-        :param str path: The path to the directory.
+        @param str path: The path to the directory.
         """
         dirs = []
         for entry in os.scandir(path):
@@ -75,7 +75,7 @@ class TraversePerformanceTestCommand(Command):
         """
         Prints the performance report.
 
-        :param float end_time: The timestamp of the end of the performance test.
+        @param float end_time: The timestamp of the end of the performance test.
         """
         self._io.writeln('')
         self._io.writeln('number of directories: {}'.format(self.__dir_count))
@@ -88,8 +88,8 @@ class TraversePerformanceTestCommand(Command):
         """
         Executes the command.
 
-        :param Input input_object: The input.
-        :param Output output_object: The output.
+        @param Input input_object: The input.
+        @param Output output_object: The output.
         """
         self.input = input_object
         self.output = output_object

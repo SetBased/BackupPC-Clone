@@ -19,7 +19,7 @@ class BackupClone:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -42,7 +42,7 @@ class BackupClone:
         """
         Scans the backup of a host.
 
-        :param str csv_filename: The name of the CSV file.
+        @param str csv_filename: The name of the CSV file.
         """
         self.__io.section('Original backup')
 
@@ -59,7 +59,7 @@ class BackupClone:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
-        :param str csv_filename: The name of the CSV file.
+        @param str csv_filename: The name of the CSV file.
         """
         self.__io.log_very_verbose(' Importing <fso>{}</fso>'.format(csv_filename))
 
@@ -78,7 +78,7 @@ class BackupClone:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
-        :param str csv_filename: The name of the CSV file.
+        @param str csv_filename: The name of the CSV file.
         """
         self.__io.section('Using pre-scan')
 
@@ -98,9 +98,9 @@ class BackupClone:
         """
         Copies a pool file from the Original pool to the clone pool. Returns the size eof the file.
 
-        :param str dir_name: The directory name relative to the top dir.
-        :param str file_name: The file name.
-        :param int bpl_inode_original: The inode of the original pool file.
+        @param str dir_name: The directory name relative to the top dir.
+        @param str file_name: The file name.
+        @param int bpl_inode_original: The inode of the original pool file.
 
         :rtype: int
         """

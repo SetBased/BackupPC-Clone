@@ -15,7 +15,7 @@ class HostDelete:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -54,7 +54,7 @@ class HostDelete:
         """
         Deletes a backup of a host.
 
-        :param str host: The name of the host.
+        @param str host: The name of the host.
         """
         self.__host = host
 

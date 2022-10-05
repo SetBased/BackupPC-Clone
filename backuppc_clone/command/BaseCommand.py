@@ -63,8 +63,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         Prompt the user for input.
 
-        :param str question: The question to ask
-        :param str|None default: The default value
+        @param str question: The question to ask
+        @param str|None default: The default value
 
         :rtype: str|None
         """

@@ -14,8 +14,8 @@ class BackupPcCloneStyle(CleoStyle):
         """
         Object constructor.
 
-        :param Input input_object: The input object.
-        :param Output output_object: The output_object object.
+        @param Input input_object: The input object.
+        @param Output output_object: The output_object object.
         """
         CleoStyle.__init__(self, input_object, output_object)
 
@@ -36,9 +36,7 @@ class BackupPcCloneStyle(CleoStyle):
         """
         Writes a waring message.
 
-        :param str|list[str] message: The message or list of messages.
-
-        :return:
+        @param str|list[str] message: The message or list of messages.
         """
         self.block(message, 'WARNING', 'fg=white;bg=red', padding=True)
 
@@ -47,7 +45,7 @@ class BackupPcCloneStyle(CleoStyle):
         """
         Formats informational text.
 
-        :param str|list[str] message: The message or list of messages.
+        @param str|list[str] message: The message or list of messages.
         """
         if isinstance(message, list):
             messages = message
@@ -62,7 +60,7 @@ class BackupPcCloneStyle(CleoStyle):
         """
         Logs a message only when logging level is verbose.
 
-        :param str|list[str] message: The message.
+        @param str|list[str] message: The message.
         """
         if self.get_verbosity() >= Output.VERBOSITY_VERBOSE:
             self.writeln(message)
@@ -72,7 +70,7 @@ class BackupPcCloneStyle(CleoStyle):
         """
         Logs a message only when logging level is very verbose.
 
-        :param str|list[str] message: The message.
+        @param str|list[str] message: The message.
         """
         if self.get_verbosity() >= Output.VERBOSITY_VERY_VERBOSE:
             self.writeln(message)

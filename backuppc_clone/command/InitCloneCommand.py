@@ -20,7 +20,7 @@ class InitCloneCommand(BaseCommand):
         """
         Creates required directories under the top dir of the clone.
 
-        :param str top_dir_clone: The top directory of the clone.
+        @param str top_dir_clone: The top directory of the clone.
         """
         os.chmod(top_dir_clone, 0o770)
 
@@ -38,7 +38,7 @@ class InitCloneCommand(BaseCommand):
         """
         Creates the metadata database.
 
-        :param str db_path: The path to the SQLite database.
+        @param str db_path: The path to the SQLite database.
         """
         sql_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 '..',
@@ -71,10 +71,10 @@ class InitCloneCommand(BaseCommand):
         """
         Creates the config file for the clone.
 
-        :param str config_filename_clone: The path to the config file of the clone.
-        :param str config_filename_original: The path to the config file of the original.
-        :param str name_clone: The name of the clone.
-        :param str name_master: The name of the master.
+        @param str config_filename_clone: The path to the config file of the clone.
+        @param str config_filename_original: The path to the config file of the original.
+        @param str name_clone: The name of the clone.
+        @param str name_master: The name of the master.
         """
         self._io.writeln(' Writing <fso>{}</fso>'.format(config_filename_clone))
 

@@ -20,8 +20,8 @@ class ProgressBar(CleoProgressBar):
         """
         Constructor.
 
-        :param Output output: The output object.
-        :param int maximum: Maximum steps (0 if unknown).
+        @param Output output: The output object.
+        @param int maximum: Maximum steps (0 if unknown).
         """
         CleoProgressBar.__init__(self, output, maximum)
 
@@ -73,7 +73,7 @@ class ProgressBar(CleoProgressBar):
         """
         Sets the current progress.
 
-        :param int step: The current progress.
+        @param int step: The current progress.
         """
         if self._should_overwrite:
             now = time.time()

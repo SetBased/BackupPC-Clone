@@ -19,7 +19,7 @@ class BackupScanner:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -52,8 +52,6 @@ class BackupScanner:
     def dir_count(self) -> int:
         """
         Returns the number of found directories.
-
-        :return: int
         """
         return self.__dir_count
 
@@ -62,8 +60,6 @@ class BackupScanner:
     def file_count(self) -> int:
         """
         Returns the number of found files.
-
-        :return: int
         """
         return self.__file_count
 
@@ -72,9 +68,9 @@ class BackupScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str parent_dir: The name of the parent directory.
-        :param str dir_name: The name of the directory.
-        :param csv.writer csv_writer: The CSV writer.
+        @param str parent_dir: The name of the parent directory.
+        @param str dir_name: The name of the directory.
+        @param csv.writer csv_writer: The CSV writer.
         """
         target_name = os.path.join(parent_dir, dir_name) if dir_name else parent_dir
 
@@ -105,9 +101,9 @@ class BackupScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str host: The host name
-        :param int backup_no: The backup number.
-        :param str csv_filename: The filename of the CSV file.
+        @param str host: The host name
+        @param int backup_no: The backup number.
+        @param str csv_filename: The filename of the CSV file.
         """
         self.__dir_count = 0
         self.__file_count = 0
@@ -130,8 +126,8 @@ class BackupScanner:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        :param str host: The host name
-        :param int backup_no: The backup number.
+        @param str host: The host name
+        @param int backup_no: The backup number.
         """
         self.__dir_count = 0
         self.__file_count = 0

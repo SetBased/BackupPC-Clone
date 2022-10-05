@@ -31,7 +31,7 @@ class NagiosCommand(Command):
         """
         Returns the performance data string.
 
-        :param dict stats: The stats of BackupPC Clone.
+        @param dict stats: The stats of BackupPC Clone.
 
         :rtype: str
         """

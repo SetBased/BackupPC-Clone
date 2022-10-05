@@ -18,7 +18,7 @@ class AuxiliaryFiles:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -31,8 +31,8 @@ class AuxiliaryFiles:
         """
         Removes obsolete auxiliary files of the Clone.
 
-        :param list files_original: The metadata of the auxiliary files of the Original.
-        :param list files_clone: The metadata of the auxiliary files of the Clone.
+        @param list files_original: The metadata of the auxiliary files of the Original.
+        @param list files_clone: The metadata of the auxiliary files of the Clone.
         """
         self.__io.section('Removing obsolete and changed files')
 
@@ -59,8 +59,8 @@ class AuxiliaryFiles:
         """
         Copies new auxiliary files from the Original to Clone.
 
-        :param list files_original: The metadata of the auxiliary files of the Original.
-        :param list files_clone: The metadata of the auxiliary files of the Clone.
+        @param list files_original: The metadata of the auxiliary files of the Original.
+        @param list files_clone: The metadata of the auxiliary files of the Clone.
         """
         self.__io.section('Coping new and changed files')
 

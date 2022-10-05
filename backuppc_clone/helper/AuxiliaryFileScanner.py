@@ -14,7 +14,7 @@ class AuxiliaryFileScanner:
         """
         Object constructor.
 
-        :param BackupPcCloneStyle io: The output style.
+        @param BackupPcCloneStyle io: The output style.
         """
 
         self.__io: BackupPcCloneStyle = io
@@ -27,7 +27,7 @@ class AuxiliaryFileScanner:
         """
         Scans recursively a directory for auxiliary of hosts.
 
-        :param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
+        @param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
         """
         self.__io.writeln(' Scanning <fso>{}</fso>'.format(pc_dir))
 
