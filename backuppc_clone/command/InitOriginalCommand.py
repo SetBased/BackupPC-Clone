@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 import configparser
 import os
 import subprocess

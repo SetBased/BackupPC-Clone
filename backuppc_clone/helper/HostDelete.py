@@ -1,8 +1,4 @@
-"""
-BackupPC Clone
-"""
 import os
-import shutil
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer

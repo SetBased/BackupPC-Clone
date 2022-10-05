@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 from typing import Union, List
 
 from cleo import Output, Input

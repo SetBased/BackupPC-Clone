@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 import os
 from typing import List, Dict
 

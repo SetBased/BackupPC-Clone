@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 from backuppc_clone.application.BackupPcCloneApplication import BackupPcCloneApplication
 
 

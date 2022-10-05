@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 import csv
 import os
 from typing import List, Optional

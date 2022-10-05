@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 

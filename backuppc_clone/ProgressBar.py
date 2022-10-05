@@ -1,6 +1,3 @@
-"""
-BackupPC Clone
-"""
 import time
 
 from cleo import ProgressBar as CleoProgressBar, Helper, Output
