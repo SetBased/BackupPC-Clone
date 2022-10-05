@@ -51,7 +51,7 @@ class HostDelete:
         self.__io.writeln(' Removing metadata')
 
         DataLayer.instance.host_delete(self.__host)
-        DataLayer.commit()
+        DataLayer.instance.commit()
 
     # ------------------------------------------------------------------------------------------------------------------
     def delete_host(self, host: str) -> None:
