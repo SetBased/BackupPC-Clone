@@ -35,7 +35,7 @@ class DataLayer:
         The path to the SQLite database.
         """
 
-        self.__connection: sqlite3.Connection = sqlite3.connect(database, isolation_level="EXCLUSIVE")
+        self.__connection: sqlite3.Connection = sqlite3.connect(':memory:')
         """
         The connection to the database.
         """
@@ -45,9 +45,7 @@ class DataLayer:
         The last rowid as returns by the last used cursor.
         """
 
-        tmp_dir = os.path.join(os.path.dirname(database), 'tmp')
-        self.execute_none('pragma temp_store = 1')
-        self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
+        self.connect()
 
     # ------------------------------------------------------------------------------------------------------------------
     def disconnect(self) -> None:
@@ -67,6 +65,7 @@ class DataLayer:
         tmp_dir = os.path.join(os.path.dirname(self.__database), 'tmp')
         self.execute_none('pragma temp_store = 1')
         self.execute_none('pragma temp_store_directory = \'{}\''.format(tmp_dir))
+        self.execute_none('pragma main.cache_size = -200000')
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_delete(self, bck_id: int) -> None:
