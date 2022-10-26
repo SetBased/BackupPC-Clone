@@ -33,7 +33,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         Validates that this command is not run under root.
         """
-        self._io.log_very_verbose('testing user')
+        self._io.log_very_verbose('Validating user')
 
         if os.getuid() == 0:
             raise BackupPcCloneException('Will not run this command under root')
@@ -44,7 +44,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         Validates the configuration files.
         """
         if self.input.has_argument('clone.cfg'):
-            self._io.log_very_verbose('validation configuration')
+            self._io.log_very_verbose('Validating configuration')
 
             config_filename_clone = self.input.get_argument('clone.cfg')
             config_clone = configparser.ConfigParser()
