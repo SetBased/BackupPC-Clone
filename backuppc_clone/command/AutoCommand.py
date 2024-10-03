@@ -187,7 +187,7 @@ class AutoCommand(BaseCommand):
         helper = BackupDelete(self._io)
         helper.delete_backup(backup['bob_host'], backup['bob_number'])
 
-        # Force resynchronization of pool.
+        # Force resynchronization of the pool.
         Config.instance.last_pool_scan = -1
 
         # Commit the transaction.
