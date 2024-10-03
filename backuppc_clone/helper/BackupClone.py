@@ -96,7 +96,7 @@ class BackupClone:
     # ------------------------------------------------------------------------------------------------------------------
     def __copy_pool_file(self, dir_name: str, file_name: str, bpl_inode_original: int) -> int:
         """
-        Copies a pool file from the Original pool to the clone pool. Returns the size eof the file.
+        Copies a pool file from the Original pool to the clone pool. Returns the size of the file.
 
         @param str dir_name: The directory name relative to the top dir.
         @param str file_name: The file name.
@@ -118,7 +118,7 @@ class BackupClone:
         if not os.path.exists(clone_dir):
             os.makedirs(clone_dir)
 
-        shutil.copyfile(original_path, clone_path)
+        shutil.copy(original_path, clone_path)
 
         stats_clone = os.stat(clone_path)
         os.chmod(clone_path, stats_original.st_mode)
