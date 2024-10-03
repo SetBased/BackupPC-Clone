@@ -347,9 +347,9 @@ order by bbt_seq
         return new_row
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_none(self, sql: str, *params) -> None:
+    def execute_none(self, sql: str, *params) -> int:
         """
-        Executes a SQL statement that does not select any rows
+        Executes a SQL statement that does not select any rows.
 
         @param str sql: The SQL calling the stored procedure.
         @param iterable params: The arguments for the stored procedure.
@@ -359,7 +359,10 @@ order by bbt_seq
         cursor = self.__connection.cursor()
         cursor.execute(sql, *params)
         self.__last_rowid = cursor.lastrowid
+        row_count = cursor.rowcount
         cursor.close()
+
+        return row_count
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute_row0(self, sql: str, *params) -> Optional[Dict]:
@@ -451,7 +454,7 @@ order by bbt_seq
     # ------------------------------------------------------------------------------------------------------------------
     def execute_singleton1(self, sql: str, *params):
         """
-        Executes a SQL statement that selects 1 row with 1 column. Returns the value of selected column.
+        Executes a SQL statement that selects 1 row with 1 column. Returns the value of the selected column.
 
         @param str sql: The SQL calling the stored procedure.
         @param iterable params: The arguments for the stored procedure.
@@ -471,7 +474,7 @@ order by bbt_seq
     # ------------------------------------------------------------------------------------------------------------------
     def get_host_id(self, hostname: str) -> int:
         """
-        Returns the ID of a host. If the host does not exists it will be inserted.
+        Returns the ID of a host. If the host does not exist, it will be inserted.
 
         @param str hostname: The name of the host.
 
@@ -487,10 +490,10 @@ order by bbt_seq
     # ------------------------------------------------------------------------------------------------------------------
     def get_bck_id(self, hst_id: int, bck_number: int) -> int:
         """
-        Returns the ID of a host backup. If the backup does not exist it will be inserted.
+        Returns the ID of a host backup. If the backup does not exist, it will be inserted.
 
         @param int hst_id: The ID of the host.
-        @param int bck_number: The number of the backup.
+        @param int bck_number: The sequence number of the backup.
 
         :rtype: int
         """
@@ -553,9 +556,9 @@ order by hst.hst_name"""
         Import a CSV file into a table.
 
         @param str table_name: The name of the table.
-        @param list column_names: The columns names.
+        @param list column_names: The column names.
         @param str path: The path to the CSV file.
-        @param bool truncate: If True the table will be truncated first.
+        @param bool truncate: If True, the table will be truncated first.
         @param dict[str,*]|None defaults: The default values for columns not in the CSV file.
         """
         if truncate:
@@ -703,7 +706,7 @@ from
     # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self) -> int:
         """
-        Deletes rows (i.e. files) from BKC_POOL that are no longer in the actual original pool.
+        Deletes rows (i.e., files) from BKC_POOL that are no longer in the actual original pool.
         """
         self.execute_none('delete from TMP_ID')
 
@@ -782,11 +785,9 @@ from   TMP_POOL"""
         self.execute_none(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_prepare_obsolete_clone_files(self) -> int:
+    def clone_pool_obsolete_files_prepare(self) -> int:
         """
-        Prepares the clone pool files that are obsolete (i.e. no longer in the original pool).
-
-        :rtype: int
+        Prepares the clone pool files that are obsolete (i.e., no longer in the original pool).
         """
         self.execute_none('delete from TMP_CLONE_POOL_OBSOLETE')
 
@@ -813,6 +814,31 @@ from   TMP_CLONE_POOL_OBSOLETE"""
         return self.execute_singleton1(sql)
 
     # ------------------------------------------------------------------------------------------------------------------
+    def clone_pool_delete_missing(self) -> int:
+        """
+        Removes rows from BKC_POOL with files that are not found in the clone pool.
+        """
+        self.execute_none('delete from TMP_ID')
+
+        sql = """
+insert into TMP_ID( tmp_id )
+select bpl.bpl_id
+from            BKC_POOL bpl
+left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_clone and
+                                  imp.imp_dir   = bpl.bpl_dir         and
+                                  imp.imp_name  = bpl.bpl_name
+where  bpl.bpl_inode_clone is not null
+and    imp.rowid is null"""
+
+        self.execute_none(sql)
+
+        sql = """
+delete from BKC_POOL
+where bpl_id in (select tmp_id from TMP_ID)"""
+
+        return self.execute_none(sql)
+
+    # ------------------------------------------------------------------------------------------------------------------
     def pool_update_by_inode_original(self,
                                       bpl_inode_original: int,
                                       bpl_inode_clone: int,
@@ -837,9 +863,9 @@ where bpl_inode_original = ?"""
         self.execute_none(sql, (bpl_inode_clone, pbl_size, pbl_mtime, bpl_inode_original))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def pool_yield_obsolete_clone_files(self):
+    def clone_pool_obsolete_files_yield(self):
         """
-        Selects the clone pool files that are obsolete (i.e. no longer in the original pool).
+        Selects the clone pool files that are obsolete (i.e., no longer in the original pool).
         """
         self.__connection.row_factory = DataLayer.dict_factory
 
