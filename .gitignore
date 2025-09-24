@@ -4,6 +4,7 @@
 /bin/phing
 /bin/yaml-lint
 /clone.db
+/clone.db-journal
 /composer.lock
 /dist/
 /docs/_build/
