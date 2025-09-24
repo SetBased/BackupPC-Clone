@@ -1,9 +1,11 @@
 **/__pycache__/
 /.idea/
-/BackupPC_Clone.egg-info
+/.venv/
 /bin/phing
+/bin/yaml-lint
 /clone.db
 /composer.lock
 /dist/
 /docs/_build/
+/poetry.lock
 /vendor/

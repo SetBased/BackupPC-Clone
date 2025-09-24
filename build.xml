@@ -1,58 +1,110 @@
 <project name="BackupPC-Clone" default="build" basedir=".">
-    <taskdef name="ReadSemanticVersion" classname="vendor.setbased.phing-extensions.src.Task.ReadSemanticVersionTask"/>
+    <taskdef name="readSemanticVersion" classname="\SetBased\Phing\Task\ReadSemanticVersionTask"/>
     <property name="BUILD_DIR" value="./build"/>
 
     <!-- Run composer update and executes various other updates -->
     <target name="composer-update">
-        <exec command="composer update" checkreturn="true" passthru="true"/>
+        <exec executable="composer" checkreturn="true" passthru="true">
+            <arg value="update"/>
+        </exec>
+    </target>
+
+    <!-- Install virtual environment -->
+    <target name="venv">
+        <exec executable="python3" checkreturn="true" passthru="true">
+            <arg value="-m"/>
+            <arg value="venv"/>
+            <arg value=".venv"/>
+        </exec>
+        <exec executable="./.venv/bin/python" checkreturn="true" passthru="true">
+            <arg value="-m"/>
+            <arg value="pip"/>
+            <arg value="install"/>
+            <arg value="--upgrade"/>
+            <arg value="pip"/>
+        </exec>
+        <exec executable="./.venv/bin/python" checkreturn="true" passthru="true">
+            <arg value="-m"/>
+            <arg value="pip"/>
+            <arg value="install"/>
+            <arg value="--upgrade"/>
+            <arg value="poetry"/>
+        </exec>
+        <exec executable="./.venv/bin/poetry" passthru="true" checkreturn="true">
+            <arg value="--ansi"/>
+            <arg value="lock"/>
+        </exec>
+        <exec executable="./.venv/bin/poetry" passthru="true" checkreturn="true">
+            <arg value="--ansi"/>
+            <arg value="install"/>
+            <arg value="--no-root"/>
+        </exec>
+        <exec executable="./.venv/bin/poetry" passthru="true" checkreturn="true">
+            <arg value="--ansi"/>
+            <arg value="show"/>
+            <arg value="--outdated"/>
+        </exec>
     </target>
 
     <!-- Creates a new version/release. -->
+    <!-- @todo replace semantic version with pep-396 -->
     <target name="version">
         <readSemanticVersion file=".version"
                              versionProperty="VERSION"
                              haltOnError="true"/>
-
         <reflexive>
             <fileset dir=".">
-                <include name="setup.py"/>
+                <include name="pyproject.toml"/>
             </fileset>
             <filterchain>
                 <replaceregexp>
-                    <regexp pattern="version=.*" replace="version='${VERSION}',"/>
+                    <regexp pattern="version = .*" replace="version = &quot;${VERSION}&quot;"/>
                 </replaceregexp>
             </filterchain>
         </reflexive>
-        <reflexive>
-            <fileset dir=".">
-                <include name="backuppc_clone/application/*.py"/>
-            </fileset>
-            <filterchain>
-                <replaceregexp>
-                    <regexp pattern="Application.__init__\(self, '([A-Za-z0-9\-]*)', .*"
-                            replace="Application.__init__(self, '$1', '${VERSION}')"/>
-                </replaceregexp>
-            </filterchain>
-        </reflexive>
-        <gitcommit repository="." message="Release: ${VERSION}" allFiles="true"/>
-        <gitpush repository="."/>
-        <gittag repository="." name="${VERSION}"/>
-        <gitpush repository="." refspec="${VERSION}" quiet="false"/>
+        <exec executable="git" checkreturn="true" passthru="true">
+            <arg value="commit"/>
+            <arg value="-a"/>
+            <arg value="-m"/>
+            <arg value="Release: ${VERSION}"/>
+        </exec>
+        <exec executable="git" checkreturn="true" passthru="true">
+            <arg value="push"/>
+        </exec>
+        <exec executable="git" checkreturn="true" passthru="true">
+            <arg value="tag"/>
+            <arg value="${VERSION}"/>
+        </exec>
+        <exec executable="git" checkreturn="true" passthru="true">
+            <arg value="push"/>
+            <arg value="origin"/>
+            <arg value="${VERSION}"/>
+        </exec>
     </target>
 
-    <!-- Creates a new distribution using setup.py -->
+    <!-- Creates a new distribution using pyproject.toml -->
     <target name="dist">
-        <exec command="python3 setup.py sdist" passthru="true" checkreturn="true"/>
+        <exec executable="./.venv/bin/poetry" passthru="true" checkreturn="true">
+            <arg value="build"/>
+        </exec>
     </target>
 
     <!-- Uploads a distribution to PyPI -->
     <target name="upload">
-        <loadfile property="VERSION" file=".version"/>
-        <exec command="twine upload dist/BackupPC-Clone-${VERSION}.tar.gz" passthru="true" checkreturn="true"/>
+        <exec executable="./.venv/bin/poetry" passthru="true" checkreturn="true">
+            <arg value="publish"/>
+        </exec>
     </target>
 
     <!-- All steps for releasing a new version -->
-    <target name="new-version" depends="version,dist,upload"/>
+    <target name="release" depends="version,dist,upload"/>
+
+    <!-- Generates the documentation -->
+    <target name="docs">
+        <exec command="sphinx-apidoc -o api --force --doc-project API --no-toc ../super_scad" dir="docs"
+              passthru="true" checkreturn="true"/>
+        <exec command="make html" dir="docs" passthru="true" checkreturn="true"/>
+    </target>
 
     <!-- Default target -->
     <target name="build">
