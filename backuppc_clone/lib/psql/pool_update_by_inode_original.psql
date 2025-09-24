@@ -1,0 +1,16 @@
+/**
+ * Sets the inode number of the clone, mtime and size of a file in the pool given an inode number of a file the
+ * original pool.
+ *
+ * @param int  :bpl_inode_original The inode number of a file in the original pool.
+ * @param int  :bpl_inode_clone    The inode number of the pool file in the clone.
+ * @param int  :pbl_size           The size of the pool file.
+ * @param real :pbl_mtime          The mtime of the pool file.
+ *
+ * @type none
+ */
+update BKC_POOL
+set bpl_inode_clone = :bpl_inode_clone
+  , bpl_size        = :pbl_size
+  , bpl_mtime       = :pbl_mtime
+where bpl_inode_original = :bpl_inode_original;

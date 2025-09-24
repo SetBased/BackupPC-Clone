@@ -1,0 +1,24 @@
+/**
+ * Selects the next backup to clone.
+ *
+ * @param int :end_time
+ *
+ * @type row0
+ */
+select bob.bob_host
+     , bob.bob_number
+     , bob.bob_end_time
+     , bob.bob_level
+     , bob.bob_type
+from BKC_ORIGINAL_BACKUP  bob
+     left join BKC_HOST   hst on hst.hst_name = bob.bob_host
+     left join BKC_BACKUP bck on bck.hst_id = hst.hst_id and
+                                 bck.bck_number = bob.bob_number
+where bck.bck_id is null
+  and bob.bob_version like '3.%'
+  and bob.bob_type in ('full', 'incr')
+  and bob.bob_end_time is not null
+  and (bob.bob_end_time < :end_time or :end_time = -1)
+order by bob.bob_type
+       , bob.bob_end_time desc
+limit 0, 1;

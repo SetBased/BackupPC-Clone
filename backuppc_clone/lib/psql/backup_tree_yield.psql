@@ -1,0 +1,16 @@
+/**
+ * Selects the file entries of a host backup.
+ *
+ * @type yield
+ */
+select bpl_inode_original
+     , bpl_dir
+     , bpl_name
+
+     , bbt_inode_original
+     , bbt_dir
+     , bbt_name
+from TMP_BACKUP_TREE
+order by bbt_seq
+       , bpl_dir
+       , bpl_name;

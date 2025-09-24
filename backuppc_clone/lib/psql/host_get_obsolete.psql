@@ -1,0 +1,10 @@
+/**
+ * Selects hosts that are cloned but no longer in the original.
+ *
+ * @type rows
+ */
+select hst.hst_name
+from BKC_HOST                      hst
+     left join BKC_ORIGINAL_BACKUP bob on bob.bob_host = hst.hst_name
+where bob.rowid is null
+order by hst.hst_name;

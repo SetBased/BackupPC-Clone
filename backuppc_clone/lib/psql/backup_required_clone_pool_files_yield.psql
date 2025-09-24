@@ -1,0 +1,11 @@
+/**
+ * Selects the pool files required for a host backup that are not yet copied from the original pool to the clone pool.
+ *
+ * @type yield
+ */
+select bpl_inode_original
+     , bpl_dir
+     , bpl_name
+from TMP_CLONE_POOL_REQUIRED
+order by bpl_dir
+       , bpl_name;

@@ -1,0 +1,27 @@
+/**
+ * Selects the file entries of a host backup.
+ *
+ * @param int :bck_id The ID of the host backup.
+ *
+ * @type none
+ */
+delete
+from TMP_BACKUP_TREE;
+
+insert into TMP_BACKUP_TREE( bpl_inode_original
+                           , bpl_dir
+                           , bpl_name
+                           , bbt_seq
+                           , bbt_inode_original
+                           , bbt_dir
+                           , bbt_name)
+select bpl.bpl_inode_original
+     , bpl.bpl_dir
+     , bpl.bpl_name
+     , bbt.bbt_seq
+     , bbt.bbt_inode_original
+     , bbt.bbt_dir
+     , bbt.bbt_name
+from BKC_BACKUP_TREE    bbt
+     left join BKC_POOL bpl on bpl.bpl_inode_original = bbt.bbt_inode_original
+where bbt.bck_id = :bck_id;

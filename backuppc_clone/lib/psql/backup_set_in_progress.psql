@@ -1,0 +1,11 @@
+/**
+ * Updates the in progress flag of a host backup.
+ *
+ * @param int  :bck_id          The ID of the host backup.
+ * @param bool :bck_in_progress The in progress flag.
+ *
+ * @type none
+ */
+update BKC_BACKUP
+set bck_in_progress = :bck_in_progress
+where bck_id = :bck_id;

@@ -1,0 +1,9 @@
+/**
+ * Selects the clone pool files that are obsolete (i.e., no longer in the original pool).
+ *
+ * @type yield
+ */
+select bpl_id
+     , bpl_dir
+     , bpl_name
+from TMP_CLONE_POOL_OBSOLETE;

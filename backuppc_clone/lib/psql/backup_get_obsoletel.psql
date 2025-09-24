@@ -1,0 +1,14 @@
+/**
+ * Selects obsolete host backups.
+ *
+ * @type rows
+ */
+select hst.hst_name
+     , bck.bck_number
+from BKC_HOST                      hst
+     join      BKC_BACKUP          bck on bck.hst_id = hst.hst_id
+     left join BKC_ORIGINAL_BACKUP bob on bob.bob_host = hst.hst_name and
+                                          bob.bob_number = bck.bck_number
+where bob.rowid is null
+order by hst.hst_name
+       , bck.bck_number;

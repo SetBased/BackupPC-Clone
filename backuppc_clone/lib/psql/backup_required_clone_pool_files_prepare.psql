@@ -1,0 +1,20 @@
+/**
+ * Prepares the files required for a host backup that are not yet copied from the original pool to the clone pool.
+ *
+ * @param int bck_id: The ID of the host backup.
+ *
+ * @type none
+ */
+delete
+from TMP_CLONE_POOL_REQUIRED;
+
+insert into TMP_CLONE_POOL_REQUIRED( bpl_inode_original
+                                   , bpl_dir
+                                   , bpl_name)
+select distinct bpl_inode_original
+              , bpl_dir
+              , bpl_name
+from BKC_BACKUP_TREE bbt
+     join BKC_POOL   bpl on bpl.bpl_inode_original = bbt.bbt_inode_original
+where bbt.bck_id = ?
+  and bpl.bpl_inode_clone is null;

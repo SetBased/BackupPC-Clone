@@ -1,0 +1,12 @@
+/**
+ * Selects partially cloned host backups.
+ *
+ * @type rows
+ */
+select hst.hst_name
+     , bck.bck_number
+from BKC_HOST        hst
+     join BKC_BACKUP bck on bck.hst_id = hst.hst_id
+where ifnull(bck.bck_in_progress, 1) = 1
+order by hst.hst_name
+       , bck.bck_number;

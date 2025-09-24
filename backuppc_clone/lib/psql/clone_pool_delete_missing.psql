@@ -1,0 +1,21 @@
+/**
+ * Removes rows from BKC_POOL with files that are not found in the clone pool.
+ *
+ * @type none
+ */
+delete
+from TMP_ID;
+
+insert into TMP_ID(tmp_id)
+select bpl.bpl_id
+from BKC_POOL           bpl
+     left join IMP_POOL imp on imp.imp_inode = bpl.bpl_inode_clone and
+                               imp.imp_dir = bpl.bpl_dir and
+                               imp.imp_name = bpl.bpl_name
+where bpl.bpl_inode_clone is not null
+  and imp.rowid is null;
+
+delete
+from BKC_POOL
+where bpl_id in ( select tmp_id
+                  from TMP_ID );

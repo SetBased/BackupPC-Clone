@@ -1,0 +1,14 @@
+/**
+ * Deletes cascading a host backup.
+ *
+ * @param int :bck_id The ID of the host backup.
+ *
+ * @type none
+ */
+delete
+from BKC_BACKUP_TREE
+where bck_id = :bck_id;
+
+delete
+from BKC_BACKUP
+where bck_id = :bck_id;

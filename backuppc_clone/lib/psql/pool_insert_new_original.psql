@@ -1,0 +1,39 @@
+/**
+ * Inserts new row into BKC_POOL based on an import from the original pool.
+ *
+ * @type none
+ */
+delete
+from TMP_POOL;
+
+insert into TMP_POOL( tmp_inode
+                    , tmp_dir
+                    , tmp_name)
+select tmp_inode
+     , tmp_dir
+     , tmp_name
+from ( select bpl_inode_original as tmp_inode
+            , bpl_dir            as tmp_dir
+            , bpl_name           as tmp_name
+            , 1                  as src
+       from BKC_POOL
+
+       union all
+
+       select imp_inode
+            , imp_dir
+            , imp_name
+            , 2 as src
+       from IMP_POOL ) t
+group by tmp_inode
+       , tmp_dir
+       , tmp_name
+having sum(case when src = 1 then 1 else 0 end) < sum(case when src = 2 then 1 else 0 end);
+
+insert into BKC_POOL( bpl_inode_original
+                    , bpl_dir
+                    , bpl_name)
+select tmp_inode
+     , tmp_dir
+     , tmp_name
+from TMP_POOL;

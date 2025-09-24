@@ -1,0 +1,23 @@
+/**
+ * Deletes cascading a host.
+ *
+ * @param text :host The name of the host.
+ *
+ * @type none
+ */
+delete
+from BKC_BACKUP_TREE
+where bck_id in ( select bck_id
+                  from BKC_HOST        hst
+                       join BKC_BACKUP bck on bck.hst_id = hst.hst_id
+                  where hst_name = :host );
+
+delete
+from BKC_BACKUP
+where hst_id = ( select hst_id
+                 from BKC_HOST
+                 where hst_name = :host );
+
+delete
+from BKC_HOST
+where hst_name = :host;

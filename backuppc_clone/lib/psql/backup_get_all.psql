@@ -1,0 +1,9 @@
+/**
+ * Selects all cloned backups.
+ *
+ * @type rows
+ */
+select hst.hst_name
+     , bck.bck_number
+from BKC_HOST        hst
+     join BKC_BACKUP bck on bck.hst_id = hst.hst_id;

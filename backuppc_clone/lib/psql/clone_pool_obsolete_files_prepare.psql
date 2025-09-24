@@ -1,0 +1,20 @@
+/**
+ * Prepares the clone pool files that are obsolete (i.e., no longer in the original pool).
+ *
+ * @type none
+ */
+delete
+from TMP_CLONE_POOL_OBSOLETE;
+
+insert into TMP_CLONE_POOL_OBSOLETE( bpl_id
+                                   , bpl_dir
+                                   , bpl_name)
+select bpl.bpl_id
+     , bpl.bpl_dir
+     , bpl.bpl_name
+from BKC_POOL           bpl
+     left join IMP_POOL imp on imp.imp_inode = bpl.bpl_inode_original and
+                               imp.imp_dir = bpl.bpl_dir and
+                               imp.imp_name = bpl.bpl_name
+where bpl.bpl_inode_clone is not null
+  and imp.rowid is null;

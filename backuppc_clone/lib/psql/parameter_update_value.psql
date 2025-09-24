@@ -1,0 +1,11 @@
+/**
+ * Sets the value of a parameter.
+ *
+ * @param text :p_prm_code  The code of the parameter.
+ * @param text :p_prm_value The value of the parameter.
+ *
+ * @type none
+ */
+update BKC_PARAMETER
+set prm_value = :p_prm_code
+where prm_code = :p_prm_value;

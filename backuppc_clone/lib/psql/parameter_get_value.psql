@@ -1,0 +1,10 @@
+/**
+ * Select the value of a parameter.
+ *
+ * @param text :p_prm_code The code of the parameter.
+ *
+ * @type singleton text
+ */
+select prm_value
+from BKC_PARAMETER
+where prm_code = :p_prm_code;
