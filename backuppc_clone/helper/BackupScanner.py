@@ -1,11 +1,10 @@
 import csv
 import os
 import shutil
-from typing import Optional
 
 from backuppc_clone.Config import Config
-from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
+from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
@@ -42,7 +41,7 @@ class BackupScanner:
         The entry sequence number.
         """
 
-        self.progress: Optional[ProgressBar] = None
+        self.progress: ProgressBar | None = None
         """
         The progress counter.
         """

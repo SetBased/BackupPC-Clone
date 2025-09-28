@@ -1,6 +1,5 @@
 import os
 import time
-from typing import Optional
 
 from cleo import Command, Input, Output
 
@@ -28,7 +27,7 @@ class TraversePerformanceTestCommand(Command):
         If True stat must be called for each file.
         """
 
-        self._io: Optional[BackupPcCloneStyle] = None
+        self._io: BackupPcCloneStyle | None = None
         """
         The output style.
         """

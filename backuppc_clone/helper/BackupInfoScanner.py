@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Optional, Dict, List
+from typing import Dict, List
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
@@ -27,7 +27,7 @@ class BackupInfoScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_backup_info(backup_dir: str, param_name: str) -> Optional[str]:
+    def get_backup_info(backup_dir: str, param_name: str) -> str | None:
         """
         Extracts info about a backup from file backupInfo.
 

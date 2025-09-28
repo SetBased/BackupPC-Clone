@@ -1,7 +1,6 @@
 import abc
 import configparser
 import os
-from typing import Optional
 
 from cleo import Command
 
@@ -17,13 +16,13 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, name: Optional[str] = None) -> None:
+    def __init__(self, name: str | None = None) -> None:
         """
         Object constructor.
         """
         Command.__init__(self, name)
 
-        self._io: Optional[BackupPcCloneStyle] = None
+        self._io: BackupPcCloneStyle | None = None
         """
         The output style.
         """
@@ -59,7 +58,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
                                                                         config_original['BackupPC Clone']['name']))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def ask(self, question: str, default: Optional[str] = None) -> Optional[str]:
+    def ask(self, question: str, default: str | None = None) -> str | None:
         """
         Prompt the user for input.
 

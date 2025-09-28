@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 
 from cleo import Command
 
@@ -17,7 +17,7 @@ class NagiosCommand(Command):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __print_status(self, status: str, message: str, perf_data: Optional[str] = None) -> None:
+    def __print_status(self, status: str, message: str, perf_data: str | None = None) -> None:
         """
         Prints the status of BackupPC Clone.
         """

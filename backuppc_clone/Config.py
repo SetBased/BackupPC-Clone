@@ -1,9 +1,7 @@
-from backuppc_clone.DataLayer import DataLayer
-
-from typing import Optional
-
 import configparser
 import os
+
+from backuppc_clone.DataLayer import DataLayer
 
 
 class Config:
@@ -34,32 +32,32 @@ class Config:
         The path to the configuration file of the clone.
         """
 
-        self.__stats_filename: Optional[str] = None
+        self.__stats_filename: str | None = None
         """
         The path to the stats file.
         """
 
-        self.__top_dir_clone: Optional[str] = None
+        self.__top_dir_clone: str | None = None
         """
         The top dir of the clone.
         """
 
-        self.__tmp_dir_clone: Optional[str] = None
+        self.__tmp_dir_clone: str | None = None
         """
         The temp dir of the clone.
         """
 
-        self.__top_dir_original: Optional[str] = None
+        self.__top_dir_original: str | None = None
         """
         The top dir of the original.
         """
 
-        self.__pc_dir_clone: Optional[str] = None
+        self.__pc_dir_clone: str | None = None
         """
         The pc dir of the clone.
         """
 
-        self.__pc_dir_original: Optional[str] = None
+        self.__pc_dir_original: str | None = None
         """
         The pc dir of the original.
         """

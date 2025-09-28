@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import List, Optional
+from typing import List
 
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
@@ -10,6 +10,7 @@ class PoolScanner:
     """
     Helper class for scanning pool and backup directories.
     """
+
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self, io: BackupPcCloneStyle):
         """
@@ -27,7 +28,7 @@ class PoolScanner:
         The file count.
         """
 
-        self.__progress: Optional[ProgressBar] = None
+        self.__progress: ProgressBar | None = None
         """
         The progress bar.
         """

@@ -1,7 +1,7 @@
 import csv
 import os
 import sqlite3
-from typing import List, Dict, Optional
+from typing import Dict, List
 
 
 class DataLayer:
@@ -72,7 +72,7 @@ class DataLayer:
         @param int bck_id: The ID of the host backup.
         """
         self.backup_empty(bck_id)
-        self.execute_none('delete from BKC_BACKUP where bck_id=?', (bck_id,))
+        self.execute_none('delete from BKC_BACKUP where BCK_ID=?', (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_empty(self, bck_id: int) -> None:
@@ -81,7 +81,7 @@ class DataLayer:
 
         @param int bck_id: The ID of the host backup.
         """
-        self.execute_none('delete from BKC_BACKUP_TREE where bck_id=?', (bck_id,))
+        self.execute_none('delete from BKC_BACKUP_TREE where BCK_ID=?', (bck_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def backup_get_all(self) -> List[Dict]:
@@ -89,10 +89,10 @@ class DataLayer:
         Selects all cloned backups.
         """
         sql = """
-select hst.hst_name
-,      bck.bck_number
-from       BKC_HOST   hst
-inner join BKC_BACKUP bck  on  bck.hst_id = hst.hst_id"""
+              select HST.HST_NAME
+                   , BCK.BCK_NUMBER
+              from BKC_HOST              HST
+                   inner join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID"""
 
         return self.execute_rows(sql)
 
@@ -104,23 +104,22 @@ inner join BKC_BACKUP bck  on  bck.hst_id = hst.hst_id"""
         :rtype: dict|None
         """
         sql = """
-select bob.bob_host
-,      bob.bob_number
-,      bob.bob_end_time
-,      bob.bob_level
-,      bob.bob_type
-from            BKC_ORIGINAL_BACKUP bob
-left outer join BKC_HOST            hst  on  hst.hst_name = bob.bob_host
-left outer join BKC_BACKUP          bck  on  bck.hst_id     = hst.hst_id and
-                                             bck.bck_number = bob.bob_number
-where bck.bck_id is null 
-and   bob.bob_version like '3.%'
-and   bob.bob_type in ('full', 'incr')
-and   bob.bob_end_time is not null
-and  (bob.bob_end_time < ? or ? = -1)
-order by bob.bob_type 
-,        bob.bob_end_time desc
-limit 0, 1"""
+              select BOB.BOB_HOST
+                   , BOB.BOB_NUMBER
+                   , BOB.BOB_END_TIME
+                   , BOB.BOB_LEVEL
+                   , BOB.BOB_TYPE
+              from BKC_ORIGINAL_BACKUP        BOB
+                   left outer join BKC_HOST   HST on HST.HST_NAME = BOB.BOB_HOST
+                   left outer join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID and
+                                                     BCK.BCK_NUMBER = BOB.BOB_NUMBER
+              where BCK.BCK_ID is null
+                and BOB.BOB_VERSION like '3.%'
+                and BOB.BOB_TYPE in ('full', 'incr')
+                and BOB.BOB_END_TIME is not null
+                and (BOB.BOB_END_TIME < ? or ? = -1)
+              order by BOB.BOB_TYPE
+                     , BOB.BOB_END_TIME desc limit 0, 1"""
 
         return self.execute_row0(sql, (end_time, end_time))
 
@@ -132,15 +131,15 @@ limit 0, 1"""
         :rtype: list[dict]
         """
         sql = """
-select hst.hst_name
-,      bck.bck_number
-from            BKC_HOST            hst
-inner join      BKC_BACKUP          bck  on  bck.hst_id = hst.hst_id
-left outer join BKC_ORIGINAL_BACKUP bob  on  bob.bob_host   = hst.hst_name and
-                                             bob.bob_number = bck.bck_number
-where bob.rowid is null
-order by hst.hst_name
-,        bck.bck_number"""
+              select HST.HST_NAME
+                   , BCK.BCK_NUMBER
+              from BKC_HOST                            HST
+                   inner join      BKC_BACKUP          BCK on BCK.HST_ID = HST.HST_ID
+                   left outer join BKC_ORIGINAL_BACKUP BOB on BOB.BOB_HOST = HST.HST_NAME and
+                                                              BOB.BOB_NUMBER = BCK.BCK_NUMBER
+              where BOB.ROWID is null
+              order by HST.HST_NAME
+                     , BCK.BCK_NUMBER"""
 
         return self.execute_rows(sql)
 
@@ -152,13 +151,13 @@ order by hst.hst_name
         :rtype: list[dict]
         """
         sql = """
-select hst.hst_name
-,      bck.bck_number
-from            BKC_HOST   hst
-inner join      BKC_BACKUP bck  on  bck.hst_id = hst.hst_id
-where ifnull(bck.bck_in_progress, 1) = 1
-order by hst.hst_name
-,        bck.bck_number"""
+              select HST.HST_NAME
+                   , BCK.BCK_NUMBER
+              from BKC_HOST              HST
+                   inner join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID
+              where IFNULL(BCK.BCK_IN_PROGRESS, 1) = 1
+              order by HST.HST_NAME
+                     , BCK.BCK_NUMBER"""
 
         return self.execute_rows(sql)
 
@@ -174,9 +173,9 @@ order by hst.hst_name
             bck_in_progress = 1
 
         sql = """
-update BKC_BACKUP
-set    bck_in_progress = ? 
-where  bck_id = ?"""
+              update BKC_BACKUP
+              set BCK_IN_PROGRESS = ?
+              where BCK_ID = ?"""
 
         self.execute_none(sql, (bck_in_progress, bck_id))
 
@@ -190,10 +189,10 @@ where  bck_id = ?"""
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select count(bbt_inode_original)                                   as '#files'
-,      sum(case when bbt_inode_original is null then 1 else 0 end) as '#dirs'
-from BKC_BACKUP_TREE
-where bck_id = ?"""
+              select count(BBT_INODE_ORIGINAL) as '#files'
+, sum(case when BBT_INODE_ORIGINAL is null then 1 else 0 end) as '#dirs'
+              from BKC_BACKUP_TREE
+              where BCK_ID = ?"""
 
         return self.execute_row1(sql, (bck_id,))
 
@@ -209,22 +208,22 @@ where bck_id = ?"""
         self.execute_none('delete from TMP_CLONE_POOL_REQUIRED')
 
         sql = """
-insert into TMP_CLONE_POOL_REQUIRED( bpl_inode_original
-,                                    bpl_dir
-,                                    bpl_name )
-select distinct bpl_inode_original
-,               bpl_dir
-,               bpl_name
-from       BKC_BACKUP_TREE bbt
-inner join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
-where bbt.bck_id = ?
-and   bpl.bpl_inode_clone is null"""
+              insert into TMP_CLONE_POOL_REQUIRED( BPL_INODE_ORIGINAL
+                                                 , BPL_DIR
+                                                 , BPL_NAME)
+              select distinct BPL_INODE_ORIGINAL
+                            , BPL_DIR
+                            , BPL_NAME
+              from BKC_BACKUP_TREE     BBT
+                   inner join BKC_POOL BPL on BPL.BPL_INODE_ORIGINAL = BBT.BBT_INODE_ORIGINAL
+              where BBT.BCK_ID = ?
+                and BPL.BPL_INODE_CLONE is null"""
 
         self.execute_none(sql, (bck_id,))
 
         sql = """
-select count(distinct bpl_inode_original)
-from   TMP_CLONE_POOL_REQUIRED"""
+              select count(distinct BPL_INODE_ORIGINAL)
+              from TMP_CLONE_POOL_REQUIRED"""
 
         return self.execute_singleton1(sql)
 
@@ -240,31 +239,30 @@ from   TMP_CLONE_POOL_REQUIRED"""
         self.execute_none('delete from TMP_BACKUP_TREE')
 
         sql = """
-insert into TMP_BACKUP_TREE( bpl_inode_original
-,                            bpl_dir
-,                            bpl_name   
+              insert into TMP_BACKUP_TREE( BPL_INODE_ORIGINAL
+                                         , BPL_DIR
+                                         , BPL_NAME
+                                         , BBT_SEQ
+                                         , BBT_INODE_ORIGINAL
+                                         , BBT_DIR
+                                         , BBT_NAME)
+              select BPL.BPL_INODE_ORIGINAL
+                   , BPL.BPL_DIR
+                   , BPL.BPL_NAME
 
-,                            bbt_seq                             
-,                            bbt_inode_original
-,                            bbt_dir
-,                            bbt_name )
-select bpl.bpl_inode_original
-,      bpl.bpl_dir
-,      bpl.bpl_name
-
-,      bbt.bbt_seq
-,      bbt.bbt_inode_original
-,      bbt.bbt_dir
-,      bbt.bbt_name
-from            BKC_BACKUP_TREE bbt
-left outer join BKC_POOL        bpl  on bpl.bpl_inode_original = bbt.bbt_inode_original
-where bbt.bck_id = ?"""
+                   , BBT.BBT_SEQ
+                   , BBT.BBT_INODE_ORIGINAL
+                   , BBT.BBT_DIR
+                   , BBT.BBT_NAME
+              from BKC_BACKUP_TREE          BBT
+                   left outer join BKC_POOL BPL on BPL.BPL_INODE_ORIGINAL = BBT.BBT_INODE_ORIGINAL
+              where BBT.BCK_ID = ?"""
 
         self.execute_none(sql, (bck_id,))
 
         sql = """
-select count(*)
-from   TMP_BACKUP_TREE"""
+              select count(*)
+              from TMP_BACKUP_TREE"""
 
         return self.execute_singleton1(sql)
 
@@ -277,12 +275,12 @@ from   TMP_BACKUP_TREE"""
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select bpl_inode_original
-,      bpl_dir
-,      bpl_name
-from   TMP_CLONE_POOL_REQUIRED
-order by bpl_dir
-,        bpl_name"""
+              select BPL_INODE_ORIGINAL
+                   , BPL_DIR
+                   , BPL_NAME
+              from TMP_CLONE_POOL_REQUIRED
+              order by BPL_DIR
+                     , BPL_NAME"""
 
         cursor = self.__connection.cursor()
         cursor.execute(sql)
@@ -301,17 +299,17 @@ order by bpl_dir
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select bpl_inode_original
-,      bpl_dir
-,      bpl_name
+              select BPL_INODE_ORIGINAL
+                   , BPL_DIR
+                   , BPL_NAME
 
-,      bbt_inode_original
-,      bbt_dir
-,      bbt_name
-from   TMP_BACKUP_TREE
-order by bbt_seq
-,        bpl_dir
-,        bpl_name"""
+                   , BBT_INODE_ORIGINAL
+                   , BBT_DIR
+                   , BBT_NAME
+              from TMP_BACKUP_TREE
+              order by BBT_SEQ
+                     , BPL_DIR
+                     , BPL_NAME"""
 
         cursor = self.__connection.cursor()
         cursor.execute(sql)
@@ -365,7 +363,7 @@ order by bbt_seq
         return row_count
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute_row0(self, sql: str, *params) -> Optional[Dict]:
+    def execute_row0(self, sql: str, *params) -> Dict | None:
         """
         Executes a SQL statement that selects 0 or 1 row.
 
@@ -480,9 +478,9 @@ order by bbt_seq
 
         :rtype: int
         """
-        hst_id = self.execute_singleton0('select hst_id from BKC_HOST where hst_name = ?', (hostname,))
+        hst_id = self.execute_singleton0('select HST_ID from BKC_HOST where HST_NAME = ?', (hostname,))
         if hst_id is None:
-            self.execute_none('insert into BKC_HOST(hst_name) values(?)', (hostname,))
+            self.execute_none('insert into BKC_HOST(HST_NAME) values(?)', (hostname,))
             hst_id = self.__last_rowid
 
         return hst_id
@@ -498,14 +496,14 @@ order by bbt_seq
         :rtype: int
         """
         sql = """
-select bck_id 
-from   BKC_BACKUP 
-where  hst_id     = ?
-and    bck_number = ?"""
+              select BCK_ID
+              from BKC_BACKUP
+              where HST_ID = ?
+                and BCK_NUMBER = ?"""
 
         bck_id = self.execute_singleton0(sql, (hst_id, bck_number))
         if bck_id is None:
-            self.execute_none('insert into BKC_BACKUP(hst_id, bck_number) values(?, ?)', (hst_id, bck_number))
+            self.execute_none('insert into BKC_BACKUP(HST_ID, BCK_NUMBER) values(?, ?)', (hst_id, bck_number))
             bck_id = self.__last_rowid
 
         return bck_id
@@ -518,16 +516,16 @@ and    bck_number = ?"""
         @param str host: The name of the host.
         """
         sql = """
-select bck_id
-from       BKC_HOST   hst
-inner join BKC_BACKUP bck  on  bck.hst_id = hst.hst_id
-where hst.hst_name = ?"""
+              select BCK_ID
+              from BKC_HOST              HST
+                   inner join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID
+              where HST.HST_NAME = ?"""
 
         rows = self.execute_rows(sql, (host,))
         for row in rows:
             self.backup_delete(row['bck_id'])
 
-        self.execute_none('delete from BKC_HOST where hst_name=?', (host,))
+        self.execute_none('delete from BKC_HOST where HST_NAME=?', (host,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def host_get_obsolete(self) -> List[Dict]:
@@ -537,11 +535,11 @@ where hst.hst_name = ?"""
         :rtype: list[dict]
         """
         sql = """
-select hst.hst_name
-from            BKC_HOST            hst
-left outer join BKC_ORIGINAL_BACKUP bob  on  bob.bob_host = hst.hst_name
-where bob.rowid is null 
-order by hst.hst_name"""
+              select HST.HST_NAME
+              from BKC_HOST                            HST
+                   left outer join BKC_ORIGINAL_BACKUP BOB on BOB.BOB_HOST = HST.HST_NAME
+              where BOB.ROWID is null
+              order by HST.HST_NAME"""
 
         return self.execute_rows(sql)
 
@@ -611,18 +609,18 @@ order by hst.hst_name"""
         Inserts an original host backup.
         """
         sql = """
-insert into BKC_ORIGINAL_BACKUP( bob_host
-,                                bob_number
-,                                bob_end_time
-,                                bob_version
-,                                bob_level
-,                                bob_type )
-values( ?
-,       ?
-,       ?
-,       ?
-,       ?
-,       ? )"""
+              insert into BKC_ORIGINAL_BACKUP( BOB_HOST
+                                             , BOB_NUMBER
+                                             , BOB_END_TIME
+                                             , BOB_VERSION
+                                             , BOB_LEVEL
+                                             , BOB_TYPE)
+              values ( ?
+                     , ?
+                     , ?
+                     , ?
+                     , ?
+                     , ?)"""
         self.execute_none(sql, (bob_host, bob_number, bob_end_time, bob_version, bob_level, bob_type))
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -633,9 +631,9 @@ values( ?
         :rtype: dict
         """
         sql = """
-select count(distinct bob_host) as '#hosts'
-,      count(*)                 as '#backups'
-from   BKC_ORIGINAL_BACKUP"""
+              select count(distinct BOB_HOST) as '#hosts'
+, count(*) as '#backups'
+              from BKC_ORIGINAL_BACKUP"""
 
         return self.execute_row1(sql)
 
@@ -654,31 +652,26 @@ from   BKC_ORIGINAL_BACKUP"""
         :rtype: dict
         """
         sql = """
-select sum(case when cnt1=1 then 1 else 0 end)            as n_backups
-,      sum(case when cnt1=1 and cnt2=1 then 1 else 0 end) as n_cloned_backups
-,      sum(case when cnt1=1 and cnt2=0 then 1 else 0 end) as n_not_cloned_backups
-,      sum(case when cnt1=0 and cnt2=1 then 1 else 0 end) as n_obsolete_cloned_backups
-from
-(
-  select sum(case when src=1 then 1 else 0 end) as cnt1
-  ,      sum(case when src=2 then 1 else 0 end) as cnt2
-  from (
-         select bob_host
-         ,      bob_number
-         ,      1 as src
-         from BKC_ORIGINAL_BACKUP
+              select sum(case when CNT1 = 1 then 1 else 0 end)              as N_BACKUPS
+                   , sum(case when CNT1 = 1 and CNT2 = 1 then 1 else 0 end) as N_CLONED_BACKUPS
+                   , sum(case when CNT1 = 1 and CNT2 = 0 then 1 else 0 end) as N_NOT_CLONED_BACKUPS
+                   , sum(case when CNT1 = 0 and CNT2 = 1 then 1 else 0 end) as N_OBSOLETE_CLONED_BACKUPS
+              from (select sum(case when SRC = 1 then 1 else 0 end) as CNT1
+                         , sum(case when SRC = 2 then 1 else 0 end) as CNT2
+                    from (select BOB_HOST
+                               , BOB_NUMBER
+                               , 1 as SRC
+                          from BKC_ORIGINAL_BACKUP
 
-         union all
+                          union all
 
-         select hst.hst_name
-         ,      bck.bck_number
-         ,      2  as src
-         from BKC_BACKUP    bck
-         join BKC_HOST hst on hst.hst_id = bck.hst_id
-       ) t
-  group by bob_host
-  ,        bob_number
-)"""
+                          select HST.HST_NAME
+                               , BCK.BCK_NUMBER
+                               , 2 as SRC
+                          from BKC_BACKUP    BCK
+                               join BKC_HOST HST on HST.HST_ID = BCK.HST_ID) T
+                    group by BOB_HOST
+                           , BOB_NUMBER)"""
 
         return self.execute_row1(sql)
 
@@ -691,7 +684,7 @@ from
 
         :rtype: *
         """
-        return self.execute_singleton1('select prm_value from BKC_PARAMETER where prm_code = ?', (prm_code,))
+        return self.execute_singleton1('select PRM_VALUE from BKC_PARAMETER where PRM_CODE = ?', (prm_code,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def parameter_update_value(self, prm_code: str, prm_value: str) -> None:
@@ -701,7 +694,7 @@ from
         @param str prm_code: The code of the parameter.
         @param str prm_value: The value of the parameter.
         """
-        self.execute_none('update BKC_PARAMETER set prm_value = ? where prm_code = ?', (prm_value, prm_code))
+        self.execute_none('update BKC_PARAMETER set PRM_VALUE = ? where PRM_CODE = ?', (prm_value, prm_code))
 
     # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self) -> int:
@@ -711,19 +704,20 @@ from
         self.execute_none('delete from TMP_ID')
 
         sql = """
-insert into TMP_ID(tmp_id)
-select bpl.bpl_id
-from            BKC_POOL bpl
-left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
-                                  imp.imp_dir   = bpl.bpl_dir            and
-                                  imp.imp_name  = bpl.bpl_name
-where bpl.bpl_inode_original is not null 
-and   imp.rowid is null"""
+              insert into TMP_ID(TMP_ID)
+              select BPL.BPL_ID
+              from BKC_POOL                 BPL
+                   left outer join IMP_POOL IMP on IMP.IMP_INODE = BPL.BPL_INODE_ORIGINAL and
+                                                   IMP.IMP_DIR = BPL.BPL_DIR and
+                                                   IMP.IMP_NAME = BPL.BPL_NAME
+              where BPL.BPL_INODE_ORIGINAL is not null
+                and IMP.ROWID is null"""
         self.execute_none(sql)
 
         sql = """
-delete from BKC_POOL
-where bpl_id in (select tmp_id from TMP_ID)"""
+              delete
+              from BKC_POOL
+              where BPL_ID in (select TMP_ID from TMP_ID)"""
         self.execute_none(sql)
 
         return self.execute_singleton1('select count(*) from TMP_ID')
@@ -735,7 +729,7 @@ where bpl_id in (select tmp_id from TMP_ID)"""
 
         @param int bpl_id: The rowid.
         """
-        self.execute_none('delete from BKC_POOL where bpl_id=?', (bpl_id,))
+        self.execute_none('delete from BKC_POOL where BPL_ID=?', (bpl_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def pool_insert_new_original(self) -> None:
@@ -745,42 +739,39 @@ where bpl_id in (select tmp_id from TMP_ID)"""
         self.execute_none('delete from TMP_POOL')
 
         sql = """
-insert into TMP_POOL( tmp_inode
-,                     tmp_dir
-,                     tmp_name )
-select tmp_inode
-,      tmp_dir
-,      tmp_name
-from
-(
-  select bpl_inode_original as tmp_inode
-  ,      bpl_dir            as tmp_dir
-  ,      bpl_name           as tmp_name
-  ,      1                  as src
-  from   BKC_POOL
+              insert into TMP_POOL( TMP_INODE
+                                  , TMP_DIR
+                                  , TMP_NAME)
+              select TMP_INODE
+                   , TMP_DIR
+                   , TMP_NAME
+              from (select BPL_INODE_ORIGINAL as TMP_INODE
+                         , BPL_DIR            as TMP_DIR
+                         , BPL_NAME           as TMP_NAME
+                         , 1                  as SRC
+                    from BKC_POOL
 
-  union all
+                    union all
 
-  select imp_inode
-  ,      imp_dir
-  ,      imp_name
-  ,      2                  as src
-  from   IMP_POOL
-) t
-group by tmp_inode
-,        tmp_dir
-,        tmp_name
-having sum(case when src=1 then 1 else 0 end) < sum(case when src=2 then 1 else 0 end)"""
+                    select IMP_INODE
+                         , IMP_DIR
+                         , IMP_NAME
+                         , 2 as SRC
+                    from IMP_POOL) T
+              group by TMP_INODE
+                     , TMP_DIR
+                     , TMP_NAME
+              having sum(case when SRC = 1 then 1 else 0 end) < sum(case when SRC = 2 then 1 else 0 end)"""
         self.execute_none(sql)
 
         sql = """
-insert into BKC_POOL( bpl_inode_original
-,                     bpl_dir
-,                     bpl_name )
-select tmp_inode
-,      tmp_dir
-,      tmp_name
-from   TMP_POOL"""
+              insert into BKC_POOL( BPL_INODE_ORIGINAL
+                                  , BPL_DIR
+                                  , BPL_NAME)
+              select TMP_INODE
+                   , TMP_DIR
+                   , TMP_NAME
+              from TMP_POOL"""
 
         self.execute_none(sql)
 
@@ -792,24 +783,24 @@ from   TMP_POOL"""
         self.execute_none('delete from TMP_CLONE_POOL_OBSOLETE')
 
         sql = """
-insert into TMP_CLONE_POOL_OBSOLETE( bpl_id
-,                                    bpl_dir
-,                                    bpl_name )
-select bpl.bpl_id
-,      bpl.bpl_dir
-,      bpl.bpl_name
-from            BKC_POOL bpl
-left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_original and
-                                  imp.imp_dir   = bpl.bpl_dir            and
-                                  imp.imp_name  = bpl.bpl_name
-where  bpl.bpl_inode_clone is not null
-and    imp.rowid is null"""
+              insert into TMP_CLONE_POOL_OBSOLETE( BPL_ID
+                                                 , BPL_DIR
+                                                 , BPL_NAME)
+              select BPL.BPL_ID
+                   , BPL.BPL_DIR
+                   , BPL.BPL_NAME
+              from BKC_POOL                 BPL
+                   left outer join IMP_POOL IMP on IMP.IMP_INODE = BPL.BPL_INODE_ORIGINAL and
+                                                   IMP.IMP_DIR = BPL.BPL_DIR and
+                                                   IMP.IMP_NAME = BPL.BPL_NAME
+              where BPL.BPL_INODE_CLONE is not null
+                and IMP.ROWID is null"""
 
         self.execute_none(sql)
 
         sql = """
-select count(*)
-from   TMP_CLONE_POOL_OBSOLETE"""
+              select count(*)
+              from TMP_CLONE_POOL_OBSOLETE"""
 
         return self.execute_singleton1(sql)
 
@@ -821,20 +812,21 @@ from   TMP_CLONE_POOL_OBSOLETE"""
         self.execute_none('delete from TMP_ID')
 
         sql = """
-insert into TMP_ID( tmp_id )
-select bpl.bpl_id
-from            BKC_POOL bpl
-left outer join IMP_POOL imp  on  imp.imp_inode = bpl.bpl_inode_clone and
-                                  imp.imp_dir   = bpl.bpl_dir         and
-                                  imp.imp_name  = bpl.bpl_name
-where  bpl.bpl_inode_clone is not null
-and    imp.rowid is null"""
+              insert into TMP_ID(TMP_ID)
+              select BPL.BPL_ID
+              from BKC_POOL                 BPL
+                   left outer join IMP_POOL IMP on IMP.IMP_INODE = BPL.BPL_INODE_CLONE and
+                                                   IMP.IMP_DIR = BPL.BPL_DIR and
+                                                   IMP.IMP_NAME = BPL.BPL_NAME
+              where BPL.BPL_INODE_CLONE is not null
+                and IMP.ROWID is null"""
 
         self.execute_none(sql)
 
         sql = """
-delete from BKC_POOL
-where bpl_id in (select tmp_id from TMP_ID)"""
+              delete
+              from BKC_POOL
+              where BPL_ID in (select TMP_ID from TMP_ID)"""
 
         return self.execute_none(sql)
 
@@ -854,11 +846,11 @@ where bpl_id in (select tmp_id from TMP_ID)"""
         @param int pbl_mtime: The mtime of the pool file.
         """
         sql = """
-update BKC_POOL
-set  bpl_inode_clone = ?
-,    bpl_size        = ?
-,    bpl_mtime       = ?
-where bpl_inode_original = ?"""
+              update BKC_POOL
+              set BPL_INODE_CLONE = ?
+                , BPL_SIZE        = ?
+                , BPL_MTIME       = ?
+              where BPL_INODE_ORIGINAL = ?"""
 
         self.execute_none(sql, (bpl_inode_clone, pbl_size, pbl_mtime, bpl_inode_original))
 
@@ -870,10 +862,10 @@ where bpl_inode_original = ?"""
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-select bpl_id
-,      bpl_dir
-,      bpl_name
-from   TMP_CLONE_POOL_OBSOLETE"""
+              select BPL_ID
+                   , BPL_DIR
+                   , BPL_NAME
+              from TMP_CLONE_POOL_OBSOLETE"""
 
         cursor = self.__connection.cursor()
         cursor.execute(sql)

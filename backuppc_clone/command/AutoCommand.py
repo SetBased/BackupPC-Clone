@@ -1,13 +1,13 @@
-import os
 import json
+import os
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict
 
 from cleo import Output
 
+from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
-from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.helper.AuxiliaryFiles import AuxiliaryFiles
 from backuppc_clone.helper.BackupClone import BackupClone
 from backuppc_clone.helper.BackupDelete import BackupDelete
@@ -128,7 +128,7 @@ class AutoCommand(BaseCommand):
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __get_next_clone_target() -> Optional[Dict]:
+    def __get_next_clone_target() -> Dict | None:
         """
         Returns the metadata of the host backup that needs to be cloned.
 
