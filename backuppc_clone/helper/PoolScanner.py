@@ -50,9 +50,8 @@ class PoolScanner:
 
         @param dir_name: The name of the directory.
         """
-        if os.path.isdir(os.path.join(dir_name, '0')) and \
-                os.path.isdir(os.path.join(dir_name, 'f')):
-            return 1 + 16 + 16 * 16 + 16 * 16 * 16
+        if dir_name.joinpath('00').is_dir() and dir_name.joinpath('fe').is_dir():
+            return 1 + 128 + 128 * 128
 
         return 1
 
