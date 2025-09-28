@@ -7,10 +7,10 @@ from backuppc_clone.command.BaseCommand import BaseCommand
 
 class InitOriginalCommand(BaseCommand):
     """
-    Creates the configuration file for the original
-
-    init-original
+    Creates the configuration file for the original.
     """
+    name = 'init-original'
+    description = 'Creates the configuration file for the original.'
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
@@ -73,7 +73,7 @@ class InitOriginalCommand(BaseCommand):
             create = True
 
         if create:
-            self._io.writeln('Writing <fso>{}</fso>'.format(config_filename_original))
+            self._io.write_line('Writing <fso>{}</fso>'.format(config_filename_original))
 
             config = configparser.ConfigParser()
             config['BackupPC Clone'] = {'role': 'original',

@@ -1,3 +1,5 @@
+from cleo.helpers import argument
+
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.helper.BackupScanner import BackupScanner
@@ -5,13 +7,13 @@ from backuppc_clone.helper.BackupScanner import BackupScanner
 
 class BackupPreScanCommand(BaseCommand):
     """
-    Pre-scans a host backup
-
-    backup-pre-scan
-        {clone.cfg : The configuration file of the clone}
-        {host      : The name of the host}
-        {backup#   : The backup number}
+    Pre-scans a host backup.
     """
+    name = 'backup-pre-scan'
+    description = 'Pre-scans a host backup.'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.'),
+                 argument(name='host', description='The name of the host.'),
+                 argument(name='backup#', description='The backup number.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def _handle_command(self) -> None:

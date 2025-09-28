@@ -2,7 +2,7 @@ import os
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class HostDelete:
@@ -11,14 +11,14 @@ class HostDelete:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -33,7 +33,7 @@ class HostDelete:
         """
         Removes the host from the clone file system.
         """
-        self.__io.writeln(' Removing files')
+        self.__io.write_line(' Removing files')
 
         host_dir_clone = Config.instance.host_dir_clone(self.__host)
         if os.path.isdir(host_dir_clone):
@@ -44,7 +44,7 @@ class HostDelete:
         """
         Removes the metadata from the database.
         """
-        self.__io.writeln(' Removing metadata')
+        self.__io.write_line(' Removing metadata')
 
         DataLayer.instance.host_delete(self.__host)
         DataLayer.instance.commit()

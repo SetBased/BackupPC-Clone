@@ -1,7 +1,7 @@
 import os
 from typing import List, Dict
 
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class AuxiliaryFileScanner:
@@ -10,14 +10,14 @@ class AuxiliaryFileScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -29,7 +29,7 @@ class AuxiliaryFileScanner:
 
         @param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
         """
-        self.__io.writeln(' Scanning <fso>{}</fso>'.format(pc_dir))
+        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir))
 
         hosts = []
         files = []

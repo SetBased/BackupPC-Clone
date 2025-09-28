@@ -9,9 +9,11 @@ from backuppc_clone.exception.BackupPcCloneException import BackupPcCloneExcepti
 class InitCloneCommand(BaseCommand):
     """
     Creates the configuration file for a clone
-
-    init-clone
+.
     """
+    name = 'init-clone'
+    description = 'Creates the configuration file for a clone.'
+
     parameters = [('SCHEMA_VERSION', 'schema version', '1'),
                   ('LAST_POOL_SYNC', 'timestamp of last original pool scan', '-1')]
 
@@ -24,7 +26,7 @@ class InitCloneCommand(BaseCommand):
         """
         os.chmod(top_dir_clone, 0o770)
 
-        self._io.writeln(' Creating directories')
+        self._io.write_line(' Creating directories')
 
         dir_names = ['cpool', 'pool', 'etc', 'pc', 'tmp', 'trash']
         for dir_name in dir_names:
@@ -48,15 +50,15 @@ class InitCloneCommand(BaseCommand):
         with open(sql_path) as file:
             sql = file.read()
 
-        self._io.section('Creating metadata database')
+        self._io.title('Creating metadata database')
 
-        self._io.writeln(' Initializing <fso>{}</fso>'.format(db_path))
+        self._io.write_line(' Initializing <fso>{}</fso>'.format(db_path))
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.executescript(sql)
 
         for parameter in self.parameters:
-            cursor.execute('insert into BKC_PARAMETER(prm_code, prm_description, prm_value) values(?, ?, ?)',
+            cursor.execute('insert into BKC_PARAMETER(PRM_CODE, PRM_DESCRIPTION, PRM_VALUE) values(?, ?, ?)',
                            parameter)
 
         connection.commit()
@@ -76,7 +78,7 @@ class InitCloneCommand(BaseCommand):
         @param str name_clone: The name of the clone.
         @param str name_master: The name of the master.
         """
-        self._io.writeln(' Writing <fso>{}</fso>'.format(config_filename_clone))
+        self._io.write_line(' Writing <fso>{}</fso>'.format(config_filename_clone))
 
         config = configparser.ConfigParser()
         config['BackupPC Clone'] = {'role': 'clone',
@@ -100,14 +102,14 @@ class InitCloneCommand(BaseCommand):
         """
         self._io.title('Initializing Clone')
 
-        self._io.section('Creating configuration file')
+        self._io.sub_title('Creating configuration file')
 
         top_dir_original = self.ask('top dir of the original', '/var/lib/BackupPC')
         config_filename_original = os.path.join(top_dir_original, 'original.cfg')
 
         if not os.path.isfile(config_filename_original):
             raise BackupPcCloneException(
-                'Configuration file {} of original not found'.format(config_filename_original))
+                    'Configuration file {} of original not found'.format(config_filename_original))
 
         config_original = configparser.ConfigParser()
         config_original.read(config_filename_original)
@@ -133,7 +135,7 @@ class InitCloneCommand(BaseCommand):
 
             self.__create_dirs(top_dir_clone)
 
-            self._io.writeln('')
+            self._io.write_line('')
 
             self.__create_database(os.path.join(top_dir_clone, 'clone.db'))
         else:

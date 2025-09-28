@@ -2,12 +2,13 @@ import abc
 import configparser
 import os
 
-from cleo import Command
+from cleo.commands.command import Command
+from cleo.io.io import IO
 
+from backuppc_clone.CloneIO import CloneIO
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.exception.BackupPcCloneException import BackupPcCloneException
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
 
 
 class BaseCommand(Command, metaclass=abc.ABCMeta):
@@ -16,13 +17,13 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, name: str | None = None) -> None:
+    def __init__(self):
         """
         Object constructor.
         """
-        Command.__init__(self, name)
+        super().__init__()
 
-        self._io: BackupPcCloneStyle | None = None
+        self._io: CloneIO | None = None
         """
         The output style.
         """
@@ -42,10 +43,10 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         Validates the configuration files.
         """
-        if self.input.has_argument('clone.cfg'):
+        if self._io.input.has_argument('clone.cfg'):
             self._io.log_very_verbose('Validating configuration')
 
-            config_filename_clone = self.input.get_argument('clone.cfg')
+            config_filename_clone = self.argument('clone.cfg')
             config_clone = configparser.ConfigParser()
             config_clone.read(config_filename_clone)
 
@@ -70,7 +71,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         if default is not None:
             question = question + ' [' + default + ']'
 
-        answer = self._io.ask(question, default)
+        answer = Command.ask(self, question, default)
         if answer is None:
             answer = default
 
@@ -95,12 +96,15 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def handle(self) -> int:
+    def execute(self, io: IO) -> int:
         """
-        Executes the command.
+        Executes this command.
+
+        :param io: The input/output object.
         """
+        self._io = CloneIO(io.input, io.output, io.error_output)
         try:
-            self._io = BackupPcCloneStyle(self.input, self.output)
+            self._io = CloneIO(io.input, io.output, io.error_output)
 
             self.__validate_user()
             self.__validate_config()
@@ -109,7 +113,7 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
             return self._handle_command()
 
         except BackupPcCloneException as error:
-            self._io.error(str(error))
+            self._io.write_error_line(str(error))
             return -1
 
 # ----------------------------------------------------------------------------------------------------------------------

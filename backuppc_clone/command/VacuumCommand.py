@@ -1,3 +1,5 @@
+from cleo.helpers import argument
+
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 
@@ -5,10 +7,10 @@ from backuppc_clone.command.BaseCommand import BaseCommand
 class VacuumCommand(BaseCommand):
     """
     Rebuilds the SQLite database freeing disk space.
-
-    vacuum
-        {clone.cfg : The configuration file of the clone}
     """
+    name = 'vacuum'
+    description = 'Rebuilds the SQLite database freeing disk space.'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def _handle_command(self) -> None:

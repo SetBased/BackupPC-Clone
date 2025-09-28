@@ -3,18 +3,19 @@ import os
 from pathlib import Path
 from typing import Dict
 
-from cleo import Command
+from cleo.commands.command import Command
+from cleo.helpers import argument
 
 from backuppc_clone.Config import Config
 
 
 class NagiosCommand(Command):
     """
-    Performance a status check for Nagios
-
-    nagios
-        {clone.cfg : The configuration file of the clone}
+    Performs a status check for Nagios.
     """
+    name = 'nagios'
+    description = 'Performs a status check for Nagios.'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def __print_status(self, status: str, message: str, perf_data: str | None = None) -> None:
@@ -46,7 +47,7 @@ class NagiosCommand(Command):
         """
         Executes the command.
         """
-        config_filename_clone = self.input.get_argument('clone.cfg')
+        config_filename_clone = self.argument('clone.cfg')
         if os.path.exists(config_filename_clone):
             config = Config(config_filename_clone)
             text = Path(config.stats_file).read_text()

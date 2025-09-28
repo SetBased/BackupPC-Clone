@@ -1,19 +1,21 @@
 import os
 import time
 
-from cleo import Command, Input, Output
+from cleo.commands.command import Command
+from cleo.helpers import argument, option
+from cleo.io.io import IO
 
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class TraversePerformanceTestCommand(Command):
     """
-    Traversing recursively a directory performance test
-
-    traverse-performance-test
-        {--stat : Get status of each file}
-        {dir    : The start directory}
+    Traversing recursively a directory performance test.
     """
+    name = 'traverse-performance-test'
+    description = 'Traversing recursively a directory performance test.'
+    arguments = [argument(name='dir', description='The start directory.')]
+    options = [option(long_name='stat', description='Get status of each file.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self):
@@ -27,7 +29,7 @@ class TraversePerformanceTestCommand(Command):
         If True stat must be called for each file.
         """
 
-        self._io: BackupPcCloneStyle | None = None
+        self._io: CloneIO | None = None
         """
         The output style.
         """
@@ -76,32 +78,28 @@ class TraversePerformanceTestCommand(Command):
 
         @param float end_time: The timestamp of the end of the performance test.
         """
-        self._io.writeln('')
-        self._io.writeln('number of directories: {}'.format(self.__dir_count))
-        self._io.writeln('number of files      : {}'.format(self.__file_count))
-        self._io.writeln('get status           : {}'.format('yes' if self.__stat else 'no'))
-        self._io.writeln('duration             : {0:.1f}s'.format(end_time - self.__start_time))
+        self._io.write_line('')
+        self._io.write_line('number of directories: {}'.format(self.__dir_count))
+        self._io.write_line('number of files      : {}'.format(self.__file_count))
+        self._io.write_line('get status           : {}'.format('yes' if self.__stat else 'no'))
+        self._io.write_line('duration             : {0:.1f}s'.format(end_time - self.__start_time))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def execute(self, input_object: Input, output_object: Output) -> None:
+    def execute(self, io: IO) -> int:
         """
-        Executes the command.
+        Executes this command.
 
-        @param Input input_object: The input.
-        @param Output output_object: The output.
+        :param io: The input/output object.
         """
-        self.input = input_object
-        self.output = output_object
+        self._io = CloneIO(io.input, io.output, io.error_output)
 
-        self.handle()
+        return self.handle()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def handle(self) -> None:
+    def handle(self) -> int:
         """
         Executes the command.
         """
-        self._io = BackupPcCloneStyle(self.input, self.output)
-
         self.__stat = self.option('stat')
         self.__dir_count = 0
         self.__file_count = 0
@@ -109,8 +107,10 @@ class TraversePerformanceTestCommand(Command):
 
         dir_name = self.argument('dir')
 
-        self._io.writeln('Traversing <fso>{}</fso>'.format(dir_name))
+        self._io.write_line('Traversing <fso>{}</fso>'.format(dir_name))
         self.__traverse(dir_name)
         self.__report(time.time())
+
+        return 0
 
 # ----------------------------------------------------------------------------------------------------------------------

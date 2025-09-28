@@ -5,7 +5,7 @@ import shutil
 from backuppc_clone.Config import Config
 from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
 from backuppc_clone.ProgressBar import ProgressBar
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class BackupScanner:
@@ -14,14 +14,14 @@ class BackupScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -115,8 +115,8 @@ class BackupScanner:
 
         with open(csv_filename, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
-            self.__io.writeln('')
+            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
             self.progress.finish()
 
@@ -142,14 +142,14 @@ class BackupScanner:
 
         with open(csv_filename1, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.writeln(' Scanning <fso>{}</fso>'.format(backup_dir))
-            self.__io.writeln('')
+            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
             self.progress.finish()
 
         shutil.move(csv_filename1, csv_filename2)
-        self.__io.writeln('')
-        self.__io.writeln(' Wrote <fso>{}</fso>'.format(csv_filename2))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Wrote <fso>{}</fso>'.format(csv_filename2))
+        self.__io.write_line('')
 
 # ----------------------------------------------------------------------------------------------------------------------

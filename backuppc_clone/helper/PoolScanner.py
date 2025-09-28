@@ -3,7 +3,7 @@ import os
 from typing import List
 
 from backuppc_clone.ProgressBar import ProgressBar
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class PoolScanner:
@@ -12,13 +12,13 @@ class PoolScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -91,8 +91,8 @@ class PoolScanner:
         """
         dir_target = os.path.join(parent_dir, dir_name)
 
-        self.__io.writeln(' Scanning <fso>{}</fso>'.format(dir_target))
-        self.__io.writeln('')
+        self.__io.write_line(' Scanning <fso>{}</fso>'.format(dir_target))
+        self.__io.write_line('')
 
         dir_count = self.__get_number_of_pool_dirs(dir_target)
         self.__progress = ProgressBar(self.__io, dir_count)
@@ -100,7 +100,7 @@ class PoolScanner:
         self.__scan_directory_helper2(parent_dir, dir_name, csv_writer)
 
         self.__progress.finish()
-        self.__io.writeln('')
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def scan_directory(self, parent_dir: str, dir_names: List[str], csv_filename: str) -> None:

@@ -1,29 +1,28 @@
 import time
 
-from cleo import ProgressBar as CleoProgressBar, Helper, Output
-from cleo.exceptions import CleoException
+from cleo.io.io import IO
+from cleo.io.outputs.output import Output
+from cleo.ui.progress_bar import ProgressBar as CleoProgressBar
 
 
 class ProgressBar(CleoProgressBar):
     """
     Customized version of Cleo's ProgressBar.
     """
-    refresh_interval = 10
+    refresh_interval: int = 10
     """
     The refresh interval in seconds.
-
-    :type: int
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, output: Output, maximum: int = 0):
+    def __init__(self, io: IO | Output, maximum: int = 0):
         """
         Constructor.
 
         @param Output output: The output object.
         @param int maximum: Maximum steps (0 if unknown).
         """
-        CleoProgressBar.__init__(self, output, maximum)
+        CleoProgressBar.__init__(self, io, maximum)
 
         self.__last_display: int = -1
         """
@@ -49,24 +48,7 @@ class ProgressBar(CleoProgressBar):
         self.set_format(' %current%/%max% [%bar%] %percent:3s%% %elapsed%')
 
         CleoProgressBar.finish(self)
-        self._output.writeln('')
-
-    # ------------------------------------------------------------------------------------------------------------------
-    def _formatter_remaining(self) -> str:
-        """
-        Bug fix, see https://github.com/sdispater/cleo/pull/53.
-
-        :rtype: str
-        """
-        if not self._max:
-            raise CleoException('Unable to display the remaining time if the maximum number of steps is not set.')
-
-        if not self._step:
-            remaining = 0
-        else:
-            remaining = (round((time.time() - self._start_time) / self._step * (self._max - self._step)))
-
-        return Helper.format_time(remaining)
+        self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def set_progress(self, step: int) -> None:

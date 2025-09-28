@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Dict
 
-from cleo import Output
+from cleo.helpers import argument
 
 from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.Config import Config
@@ -19,10 +19,10 @@ from backuppc_clone.helper.PoolSync import PoolSync
 class AutoCommand(BaseCommand):
     """
     Clones the original in automatic mode
-
-    auto
-        {clone.cfg : The configuration file of the clone}
     """
+    name = 'auto'
+    description = 'Clones the original in automatic mode'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def __scan_original_backups(self) -> None:
@@ -53,11 +53,11 @@ class AutoCommand(BaseCommand):
         """
         stats = DataLayer.instance.overview_get_stats()
 
-        self._io.writeln(' # backups                : {}'.format(stats['n_backups']))
-        self._io.writeln(' # cloned backups         : {}'.format(stats['n_cloned_backups']))
-        self._io.writeln(' # backups still to clone : {}'.format(stats['n_not_cloned_backups']))
-        self._io.writeln(' # obsolete cloned backups: {}'.format(stats['n_obsolete_cloned_backups']))
-        self._io.writeln('')
+        self._io.write_line(' # backups                : {}'.format(stats['n_backups']))
+        self._io.write_line(' # cloned backups         : {}'.format(stats['n_cloned_backups']))
+        self._io.write_line(' # backups still to clone : {}'.format(stats['n_not_cloned_backups']))
+        self._io.write_line(' # obsolete cloned backups: {}'.format(stats['n_obsolete_cloned_backups']))
+        self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __write_stats(self) -> None:
@@ -78,7 +78,7 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Hosts')
 
             for host in hosts:
-                self._io.section('Removing host {}'.format(host['hst_name']))
+                self._io.sub_title('Removing host {}'.format(host['hst_name']))
 
                 helper = HostDelete(self._io)
                 helper.delete_host(host['hst_name'])
@@ -86,7 +86,7 @@ class AutoCommand(BaseCommand):
                 DataLayer.instance.commit()
                 self.__write_stats()
 
-                self._io.writeln('')
+                self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __remove_obsolete_backups(self) -> None:
@@ -98,14 +98,14 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Host Backups')
 
             for backup in backups:
-                self._io.section('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+                self._io.sub_title('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
 
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
 
                 self.__write_stats()
 
-                self._io.writeln('')
+                self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __remove_partially_cloned_backups(self) -> None:
@@ -117,22 +117,20 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Partially Cloned Host Backups')
 
             for backup in backups:
-                self._io.section('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+                self._io.sub_title('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
 
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
 
                 self.__write_stats()
 
-                self._io.writeln('')
+                self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
     def __get_next_clone_target() -> Dict | None:
         """
         Returns the metadata of the host backup that needs to be cloned.
-
-        :dict|None:
         """
         backup = DataLayer.instance.backup_get_next(Config.instance.last_pool_scan)
         if not backup:
@@ -145,7 +143,7 @@ class AutoCommand(BaseCommand):
         """
         Re-syncs the pool if required for cloning a backup.
 
-        @param dict backup: The metadata of the backup.
+        @param backup: The metadata of the backup.
         """
         if Config.instance.last_pool_scan < backup['bob_end_time']:
             self._io.title('Maintaining Clone Pool and Pool Metadata')
@@ -160,7 +158,7 @@ class AutoCommand(BaseCommand):
         """
         Clones a backup.
 
-        @param dict backup: The metadata of the backup.
+        @param backup: The metadata of the backup.
         """
         self._io.title('Cloning Backup {}/{}'.format(backup['bob_host'], backup['bob_number']))
 
@@ -178,10 +176,10 @@ class AutoCommand(BaseCommand):
         @param dict backup: The metadata of the backup.
         @param FileNotFoundError error: The exception.
         """
-        if self._io.get_verbosity() >= Output.VERBOSITY_VERBOSE:
+        if self._io.is_verbose():
             self._io.warning(str(error))
 
-        self._io.block('Resynchronization of the pool is required')
+        self._io.text('Resynchronization of the pool is required')
 
         # The host backup might have been partially cloned.
         helper = BackupDelete(self._io)

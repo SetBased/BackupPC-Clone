@@ -1,3 +1,5 @@
+from cleo.helpers import argument
+
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.helper.BackupDelete import BackupDelete
@@ -5,13 +7,13 @@ from backuppc_clone.helper.BackupDelete import BackupDelete
 
 class BackupDeleteCommand(BaseCommand):
     """
-    Deletes a host backup
-
-    backup-delete
-        {clone.cfg : The configuration file of the clone}
-        {host      : The name of the host}
-        {backup#   : The backup number}
+    Deletes a host backup.
     """
+    name = 'backup-delete'
+    description = 'Deletes a host backup.'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.'),
+                 argument(name='host', description='The name of the host.'),
+                 argument(name='backup#', description='The backup number.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def _handle_command(self) -> None:

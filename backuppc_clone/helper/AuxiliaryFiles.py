@@ -5,7 +5,7 @@ from typing import List
 from backuppc_clone.Config import Config
 from backuppc_clone.helper.AuxiliaryFileScanner import AuxiliaryFileScanner
 from backuppc_clone.misc import sizeof_fmt
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class AuxiliaryFiles:
@@ -14,14 +14,14 @@ class AuxiliaryFiles:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -34,7 +34,7 @@ class AuxiliaryFiles:
         @param list files_original: The metadata of the auxiliary files of the Original.
         @param list files_clone: The metadata of the auxiliary files of the Clone.
         """
-        self.__io.section('Removing obsolete and changed files')
+        self.__io.sub_title('Removing obsolete and changed files')
 
         obsolete = []
         for file in files_clone:
@@ -50,9 +50,9 @@ class AuxiliaryFiles:
             file_count += 1
             total_size += file['size']
 
-        self.__io.writeln(' Number of files removed: {}'.format(file_count))
-        self.__io.writeln(' Total bytes freed      : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
-        self.__io.writeln('')
+        self.__io.write_line(' Number of files removed: {}'.format(file_count))
+        self.__io.write_line(' Total bytes freed      : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __copy_new_files(self, files_original: List, files_clone: List) -> None:
@@ -62,7 +62,7 @@ class AuxiliaryFiles:
         @param list files_original: The metadata of the auxiliary files of the Original.
         @param list files_clone: The metadata of the auxiliary files of the Clone.
         """
-        self.__io.section('Coping new and changed files')
+        self.__io.sub_title('Coping new and changed files')
 
         new = []
         for file in files_original:
@@ -88,9 +88,9 @@ class AuxiliaryFiles:
             file_count += 1
             total_size += file['size']
 
-        self.__io.writeln(' Number of files copied: {}'.format(file_count))
-        self.__io.writeln(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
-        self.__io.writeln('')
+        self.__io.write_line(' Number of files copied: {}'.format(file_count))
+        self.__io.write_line(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def synchronize(self) -> None:
@@ -101,7 +101,7 @@ class AuxiliaryFiles:
         files_original = scanner.scan(Config.instance.pc_dir_original)
         files_clone = scanner.scan(Config.instance.pc_dir_clone)
 
-        self.__io.writeln('')
+        self.__io.write_line('')
 
         self.__remove_obsolete_files(files_original, files_clone)
         self.__copy_new_files(files_original, files_clone)

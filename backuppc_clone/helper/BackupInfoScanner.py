@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class BackupInfoScanner:
@@ -13,14 +13,14 @@ class BackupInfoScanner:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -60,7 +60,7 @@ class BackupInfoScanner:
         """
         pc_dir_original = Config.instance.pc_dir_original
 
-        self.__io.writeln(' Scanning <fso>{}</fso>'.format(pc_dir_original))
+        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir_original))
 
         backups = []
         for host in os.scandir(pc_dir_original):
@@ -97,9 +97,9 @@ class BackupInfoScanner:
 
         stats = DataLayer.instance.original_backup_get_stats()
 
-        self.__io.writeln('')
-        self.__io.writeln(' Found {} hosts and {} backups'.format(stats['#hosts'], stats['#backups']))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Found {} hosts and {} backups'.format(stats['#hosts'], stats['#backups']))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def scan(self) -> None:

@@ -1,3 +1,5 @@
+from cleo.helpers import argument
+
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.command.BaseCommand import BaseCommand
 from backuppc_clone.helper.AuxiliaryFiles import AuxiliaryFiles
@@ -5,11 +7,11 @@ from backuppc_clone.helper.AuxiliaryFiles import AuxiliaryFiles
 
 class SyncAuxiliaryCommand(BaseCommand):
     """
-    Synchronizes the auxiliary files of the clone with the original
-
-    sync-auxiliary
-        {clone.cfg : The configuration file of the clone}
+    Synchronizes the auxiliary files of the clone with the original.
     """
+    name = 'sync-auxiliary'
+    description = 'Synchronizes the auxiliary files of the clone with the original.'
+    arguments = [argument(name='clone.cfg', description='The configuration file of the clone.')]
 
     # ------------------------------------------------------------------------------------------------------------------
     def _handle_command(self) -> None:

@@ -6,7 +6,7 @@ from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupScanner import BackupScanner
 from backuppc_clone.misc import sizeof_fmt
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class BackupClone:
@@ -15,14 +15,14 @@ class BackupClone:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -44,15 +44,15 @@ class BackupClone:
 
         @param str csv_filename: The name of the CSV file.
         """
-        self.__io.section('Original backup')
+        self.__io.sub_title('Original backup')
 
         scanner = BackupScanner(self.__io)
         scanner.scan_directory(self.__host, self.__backup_no, csv_filename)
 
-        self.__io.writeln('')
-        self.__io.writeln(' Files found:       {}'.format(scanner.file_count))
-        self.__io.writeln(' Directories found: {}'.format(scanner.dir_count))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Files found:       {}'.format(scanner.file_count))
+        self.__io.write_line(' Directories found: {}'.format(scanner.dir_count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __import_host_scan_csv(self, csv_filename: str) -> None:
@@ -80,7 +80,7 @@ class BackupClone:
 
         @param str csv_filename: The name of the CSV file.
         """
-        self.__io.section('Using pre-scan')
+        self.__io.sub_title('Using pre-scan')
 
         self.__import_host_scan_csv(csv_filename)
 
@@ -89,9 +89,9 @@ class BackupClone:
 
         stats = DataLayer.instance.backup_get_stats(bck_id)
 
-        self.__io.writeln(' Files found:       {}'.format(stats['#files']))
-        self.__io.writeln(' Directories found: {}'.format(stats['#dirs']))
-        self.__io.writeln('')
+        self.__io.write_line(' Files found:       {}'.format(stats['#files']))
+        self.__io.write_line(' Directories found: {}'.format(stats['#dirs']))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __copy_pool_file(self, dir_name: str, file_name: str, bpl_inode_original: int) -> int:
@@ -136,9 +136,9 @@ class BackupClone:
         """
         Copies required pool files from the original pool to the clone pool.
         """
-        self.__io.section('Clone pool')
-        self.__io.writeln(' Adding files ...')
-        self.__io.writeln('')
+        self.__io.sub_title('Clone pool')
+        self.__io.write_line(' Adding files ...')
+        self.__io.write_line('')
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, self.__backup_no)
@@ -156,19 +156,19 @@ class BackupClone:
 
         progress.finish()
 
-        self.__io.writeln('')
-        self.__io.writeln(' Number of files copied: {}'.format(file_count))
-        self.__io.writeln(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Number of files copied: {}'.format(file_count))
+        self.__io.write_line(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __clone_backup(self) -> None:
         """
         Clones the backup.
         """
-        self.__io.section('Clone backup')
-        self.__io.writeln(' Populating ...')
-        self.__io.writeln('')
+        self.__io.sub_title('Clone backup')
+        self.__io.write_line(' Populating ...')
+        self.__io.write_line('')
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
@@ -221,11 +221,11 @@ class BackupClone:
 
         DataLayer.instance.backup_set_in_progress(bck_id, 0)
 
-        self.__io.writeln('')
-        self.__io.writeln(' Number of files copied       : {}'.format(file_count))
-        self.__io.writeln(' Number of hardlinks created  : {}'.format(link_count))
-        self.__io.writeln(' Number of directories created: {}'.format(dir_count))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Number of files copied       : {}'.format(file_count))
+        self.__io.write_line(' Number of hardlinks created  : {}'.format(link_count))
+        self.__io.write_line(' Number of directories created: {}'.format(dir_count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def clone_backup(self, host: str, backup_no: int) -> None:

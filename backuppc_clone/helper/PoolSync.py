@@ -5,7 +5,7 @@ from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
 from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.PoolScanner import PoolScanner
-from backuppc_clone.style.BackupPcCloneStyle import BackupPcCloneStyle
+from backuppc_clone.CloneIO import CloneIO
 
 
 class PoolSync:
@@ -14,14 +14,14 @@ class PoolSync:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, io: BackupPcCloneStyle):
+    def __init__(self, io: CloneIO):
         """
         Object constructor.
 
-        @param BackupPcCloneStyle io: The output style.
+        @param CloneIO io: The output style.
         """
 
-        self.__io: BackupPcCloneStyle = io
+        self.__io: CloneIO = io
         """
         The output style.
         """
@@ -31,9 +31,9 @@ class PoolSync:
         """
         Removes obsolete files from pool of clone.
         """
-        self.__io.writeln('')
-        self.__io.section('Clone pool')
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.sub_title('Clone pool')
+        self.__io.write_line('')
 
         file_count = DataLayer.instance.clone_pool_obsolete_files_prepare()
         progress = ProgressBar(self.__io.output, file_count)
@@ -56,9 +56,9 @@ class PoolSync:
 
         progress.finish()
 
-        self.__io.writeln('')
-        self.__io.writeln(' Files removed: {}'.format(count))
-        self.__io.writeln('')
+        self.__io.write_line('')
+        self.__io.write_line(' Files removed: {}'.format(count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __scan_original_pool(self, csv_filename: str) -> None:
@@ -67,13 +67,13 @@ class PoolSync:
 
         @param str csv_filename: The name of the CSV file.
         """
-        self.__io.section('Original pool')
+        self.__io.sub_title('Original pool')
 
         scanner = PoolScanner(self.__io)
         scanner.scan_directory(Config.instance.top_dir_original, ['pool', 'cpool'], csv_filename)
 
-        self.__io.writeln(' Files found: {}'.format(scanner.count))
-        self.__io.writeln('')
+        self.__io.write_line(' Files found: {}'.format(scanner.count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __scan_clone_pool(self, csv_filename: str) -> None:
@@ -82,13 +82,13 @@ class PoolSync:
 
         @param str csv_filename: The name of the CSV file.
         """
-        self.__io.section('Clone pool')
+        self.__io.sub_title('Clone pool')
 
         scanner = PoolScanner(self.__io)
         scanner.scan_directory(Config.instance.top_dir_clone, ['pool', 'cpool'], csv_filename)
 
-        self.__io.writeln(' Files found: {}'.format(scanner.count))
-        self.__io.writeln('')
+        self.__io.write_line(' Files found: {}'.format(scanner.count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __import_csv(self, csv_filename: str) -> None:
@@ -106,8 +106,8 @@ class PoolSync:
         """
         Updates the database.
         """
-        self.__io.writeln(' Updating <dbo>BKC_POOL</dbo>')
-        self.__io.writeln('')
+        self.__io.write_line(' Updating <dbo>BKC_POOL</dbo>')
+        self.__io.write_line('')
 
         DataLayer.instance.pool_delete_obsolete_original_rows()
         DataLayer.instance.pool_insert_new_original()
@@ -117,13 +117,13 @@ class PoolSync:
         """
         Updates the database.
         """
-        self.__io.writeln(' Updating <dbo>BKC_POOL</dbo>')
-        self.__io.writeln('')
+        self.__io.write_line(' Updating <dbo>BKC_POOL</dbo>')
+        self.__io.write_line('')
 
         row_count = DataLayer.instance.clone_pool_delete_missing()
 
-        self.__io.writeln(' Rows removed: {}'.format(row_count))
-        self.__io.writeln('')
+        self.__io.write_line(' Rows removed: {}'.format(row_count))
+        self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
     def synchronize(self) -> None:

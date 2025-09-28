@@ -1,6 +1,4 @@
-from typing import List
-
-from cleo import Application, Command
+from cleo.application import Application
 
 from backuppc_clone.command.AutoCommand import AutoCommand
 from backuppc_clone.command.BackupCloneCommand import BackupCloneCommand
@@ -28,28 +26,17 @@ class BackupPcCloneApplication(Application):
         """
         Application.__init__(self, 'backuppc-clone', '0.0.0')
 
-    # ------------------------------------------------------------------------------------------------------------------
-    def get_default_commands(self) -> List[Command]:
-        """
-        Returns the default commands of this application.
-
-        :rtype: list[Command]
-        """
-        commands = Application.get_default_commands(self)
-
-        commands.append(AutoCommand())
-        commands.append(BackupCloneCommand())
-        commands.append(BackupDeleteCommand())
-        commands.append(BackupPreScanCommand())
-        commands.append(HostDeleteCommand())
-        commands.append(InitCloneCommand())
-        commands.append(InitOriginalCommand())
-        commands.append(NagiosCommand())
-        commands.append(PoolCommand())
-        commands.append(SyncAuxiliaryCommand())
-        commands.append(TraversePerformanceTestCommand())
-        commands.append(VacuumCommand())
-
-        return commands
+        self.add(AutoCommand())
+        self.add(BackupCloneCommand())
+        self.add(BackupDeleteCommand())
+        self.add(BackupPreScanCommand())
+        self.add(HostDeleteCommand())
+        self.add(InitCloneCommand())
+        self.add(InitOriginalCommand())
+        self.add(NagiosCommand())
+        self.add(PoolCommand())
+        self.add(SyncAuxiliaryCommand())
+        self.add(TraversePerformanceTestCommand())
+        self.add(VacuumCommand())
 
 # ----------------------------------------------------------------------------------------------------------------------
