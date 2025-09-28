@@ -1,5 +1,4 @@
 import configparser
-import os
 from pathlib import Path
 
 from backuppc_clone.DataLayer import DataLayer
@@ -17,7 +16,7 @@ class Config:
     """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __init__(self, config_filename: str):
+    def __init__(self, config_path: Path):
         """
         Object constructor.
 
@@ -28,7 +27,7 @@ class Config:
         else:
             Config.instance = self
 
-        self.__config_filename: str = config_filename
+        self.__config_path: Path = config_path.resolve()
         """
         The path to the configuration file of the clone.
         """
@@ -38,12 +37,12 @@ class Config:
         The path to the stats file.
         """
 
-        self.__top_dir_clone: str | None = None
+        self.__top_dir_clone: Path | None = None
         """
         The top dir of the clone.
         """
 
-        self.__tmp_dir_clone: str | None = None
+        self.__tmp_dir_clone: Path | None = None
         """
         The temp dir of the clone.
         """
@@ -65,14 +64,12 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def stats_file(self) -> str:
+    def stats_path(self) -> Path:
         """
         Returns the path to the stats file.
-
-        :rtype: str
         """
         if self.__stats_filename is None:
-            self.__stats_filename = os.path.join(os.path.dirname(self.__config_filename), 'status.json')
+            self.__stats_filename = self.__config_path.parent.joinpath('status.json')
 
         return self.__stats_filename
 
@@ -81,8 +78,6 @@ class Config:
     def last_pool_scan(self) -> int:
         """
         Returns the timestamp of the last original pool scan.
-
-        :rtype: int
         """
         return int(DataLayer.instance.parameter_get_value('LAST_POOL_SYNC'))
 
@@ -98,26 +93,24 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def pc_dir_clone(self) -> str:
+    def pc_clone_path(self) -> Path:
         """
-        Gives the pc dir of the clone.
-
-        :rtype: str
+        Returns the path to the pc directory of the clone.
         """
         if self.__pc_dir_clone is None:
-            self.__pc_dir_clone = os.path.join(self.top_dir_clone, 'pc')
+            self.__pc_dir_clone = self.top_clone_path.joinpath('pc')
 
         return self.__pc_dir_clone
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def pc_dir_original(self) -> Path:
+    def pc_original_path(self) -> Path:
         """
-        Gives the pc dir of the original.
+        Returns the path to the pc directory of the original.
         """
         if self.__pc_dir_original is None:
             config_clone = configparser.ConfigParser()
-            config_clone.read(self.__config_filename)
+            config_clone.read(self.__config_path)
 
             config_original = configparser.ConfigParser()
             config_original.read(config_clone['Original']['config'])
@@ -128,90 +121,76 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def tmp_dir_clone(self) -> str:
+    def tmp_clone_path(self) -> Path:
         """
-        Gives the temp dir of the clone.
-
-        :rtype: str
+        Returns the path to temp directory of the clone.
         """
         if self.__tmp_dir_clone is None:
-            self.__tmp_dir_clone = os.path.join(self.top_dir_clone, 'tmp')
+            self.__tmp_dir_clone = self.top_clone_path.joinpath('tmp')
 
         return self.__tmp_dir_clone
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_dir_clone(self) -> str:
+    def top_clone_path(self) -> Path:
         """
-        Gives the top dir of the clone.
-
-        :rtype: str
+        Returns the path to the top directory of the clone.
         """
         if self.__top_dir_clone is None:
-            self.__top_dir_clone = os.path.realpath(os.path.dirname(self.__config_filename))
+            self.__top_dir_clone = self.__config_path.parent
 
         return self.__top_dir_clone
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def top_dir_original(self) -> str:
+    def top_original_path(self) -> Path:
         """
-        Gives the top dir of the original.
-
-        :rtype: str
+        Returns the path to the top directory of the original.
         """
         if self.__top_dir_original is None:
             config_clone = configparser.ConfigParser()
-            config_clone.read(self.__config_filename)
+            config_clone.read(self.__config_path)
 
-            self.__top_dir_original = os.path.realpath(os.path.dirname(config_clone['Original']['config']))
+            self.__top_dir_original = Path(config_clone['Original']['config']).parent.resolve(True)
 
         return self.__top_dir_original
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_dir_clone(self, host: str, backup_no: int) -> str:
+    def backup_clone_path(self, host: str, backup_no: int) -> Path:
         """
         Returns the path to a host backup of the clone.
 
-        @param str host: The name of the host.
-        @param int backup_no: The backup number.
-
-        :rtype: str
+        @param host: The name of the host.
+        @param backup_no: The backup number.
         """
-        return os.path.join(self.top_dir_clone, 'pc', host, str(backup_no))
+        return self.top_clone_path.joinpath('pc', host, str(backup_no))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def backup_dir_original(self, host: str, backup_no: int) -> str:
+    def backup_original_path(self, host: str, backup_no: int) -> Path:
         """
         Returns the path to a host backup of the original.
 
-        @param str host: The name of the host.
-        @param int backup_no: The backup number.
-
-        :rtype: str
+        @param host: The name of the host.
+        @param backup_no: The backup number.
         """
-        return os.path.join(self.pc_dir_original, host, str(backup_no))
+        return self.pc_original_path.joinpath(host, str(backup_no))
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_dir_clone(self, host: str) -> str:
+    def host_dir_clone(self, host: str) -> Path:
         """
         Returns the path to host of the clone.
 
-        @param str host: The name of the host.
-
-        :rtype: str
+        @param host: The name of the host.
         """
-        return os.path.join(self.top_dir_clone, 'pc', host)
+        return self.top_clone_path.joinpath('pc', host)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def host_dir_original(self, host: str) -> str:
+    def host_dir_original(self, host: str) -> Path:
         """
         Returns the path to host of the original.
 
-        @param str host: The name of the host.
-
-        :rtype: str
+        @param host: The name of the host.
         """
-        return os.path.join(self.top_dir_original, 'pc', host)
+        return self.top_original_path.joinpath('pc', host)
 
 # ----------------------------------------------------------------------------------------------------------------------

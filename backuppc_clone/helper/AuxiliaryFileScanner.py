@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List, Dict
 
 from backuppc_clone.CloneIO import CloneIO
@@ -23,25 +24,25 @@ class AuxiliaryFileScanner:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan(self, pc_dir: str) -> List[Dict]:
+    def scan(self, pc_path: Path) -> List[Dict]:
         """
         Scans recursively a directory for auxiliary of hosts.
 
-        @param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
+        @param pc_path: The path to thePC directory, i.e. the directory where the host backups are stored.
         """
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir))
+        self.__io.write_line(f' Scanning <fso>{pc_path}</fso>')
 
         hosts = []
         files = []
-        for entry in os.scandir(pc_dir):
+        for entry in os.scandir(pc_path):
             if entry.is_dir():
                 hosts.append(entry.name)
 
         for host in hosts:
-            host_dir = os.path.join(pc_dir, host)
+            host_dir = pc_path.joinpath(host)
             for entry in os.scandir(host_dir):
                 if entry.is_file():
-                    stats = os.stat(os.path.join(host_dir, entry.name))
+                    stats = os.stat(host_dir.joinpath(entry.name))
                     files.append({'host':  host,
                                   'name':  entry.name,
                                   'size':  stats.st_size,

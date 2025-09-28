@@ -23,9 +23,9 @@ class NagiosCommand(Command):
         Prints the status of BackupPC Clone.
         """
         if perf_data:
-            print('BackupPC Clone {} - {} | {}'.format(status, message, perf_data))
+            print(f'BackupPC Clone {status} - {message} | {perf_data}')
         else:
-            print('BackupPC Clone {} - {}'.format(status, message, perf_data))
+            print(f'BackupPC Clone {status} - {message}')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __get_performance_data(self, stats: Dict[str, any]) -> str:
@@ -47,10 +47,10 @@ class NagiosCommand(Command):
         """
         Executes the command.
         """
-        config_filename_clone = self.argument('clone.cfg')
-        if os.path.exists(config_filename_clone):
-            config = Config(config_filename_clone)
-            text = Path(config.stats_file).read_text()
+        config_clone_path = Path(self.argument('clone.cfg'))
+        if config_clone_path.exists():
+            config = Config(config_clone_path)
+            text = config.stats_path.read_text()
             stats = json.loads(text)
 
             status = 'OK'

@@ -1,6 +1,7 @@
 import abc
 import configparser
 import os
+from pathlib import Path
 
 from cleo.commands.command import Command
 from cleo.io.io import IO
@@ -82,8 +83,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         """
         Initializes the singleton objects.
         """
-        Config(self.argument('clone.cfg'))
-        DataLayer(os.path.join(Config.instance.top_dir_clone, 'clone.db'))
+        Config(Path(self.argument('clone.cfg')))
+        DataLayer(str(Config.instance.top_clone_path.joinpath('clone.db')))
 
     # ------------------------------------------------------------------------------------------------------------------
     @abc.abstractmethod

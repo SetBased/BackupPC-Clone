@@ -1,11 +1,12 @@
 import csv
 import os
 import shutil
+from pathlib import Path
 
+from backuppc_clone.CloneIO import CloneIO
 from backuppc_clone.Config import Config
 from backuppc_clone.helper.BackupInfoScanner import BackupInfoScanner
 from backuppc_clone.ProgressBar import ProgressBar
-from backuppc_clone.CloneIO import CloneIO
 
 
 class BackupScanner:
@@ -63,19 +64,19 @@ class BackupScanner:
         return self.__file_count
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
+    def __scan_directory_helper(self, parent_dir_path: Path, dir_name: Path | None, csv_writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        @param str parent_dir: The name of the parent directory.
-        @param str dir_name: The name of the directory.
-        @param csv.writer csv_writer: The CSV writer.
+        @param parent_dir_path: The path to the parent directory.
+        @param dir_name: The name of the directory.
+        @param csv_writer: The CSV writer.
         """
-        target_name = os.path.join(parent_dir, dir_name) if dir_name else parent_dir
+        target_path = parent_dir_path.joinpath(dir_name) if dir_name else parent_dir_path
 
         first_file = True
         sub_dir_names = []
-        for entry in os.scandir(target_name):
+        for entry in os.scandir(target_path):
             if entry.is_file():
                 self.__file_count += 1
                 if first_file:
@@ -93,31 +94,31 @@ class BackupScanner:
             self.__entry_seq += 1
             self.__dir_count += 1
             csv_writer.writerow((self.__entry_seq, None, dir_name, sub_dir_name))
-            self.__scan_directory_helper(parent_dir, os.path.join(dir_name, sub_dir_name), csv_writer)
+            self.__scan_directory_helper(parent_dir_path, dir_name.joinpath(sub_dir_name), csv_writer)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan_directory(self, host: str, backup_no: int, csv_filename: str) -> None:
+    def scan_directory(self, host: str, backup_no: int, csv_path: Path) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        @param str host: The host name
-        @param int backup_no: The backup number.
-        @param str csv_filename: The filename of the CSV file.
+        @param host: The host name
+        @param backup_no: The backup number.
+        @param csv_path: The path to the CSV file.
         """
         self.__dir_count = 0
         self.__file_count = 0
         self.__entry_seq = 0
 
-        backup_dir = Config.instance.backup_dir_original(host, backup_no)
+        backup_dir = Config.instance.backup_original_path(host, backup_no)
 
         file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
         self.progress = ProgressBar(self.__io.output, file_count)
 
-        with open(csv_filename, 'w') as csv_file:
+        with open(csv_path, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line(f' Scanning <fso>{backup_dir}</fso>')
             self.__io.write_line('')
-            self.__scan_directory_helper(backup_dir, '', csv_writer)
+            self.__scan_directory_helper(backup_dir, None, csv_writer)
             self.progress.finish()
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -132,24 +133,24 @@ class BackupScanner:
         self.__file_count = 0
         self.__entry_seq = 0
 
-        backup_dir = Config.instance.backup_dir_original(host, backup_no)
+        backup_original_path = Config.instance.backup_original_path(host, backup_no)
 
-        csv_filename1 = os.path.join(Config.instance.tmp_dir_clone, '.backup-{}-{}.csv'.format(host, backup_no))
-        csv_filename2 = os.path.join(backup_dir, 'backuppc-clone.csv')
+        csv_filename1 = Config.instance.tmp_clone_path.joinpath(f'backup-{host}-{backup_no}.csv')
+        csv_filename2 = backup_original_path.joinpath('backuppc-clone.csv')
 
-        file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
+        file_count = int(BackupInfoScanner.get_backup_info(backup_original_path, 'nFiles'))
         self.progress = ProgressBar(self.__io.output, file_count)
 
         with open(csv_filename1, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line(f' Scanning <fso>{backup_original_path}</fso>')
             self.__io.write_line('')
-            self.__scan_directory_helper(backup_dir, '', csv_writer)
+            self.__scan_directory_helper(backup_original_path, None, csv_writer)
             self.progress.finish()
 
         shutil.move(csv_filename1, csv_filename2)
         self.__io.write_line('')
-        self.__io.write_line(' Wrote <fso>{}</fso>'.format(csv_filename2))
+        self.__io.write_line(f' Wrote <fso>{csv_filename2}</fso>')
         self.__io.write_line('')
 
 # ----------------------------------------------------------------------------------------------------------------------

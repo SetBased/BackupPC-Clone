@@ -1,6 +1,7 @@
 import csv
 import os
 import sqlite3
+from pathlib import Path
 from typing import Dict, List
 
 
@@ -547,17 +548,17 @@ class DataLayer:
     def import_csv(self,
                    table_name: str,
                    column_names: List[str],
-                   path: str,
+                   path: Path,
                    truncate: bool = True,
                    defaults: Dict = None):
         """
         Import a CSV file into a table.
 
-        @param str table_name: The name of the table.
-        @param list column_names: The column names.
-        @param str path: The path to the CSV file.
-        @param bool truncate: If True, the table will be truncated first.
-        @param dict[str,*]|None defaults: The default values for columns not in the CSV file.
+        @param table_name: The name of the table.
+        @param column_names: The column names.
+        @param path: The path to the CSV file.
+        @param truncate: If True, the table will be truncated first.
+        @param defaults: The default values for columns not in the CSV file.
         """
         if truncate:
             self.execute_none('delete from {}'.format(table_name))
@@ -650,12 +651,12 @@ class DataLayer:
         :rtype: dict
         """
         sql = """
-              select sum(case when CNT1 = 1 then 1 else 0 end)              as n_backups
-                   , sum(case when CNT1 = 1 and CNT2 = 1 then 1 else 0 end) as n_cloned_backups
-                   , sum(case when CNT1 = 1 and CNT2 = 0 then 1 else 0 end) as n_not_cloned_backups
-                   , sum(case when CNT1 = 0 and CNT2 = 1 then 1 else 0 end) as n_obsolete_cloned_backups
-              from ( select sum(case when SRC = 1 then 1 else 0 end) as CNT1
-                          , sum(case when SRC = 2 then 1 else 0 end) as CNT2
+              select sum(case when cnt1 = 1 then 1 else 0 end)              as n_backups
+                   , sum(case when cnt1 = 1 and cnt2 = 1 then 1 else 0 end) as n_cloned_backups
+                   , sum(case when cnt1 = 1 and cnt2 = 0 then 1 else 0 end) as n_not_cloned_backups
+                   , sum(case when cnt1 = 0 and cnt2 = 1 then 1 else 0 end) as n_obsolete_cloned_backups
+              from ( select sum(case when src = 1 then 1 else 0 end) as cnt1
+                          , sum(case when src = 2 then 1 else 0 end) as cnt2
                      from ( select bob_host
                                  , bob_number
                                  , 1 as src
@@ -782,18 +783,18 @@ class DataLayer:
         self.execute_none('delete from TMP_CLONE_POOL_OBSOLETE')
 
         sql = """
-              insert into TMP_CLONE_POOL_OBSOLETE( BPL_ID
-                                                 , BPL_DIR
-                                                 , BPL_NAME)
-              select BPL.BPL_ID
-                   , BPL.BPL_DIR
-                   , BPL.BPL_NAME
-              from BKC_POOL                 BPL
-                   left outer join IMP_POOL IMP on IMP.IMP_INODE = BPL.BPL_INODE_ORIGINAL and
-                                                   IMP.IMP_DIR = BPL.BPL_DIR and
-                                                   IMP.IMP_NAME = BPL.BPL_NAME
-              where BPL.BPL_INODE_CLONE is not null
-                and IMP.ROWID is null"""
+              insert into TMP_CLONE_POOL_OBSOLETE( bpl_id
+                                                 , bpl_dir
+                                                 , bpl_name)
+              select bpl.bpl_id
+                   , bpl.bpl_dir
+                   , bpl.bpl_name
+              from BKC_POOL                 bpl
+                   left outer join IMP_POOL imp on imp.imp_inode = bpl.bpl_inode_original and
+                                                   imp.imp_dir = bpl.bpl_dir and
+                                                   imp.imp_name = bpl.bpl_name
+              where BPL.bpl_inode_clone is not null
+                and IMP.rowid is null"""
 
         self.execute_none(sql)
 
@@ -825,7 +826,7 @@ class DataLayer:
         sql = """
               delete
               from BKC_POOL
-              where BPL_ID in ( select TMP_ID
+              where bpl_id in ( select tmp_id
                                 from TMP_ID )"""
 
         return self.execute_none(sql)
@@ -847,9 +848,9 @@ class DataLayer:
         """
         sql = """
               update BKC_POOL
-              set BPL_INODE_CLONE = ?
-                , BPL_SIZE        = ?
-                , BPL_MTIME       = ?
+              set bpl_inode_clone = ?
+                , bpl_size        = ?
+                , bpl_mtime       = ?
               where BPL_INODE_ORIGINAL = ?"""
 
         self.execute_none(sql, (bpl_inode_clone, pbl_size, pbl_mtime, bpl_inode_original))
@@ -862,9 +863,9 @@ class DataLayer:
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-              select BPL_ID
-                   , BPL_DIR
-                   , BPL_NAME
+              select bpl_id
+                   , bpl_dir
+                   , bpl_name
               from TMP_CLONE_POOL_OBSOLETE"""
 
         cursor = self.__connection.cursor()

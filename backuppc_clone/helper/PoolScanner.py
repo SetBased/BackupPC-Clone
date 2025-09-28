@@ -1,9 +1,10 @@
 import csv
 import os
+from pathlib import Path
 from typing import List
 
-from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.CloneIO import CloneIO
+from backuppc_clone.ProgressBar import ProgressBar
 
 
 class PoolScanner:
@@ -23,7 +24,7 @@ class PoolScanner:
         The output style.
         """
 
-        self.__count: int = 0
+        self.__file_count: int = 0
         """
         The file count.
         """
@@ -39,17 +40,15 @@ class PoolScanner:
         """
         Returns the number of found files.
         """
-        return self.__count
+        return self.__file_count
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def __get_number_of_pool_dirs(dir_name: str) -> int:
+    def __get_number_of_pool_dirs(dir_name: Path) -> int:
         """
-        Returns the (estimate) number of directories in a pool.
+        Returns the (estimated) number of directories in a pool.
 
-        @param str dir_name: The name of the directory.
-
-        :rtype: int
+        @param dir_name: The name of the directory.
         """
         if os.path.isdir(os.path.join(dir_name, '0')) and \
                 os.path.isdir(os.path.join(dir_name, 'f')):
@@ -58,67 +57,67 @@ class PoolScanner:
         return 1
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper2(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
+    def __scan_directory_helper2(self, parent_path1: Path, dir_name: Path, csv_writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        @param str parent_dir: The name of the parent directory.
-        @param str dir_name: The name of the directory.
-        @param csv.writer csv_writer: The CSV writer.
+        @param parent_path: The name of the parent directory.
+        @param dir_name: The name of the directory.
+        @param csv_writer: The CSV writer.
         """
         sub_dir_names = []
-        for entry in os.scandir(os.path.join(parent_dir, dir_name)):
+        for entry in os.scandir(parent_path1.joinpath(dir_name)):
             if entry.is_file():
-                self.__count += 1
+                self.__file_count += 1
                 csv_writer.writerow((entry.inode(), dir_name, entry.name))
 
             elif entry.is_dir():
                 sub_dir_names.append(entry.name)
 
         for sub_dir_name in sub_dir_names:
-            self.__scan_directory_helper2(parent_dir, os.path.join(dir_name, sub_dir_name), csv_writer)
+            self.__scan_directory_helper2(parent_path1,  dir_name.joinpath(sub_dir_name), csv_writer)
 
         self.__progress.advance()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_directory_helper1(self, parent_dir: str, dir_name: str, csv_writer: csv.writer) -> None:
+    def __scan_directory_helper1(self, parent_path: Path, dir_name: Path, csv_writer) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        @param str parent_dir: The name of the parent directory.
-        @param str dir_name: The name of the directory.
-        @param csv.writer csv_writer: The CSV writer.
+        @param parent_path: The path to the parent directory.
+        @param dir_name: The name of the directory.
+        @param csv_writer: The CSV writer.
         """
-        dir_target = os.path.join(parent_dir, dir_name)
+        dir_target = parent_path.joinpath(dir_name)
 
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(dir_target))
+        self.__io.write_line(f' Scanning <fso>{dir_target}</fso>')
         self.__io.write_line('')
 
         dir_count = self.__get_number_of_pool_dirs(dir_target)
         self.__progress = ProgressBar(self.__io, dir_count)
 
-        self.__scan_directory_helper2(parent_dir, dir_name, csv_writer)
+        self.__scan_directory_helper2(parent_path, dir_name, csv_writer)
 
         self.__progress.finish()
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def scan_directory(self, parent_dir: str, dir_names: List[str], csv_filename: str) -> None:
+    def scan_directory(self, parent_path: Path, dir_names: List[str], csv_path: Path) -> None:
         """
         Scans recursively a list of directories and stores filenames and directories in CSV format.
 
-        @param str parent_dir: The name of the parent dir.
-        @param list[str] dir_names: The list of directories to scan.
-        @param str csv_filename: The filename of the CSV file.
+        @param parent_dir: The path to the parent dir.
+        @param dir_names: The list of directories to scan.
+        @param csv_path: The path to the CSV file.
         """
-        self.__count = 0
+        self.__file_count = 0
 
-        with open(csv_filename, 'w') as csv_file:
+        with open(csv_path, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
             if not dir_names:
-                self.__scan_directory_helper1(parent_dir, '', csv_writer)
+                self.__scan_directory_helper1(parent_path, Path(''), csv_writer)
             else:
                 for dir_name in dir_names:
-                    self.__scan_directory_helper1(parent_dir, dir_name, csv_writer)
+                    self.__scan_directory_helper1(parent_path, Path(dir_name), csv_writer)
 
 # ----------------------------------------------------------------------------------------------------------------------

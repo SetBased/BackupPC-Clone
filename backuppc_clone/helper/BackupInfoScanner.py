@@ -48,7 +48,7 @@ class BackupInfoScanner:
 
         :rtype: list[dict]
         """
-        pc_dir_original = Config.instance.pc_dir_original
+        pc_dir_original = Config.instance.pc_original_path
 
         self.__io.write_line(f' Scanning <fso>{pc_dir_original}</fso>')
 

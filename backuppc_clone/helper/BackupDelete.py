@@ -40,7 +40,7 @@ class BackupDelete:
         """
         self.__io.write_line(' Removing files')
 
-        backup_dir_clone = Config.instance.backup_dir_clone(self.__host, self.__backup_no)
+        backup_dir_clone = Config.instance.backup_clone_path(self.__host, self.__backup_no)
         if os.path.isdir(backup_dir_clone):
             os.system('rm -fr "%s"' % backup_dir_clone)
 

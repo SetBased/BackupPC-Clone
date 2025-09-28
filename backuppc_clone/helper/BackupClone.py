@@ -1,12 +1,13 @@
 import os
 import shutil
+from pathlib import Path
 
+from backuppc_clone.CloneIO import CloneIO
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
-from backuppc_clone.ProgressBar import ProgressBar
 from backuppc_clone.helper.BackupScanner import BackupScanner
 from backuppc_clone.misc import sizeof_fmt
-from backuppc_clone.CloneIO import CloneIO
+from backuppc_clone.ProgressBar import ProgressBar
 
 
 class BackupClone:
@@ -38,30 +39,30 @@ class BackupClone:
         """
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __scan_host_backup(self, csv_filename: str) -> None:
+    def __scan_host_backup(self, csv_path: Path) -> None:
         """
         Scans the backup of a host.
 
-        @param str csv_filename: The name of the CSV file.
+        @param csv_path: The path to the CSV file.
         """
         self.__io.sub_title('Original backup')
 
         scanner = BackupScanner(self.__io)
-        scanner.scan_directory(self.__host, self.__backup_no, csv_filename)
+        scanner.scan_directory(self.__host, self.__backup_no, csv_path)
 
         self.__io.write_line('')
-        self.__io.write_line(' Files found:       {}'.format(scanner.file_count))
-        self.__io.write_line(' Directories found: {}'.format(scanner.dir_count))
+        self.__io.write_line(f' Files found:       {scanner.file_count}')
+        self.__io.write_line(f' Directories found: {scanner.dir_count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_host_scan_csv(self, csv_filename: str) -> None:
+    def __import_host_scan_csv(self, csv_path: Path) -> None:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
-        @param str csv_filename: The name of the CSV file.
+        @param csv_path: The path to the CSV file.
         """
-        self.__io.log_very_verbose(' Importing <fso>{}</fso>'.format(csv_filename))
+        self.__io.log_very_verbose(f' Importing <fso>{csv_path}</fso>')
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
@@ -69,28 +70,28 @@ class BackupClone:
         DataLayer.instance.backup_empty(bck_id)
         DataLayer.instance.import_csv('BKC_BACKUP_TREE',
                                       ['bbt_seq', 'bbt_inode_original', 'bbt_dir', 'bbt_name'],
-                                      csv_filename,
+                                      csv_path,
                                       False,
                                       {'bck_id': bck_id})
 
     # ------------------------------------------------------------------------------------------------------------------
-    def __import_pre_scan_csv(self, csv_filename: str) -> None:
+    def __import_pre_scan_csv(self, csv_path: Path) -> None:
         """
         Imports to CSV file with entries of the original pool into the SQLite database.
 
-        @param str csv_filename: The name of the CSV file.
+        @param csv_path: The path to the CSV file.
         """
         self.__io.sub_title('Using pre-scan')
 
-        self.__import_host_scan_csv(csv_filename)
+        self.__import_host_scan_csv(csv_path)
 
         hst_id = DataLayer.instance.get_host_id(self.__host)
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
 
         stats = DataLayer.instance.backup_get_stats(bck_id)
 
-        self.__io.write_line(' Files found:       {}'.format(stats['#files']))
-        self.__io.write_line(' Directories found: {}'.format(stats['#dirs']))
+        self.__io.write_line(f" Files found:       {stats['#files']}")
+        self.__io.write_line(f" Directories found: {stats['#dirs']}")
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -104,16 +105,15 @@ class BackupClone:
 
         :rtype: int
         """
-        original_path = os.path.join(Config.instance.top_dir_original, dir_name, file_name)
-        clone_dir = os.path.join(Config.instance.top_dir_clone, dir_name)
-        clone_path = os.path.join(clone_dir, file_name)
+        original_path = os.path.join(Config.instance.top_original_path, dir_name, file_name)
+        clone_dir = Config.instance.top_clone_path.joinpath(dir_name)
+        clone_path = clone_dir.joinpath(file_name)
 
-        self.__io.log_very_verbose('Coping <fso>{}</fso> to <fso>{}</fso>'.format(original_path, clone_dir))
+        self.__io.log_very_verbose(f'Coping <fso>{original_path}</fso> to <fso>{clone_dir}</fso>')
 
         stats_original = os.stat(original_path)
-        # BackupPC 3.x renames pool files with hash collisions.
         if stats_original.st_ino != bpl_inode_original:
-            raise FileNotFoundError("Filename '{}' and inode {} do not match".format(original_path, bpl_inode_original))
+            raise FileNotFoundError(f"Filename '{original_path}' and inode {bpl_inode_original} do not match")
 
         if not os.path.exists(clone_dir):
             os.makedirs(clone_dir)
@@ -157,8 +157,8 @@ class BackupClone:
         progress.finish()
 
         self.__io.write_line('')
-        self.__io.write_line(' Number of files copied: {}'.format(file_count))
-        self.__io.write_line(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line(f' Number of files copied: {file_count}')
+        self.__io.write_line(f' Total bytes copied    : {sizeof_fmt(total_size)} ({total_size}B)')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -174,13 +174,13 @@ class BackupClone:
         bck_id = DataLayer.instance.get_bck_id(hst_id, int(self.__backup_no))
         DataLayer.instance.backup_set_in_progress(bck_id, 1)
 
-        backup_dir_clone = Config.instance.backup_dir_clone(self.__host, self.__backup_no)
-        if os.path.exists(backup_dir_clone):
-            shutil.rmtree(backup_dir_clone)
-        os.makedirs(backup_dir_clone)
+        backup_clone_path = Config.instance.backup_clone_path(self.__host, self.__backup_no)
+        if backup_clone_path.exists():
+            shutil.rmtree(backup_clone_path)
+        backup_clone_path.mkdir(parents=True, exist_ok=True)
 
-        backup_dir_original = Config.instance.backup_dir_original(self.__host, self.__backup_no)
-        top_dir_clone = Config.instance.top_dir_clone
+        backup_original_path = Config.instance.backup_original_path(self.__host, self.__backup_no)
+        top_clone_path = Config.instance.top_clone_path
 
         file_count = DataLayer.instance.backup_prepare_tree(bck_id)
         progress = ProgressBar(self.__io.output, file_count)
@@ -193,21 +193,19 @@ class BackupClone:
                 if row['bbt_dir'] is None:
                     row['bbt_dir'] = ''
 
-                target_clone = os.path.join(backup_dir_clone, row['bbt_dir'], row['bbt_name'])
+                target_clone = os.path.join(backup_clone_path, row['bbt_dir'], row['bbt_name'])
 
                 if row['bpl_inode_original']:
                     # Entry is a file linked to the pool.
-                    source_clone = os.path.join(top_dir_clone, row['bpl_dir'], row['bpl_name'])
-                    self.__io.log_very_verbose(
-                            'Linking to <fso>{}</fso> from <fso>{}</fso>'.format(source_clone, target_clone))
+                    source_clone = os.path.join(top_clone_path, row['bpl_dir'], row['bpl_name'])
+                    self.__io.log_very_verbose(f'Linking to <fso>{source_clone}</fso> from <fso>{target_clone}</fso>')
                     os.link(source_clone, target_clone)
                     link_count += 1
 
                 elif row['bbt_inode_original']:
                     # Entry is a file not linked to the pool.
-                    source_original = os.path.join(backup_dir_original, row['bbt_dir'], row['bbt_name'])
-                    self.__io.log_very_verbose('Copying <fso>{}</fso> to <fso>{}</fso>'.format(source_original,
-                                                                                               target_clone))
+                    source_original = os.path.join(backup_original_path, row['bbt_dir'], row['bbt_name'])
+                    self.__io.log_very_verbose(f'Copying <fso>{source_original}</fso> to <fso>{target_clone}</fso>')
                     shutil.copy2(source_original, target_clone)
                     file_count += 1
                 else:
@@ -222,9 +220,9 @@ class BackupClone:
         DataLayer.instance.backup_set_in_progress(bck_id, 0)
 
         self.__io.write_line('')
-        self.__io.write_line(' Number of files copied       : {}'.format(file_count))
-        self.__io.write_line(' Number of hardlinks created  : {}'.format(link_count))
-        self.__io.write_line(' Number of directories created: {}'.format(dir_count))
+        self.__io.write_line(f' Number of files copied       : {file_count}')
+        self.__io.write_line(f' Number of hardlinks created  : {link_count}')
+        self.__io.write_line(f' Number of directories created: {dir_count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -232,17 +230,18 @@ class BackupClone:
         """
         Clones a backup of a host.
         """
+
         self.__host = host
         self.__backup_no = backup_no
 
-        backup_dir_original = Config.instance.backup_dir_original(host, backup_no)
-        pre_scan_csv_filename = os.path.join(backup_dir_original, 'backuppc-clone.csv')
-        if os.path.isfile(pre_scan_csv_filename):
-            self.__import_pre_scan_csv(pre_scan_csv_filename)
+        backup_original_path = Config.instance.backup_original_path(host, backup_no)
+        pre_scan_csv_path = backup_original_path.joinpath('backuppc-clone.csv')
+        if os.path.isfile(pre_scan_csv_path):
+            self.__import_pre_scan_csv(pre_scan_csv_path)
         else:
-            csv_filename = os.path.join(Config.instance.tmp_dir_clone, 'backup-{}-{}.csv'.format(host, backup_no))
-            self.__scan_host_backup(csv_filename)
-            self.__import_host_scan_csv(csv_filename)
+            csv_path = Config.instance.tmp_clone_path.joinpath(f'backup-{host}-{backup_no}.csv')
+            self.__scan_host_backup(csv_path)
+            self.__import_host_scan_csv(csv_path)
 
         self.__update_clone_pool()
         self.__clone_backup()
