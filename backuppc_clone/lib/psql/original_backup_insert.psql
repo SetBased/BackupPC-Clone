@@ -4,7 +4,6 @@
  * @param text :bob_host      The name of the host.
  * @param int  :bob_number    The backup number.
  * @param text :bob_end_time
- * @param int  :bob_version
  * @param int  :bob_level
  * @param text :bob_type
  *
@@ -13,12 +12,10 @@
 insert into BKC_ORIGINAL_BACKUP( bob_host
 ,                                bob_number
 ,                                bob_end_time
-,                                bob_version
 ,                                bob_level
 ,                                bob_type )
 values( :bob_host
 ,       :bob_number
 ,       :bob_end_time
-,       :bob_version
 ,       :bob_level
 ,       :bob_type )

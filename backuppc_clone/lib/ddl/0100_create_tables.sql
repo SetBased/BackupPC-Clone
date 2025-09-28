@@ -49,7 +49,6 @@ CREATE TABLE BKC_ORIGINAL_BACKUP (
   bob_host TEXT NOT NULL,
   bob_number INTEGER NOT NULL,
   bob_end_time INTEGER,
-  bob_version TEXT,
   bob_level INTEGER,
   bob_type TEXT
 );

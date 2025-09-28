@@ -14,7 +14,7 @@ class InitCloneCommand(BaseCommand):
     name = 'init-clone'
     description = 'Creates the configuration file for a clone.'
 
-    parameters = [('SCHEMA_VERSION', 'schema version', '1'),
+    parameters = [('SCHEMA_VERSION', 'schema version', '2'),
                   ('LAST_POOL_SYNC', 'timestamp of last original pool scan', '-1')]
 
     # ------------------------------------------------------------------------------------------------------------------

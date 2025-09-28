@@ -1,10 +1,10 @@
-import os
 import re
+from pathlib import Path
 from typing import Dict, List
 
+from backuppc_clone.CloneIO import CloneIO
 from backuppc_clone.Config import Config
 from backuppc_clone.DataLayer import DataLayer
-from backuppc_clone.CloneIO import CloneIO
 
 
 class BackupInfoScanner:
@@ -27,29 +27,19 @@ class BackupInfoScanner:
 
     # ------------------------------------------------------------------------------------------------------------------
     @staticmethod
-    def get_backup_info(backup_dir: str, param_name: str) -> str | None:
+    def get_backup_info(backup_dir: Path, param_name: str) -> str | None:
         """
         Extracts info about a backup from file backupInfo.
 
-        @param str backup_dir: The path to the host backup.
-        @param str param_name: The name of the info parameter.
-
-        :rtype: str|None
+        @param backup_dir: The path to the host backup.
+        @param param_name: The name of the info parameter.
         """
-        ret = None
+        content = backup_dir.joinpath('backupInfo').read_text()
+        result = re.search(r"'{}' => '(.*?)'".format(param_name), content)
+        if result:
+            return result.group(1)
 
-        path = os.path.join(backup_dir, 'backupInfo')
-        if os.path.isfile(path):
-            with open(path) as file:
-                content = file.read()
-                result = re.search(r"'{}' => '(.*?)'".format(param_name), content)
-                if result:
-                    ret = result.group(1)
-
-        if not ret:
-            ret = None
-
-        return ret
+        return None
 
     # ------------------------------------------------------------------------------------------------------------------
     def __scan_for_backups(self) -> List[Dict]:
@@ -60,23 +50,39 @@ class BackupInfoScanner:
         """
         pc_dir_original = Config.instance.pc_dir_original
 
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir_original))
+        self.__io.write_line(f' Scanning <fso>{pc_dir_original}</fso>')
 
         backups = []
-        for host in os.scandir(pc_dir_original):
-            if host.is_dir():
-                host_dir = os.path.join(Config.instance.pc_dir_original, host.name)
-                for backup in os.scandir(host_dir):
-                    if backup.is_dir() and re.match(r'^\d+$', backup.name):
-                        backup_dir = os.path.join(host_dir, backup.name)
-                        backups.append({'bob_host':     host.name,
-                                        'bob_number':   int(backup.name),
-                                        'bob_end_time': self.get_backup_info(backup_dir, 'endTime'),
-                                        'bob_version':  self.get_backup_info(backup_dir, 'version'),
-                                        'bob_level':    self.get_backup_info(backup_dir, 'level'),
-                                        'bob_type':     self.get_backup_info(backup_dir, 'type')})
+        for pc_child in pc_dir_original.iterdir():
+            if pc_child.is_dir():
+                host_dir = pc_dir_original.joinpath(pc_child)
+                for host_child in host_dir.iterdir():
+                    if host_child.is_dir():
+                        backup_dir = host_dir.joinpath(host_child)
+                        if self.__is_a_backuppc_v4(host_child):
+                            backups.append({'bob_host':     pc_child.name,
+                                            'bob_number':   int(host_child.name),
+                                            'bob_end_time': self.get_backup_info(backup_dir, 'endTime'),
+                                            'bob_level':    self.get_backup_info(backup_dir, 'level'),
+                                            'bob_type':     self.get_backup_info(backup_dir, 'type')})
 
         return backups
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def __is_a_backuppc_v4(self, path: Path) -> bool:
+        """
+        Returns whether a path is a BackupPC V4 backup.
+
+        :param path: The path.
+        """
+        if not re.match(r'^\d+$', path.name):
+            return False
+
+        for child in path.iterdir():
+            if re.match(r'^attrib_[0-9a-f]+$', child.name):
+                return True
+
+        return False
 
     # ------------------------------------------------------------------------------------------------------------------
     def __import_backups(self, backups: List[Dict]) -> None:
@@ -91,14 +97,13 @@ class BackupInfoScanner:
             DataLayer.instance.original_backup_insert(backup['bob_host'],
                                                       backup['bob_number'],
                                                       backup['bob_end_time'],
-                                                      backup['bob_version'],
                                                       backup['bob_level'],
                                                       backup['bob_type'])
 
         stats = DataLayer.instance.original_backup_get_stats()
 
         self.__io.write_line('')
-        self.__io.write_line(' Found {} hosts and {} backups'.format(stats['#hosts'], stats['#backups']))
+        self.__io.write_line(f" Found {stats['#hosts']} hosts and {stats['#backups']} backups")
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------

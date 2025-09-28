@@ -15,7 +15,6 @@ from BKC_ORIGINAL_BACKUP  bob
      left join BKC_BACKUP bck on bck.hst_id = hst.hst_id and
                                  bck.bck_number = bob.bob_number
 where bck.bck_id is null
-  and bob.bob_version like '3.%'
   and bob.bob_type in ('full', 'incr')
   and bob.bob_end_time is not null
   and (bob.bob_end_time < :end_time or :end_time = -1)

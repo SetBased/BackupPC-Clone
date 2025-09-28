@@ -1,5 +1,6 @@
 import configparser
 import os
+from pathlib import Path
 
 from backuppc_clone.DataLayer import DataLayer
 
@@ -57,7 +58,7 @@ class Config:
         The pc dir of the clone.
         """
 
-        self.__pc_dir_original: str | None = None
+        self.__pc_dir_original: Path | None = None
         """
         The pc dir of the original.
         """
@@ -110,11 +111,9 @@ class Config:
 
     # ------------------------------------------------------------------------------------------------------------------
     @property
-    def pc_dir_original(self) -> str:
+    def pc_dir_original(self) -> Path:
         """
         Gives the pc dir of the original.
-
-        :rtype: str
         """
         if self.__pc_dir_original is None:
             config_clone = configparser.ConfigParser()
@@ -123,7 +122,7 @@ class Config:
             config_original = configparser.ConfigParser()
             config_original.read(config_clone['Original']['config'])
 
-            self.__pc_dir_original = os.path.realpath(config_original['Original']['pc_dir'])
+            self.__pc_dir_original = Path(config_original['Original']['pc_dir']).resolve(True)
 
         return self.__pc_dir_original
 

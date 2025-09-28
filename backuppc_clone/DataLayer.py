@@ -114,12 +114,12 @@ class DataLayer:
                    left outer join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID and
                                                      BCK.BCK_NUMBER = BOB.BOB_NUMBER
               where BCK.BCK_ID is null
-                and BOB.BOB_VERSION like '3.%'
                 and BOB.BOB_TYPE in ('full', 'incr')
                 and BOB.BOB_END_TIME is not null
                 and (BOB.BOB_END_TIME < ? or ? = -1)
               order by BOB.BOB_TYPE
-                     , BOB.BOB_END_TIME desc limit 0, 1"""
+                     , BOB.BOB_END_TIME desc
+              limit 0, 1"""
 
         return self.execute_row0(sql, (end_time, end_time))
 
@@ -155,7 +155,7 @@ class DataLayer:
                    , BCK.BCK_NUMBER
               from BKC_HOST              HST
                    inner join BKC_BACKUP BCK on BCK.HST_ID = HST.HST_ID
-              where IFNULL(BCK.BCK_IN_PROGRESS, 1) = 1
+              where ifnull(BCK.BCK_IN_PROGRESS, 1) = 1
               order by HST.HST_NAME
                      , BCK.BCK_NUMBER"""
 
@@ -189,8 +189,8 @@ class DataLayer:
         self.__connection.row_factory = DataLayer.dict_factory
 
         sql = """
-              select count(BBT_INODE_ORIGINAL) as '#files'
-, sum(case when BBT_INODE_ORIGINAL is null then 1 else 0 end) as '#dirs'
+              select count(BBT_INODE_ORIGINAL)                                   as '#files'
+                   , sum(case when BBT_INODE_ORIGINAL is null then 1 else 0 end) as '#dirs'
               from BKC_BACKUP_TREE
               where BCK_ID = ?"""
 
@@ -602,26 +602,24 @@ class DataLayer:
                                bob_host: str,
                                bob_number: int,
                                bob_end_time: str,
-                               bob_version: int,
                                bob_level: int,
                                bob_type: str) -> None:
         """
         Inserts an original host backup.
         """
         sql = """
-              insert into BKC_ORIGINAL_BACKUP( BOB_HOST
-                                             , BOB_NUMBER
-                                             , BOB_END_TIME
-                                             , BOB_VERSION
-                                             , BOB_LEVEL
-                                             , BOB_TYPE)
-              values ( ?
-                     , ?
-                     , ?
-                     , ?
-                     , ?
-                     , ?)"""
-        self.execute_none(sql, (bob_host, bob_number, bob_end_time, bob_version, bob_level, bob_type))
+              insert into BKC_ORIGINAL_BACKUP( bob_host
+                                             , bob_number
+                                             , bob_end_time
+                                             , bob_level
+                                             , bob_type)
+              values
+                  ( ?
+                  , ?
+                  , ?
+                  , ?
+                  , ?)"""
+        self.execute_none(sql, (bob_host, bob_number, bob_end_time, bob_level, bob_type))
 
     # ------------------------------------------------------------------------------------------------------------------
     def original_backup_get_stats(self) -> Dict:
@@ -632,7 +630,7 @@ class DataLayer:
         """
         sql = """
               select count(distinct BOB_HOST) as '#hosts'
-, count(*) as '#backups'
+                   , count(*)                 as '#backups'
               from BKC_ORIGINAL_BACKUP"""
 
         return self.execute_row1(sql)
@@ -652,26 +650,26 @@ class DataLayer:
         :rtype: dict
         """
         sql = """
-              select sum(case when CNT1 = 1 then 1 else 0 end)              as N_BACKUPS
-                   , sum(case when CNT1 = 1 and CNT2 = 1 then 1 else 0 end) as N_CLONED_BACKUPS
-                   , sum(case when CNT1 = 1 and CNT2 = 0 then 1 else 0 end) as N_NOT_CLONED_BACKUPS
-                   , sum(case when CNT1 = 0 and CNT2 = 1 then 1 else 0 end) as N_OBSOLETE_CLONED_BACKUPS
-              from (select sum(case when SRC = 1 then 1 else 0 end) as CNT1
-                         , sum(case when SRC = 2 then 1 else 0 end) as CNT2
-                    from (select BOB_HOST
-                               , BOB_NUMBER
-                               , 1 as SRC
-                          from BKC_ORIGINAL_BACKUP
+              select sum(case when CNT1 = 1 then 1 else 0 end)              as n_backups
+                   , sum(case when CNT1 = 1 and CNT2 = 1 then 1 else 0 end) as n_cloned_backups
+                   , sum(case when CNT1 = 1 and CNT2 = 0 then 1 else 0 end) as n_not_cloned_backups
+                   , sum(case when CNT1 = 0 and CNT2 = 1 then 1 else 0 end) as n_obsolete_cloned_backups
+              from ( select sum(case when SRC = 1 then 1 else 0 end) as CNT1
+                          , sum(case when SRC = 2 then 1 else 0 end) as CNT2
+                     from ( select bob_host
+                                 , bob_number
+                                 , 1 as src
+                            from BKC_ORIGINAL_BACKUP
 
-                          union all
+                            union all
 
-                          select HST.HST_NAME
-                               , BCK.BCK_NUMBER
-                               , 2 as SRC
-                          from BKC_BACKUP    BCK
-                               join BKC_HOST HST on HST.HST_ID = BCK.HST_ID) T
-                    group by BOB_HOST
-                           , BOB_NUMBER)"""
+                            select hst.hst_name
+                                 , bck.bck_number
+                                 , 2 as src
+                            from BKC_BACKUP    bck
+                                 join BKC_HOST hst on hst.hst_id = bck.hst_id ) T
+                     group by bob_host
+                            , bob_number )"""
 
         return self.execute_row1(sql)
 
@@ -684,7 +682,7 @@ class DataLayer:
 
         :rtype: *
         """
-        return self.execute_singleton1('select PRM_VALUE from BKC_PARAMETER where PRM_CODE = ?', (prm_code,))
+        return self.execute_singleton1('select prm_value from BKC_PARAMETER where prm_code = ?', (prm_code,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def parameter_update_value(self, prm_code: str, prm_value: str) -> None:
@@ -694,7 +692,7 @@ class DataLayer:
         @param str prm_code: The code of the parameter.
         @param str prm_value: The value of the parameter.
         """
-        self.execute_none('update BKC_PARAMETER set PRM_VALUE = ? where PRM_CODE = ?', (prm_value, prm_code))
+        self.execute_none('update bkc_parameter set prm_value = ? where prm_code = ?', (prm_value, prm_code))
 
     # ------------------------------------------------------------------------------------------------------------------
     def pool_delete_obsolete_original_rows(self) -> int:
@@ -704,20 +702,21 @@ class DataLayer:
         self.execute_none('delete from TMP_ID')
 
         sql = """
-              insert into TMP_ID(TMP_ID)
-              select BPL.BPL_ID
-              from BKC_POOL                 BPL
-                   left outer join IMP_POOL IMP on IMP.IMP_INODE = BPL.BPL_INODE_ORIGINAL and
-                                                   IMP.IMP_DIR = BPL.BPL_DIR and
-                                                   IMP.IMP_NAME = BPL.BPL_NAME
-              where BPL.BPL_INODE_ORIGINAL is not null
-                and IMP.ROWID is null"""
+              insert into TMP_ID(tmp_id)
+              select bpl.bpl_id
+              from BKC_POOL                 bpl
+                   left outer join IMP_POOL imp on imp.imp_inode = bpl.bpl_inode_original and
+                                                   imp.imp_dir = bpl.bpl_dir and
+                                                   imp.imp_name = bpl.bpl_name
+              where bpl.bpl_inode_original is not null
+                and imp.rowid is null"""
         self.execute_none(sql)
 
         sql = """
               delete
               from BKC_POOL
-              where BPL_ID in (select TMP_ID from TMP_ID)"""
+              where bpl_id in ( select tmp_id
+                                from TMP_ID )"""
         self.execute_none(sql)
 
         return self.execute_singleton1('select count(*) from TMP_ID')
@@ -729,7 +728,7 @@ class DataLayer:
 
         @param int bpl_id: The rowid.
         """
-        self.execute_none('delete from BKC_POOL where BPL_ID=?', (bpl_id,))
+        self.execute_none('delete from BKC_POOL where bpl_id=?', (bpl_id,))
 
     # ------------------------------------------------------------------------------------------------------------------
     def pool_insert_new_original(self) -> None:
@@ -739,38 +738,38 @@ class DataLayer:
         self.execute_none('delete from TMP_POOL')
 
         sql = """
-              insert into TMP_POOL( TMP_INODE
-                                  , TMP_DIR
-                                  , TMP_NAME)
+              insert into TMP_POOL( tmp_inode
+                                  , tmp_dir
+                                  , tmp_name)
               select TMP_INODE
                    , TMP_DIR
                    , TMP_NAME
-              from (select BPL_INODE_ORIGINAL as TMP_INODE
-                         , BPL_DIR            as TMP_DIR
-                         , BPL_NAME           as TMP_NAME
-                         , 1                  as SRC
-                    from BKC_POOL
+              from ( select bpl_inode_original as tmp_inode
+                          , bpl_dir            as tmp_dir
+                          , bpl_name           as tmp_name
+                          , 1                  as src
+                     from BKC_POOL
 
-                    union all
+                     union all
 
-                    select IMP_INODE
-                         , IMP_DIR
-                         , IMP_NAME
-                         , 2 as SRC
-                    from IMP_POOL) T
-              group by TMP_INODE
-                     , TMP_DIR
-                     , TMP_NAME
-              having sum(case when SRC = 1 then 1 else 0 end) < sum(case when SRC = 2 then 1 else 0 end)"""
+                     select imp_inode
+                          , imp_dir
+                          , imp_name
+                          , 2 as src
+                     from IMP_POOL ) T
+              group by tmp_inode
+                     , tmp_dir
+                     , tmp_name
+              having sum(case when src = 1 then 1 else 0 end) < sum(case when src = 2 then 1 else 0 end)"""
         self.execute_none(sql)
 
         sql = """
-              insert into BKC_POOL( BPL_INODE_ORIGINAL
-                                  , BPL_DIR
-                                  , BPL_NAME)
-              select TMP_INODE
-                   , TMP_DIR
-                   , TMP_NAME
+              insert into BKC_POOL( bpl_inode_original
+                                  , bpl_dir
+                                  , bpl_name)
+              select tmp_inode
+                   , tmp_dir
+                   , tmp_name
               from TMP_POOL"""
 
         self.execute_none(sql)
@@ -826,7 +825,8 @@ class DataLayer:
         sql = """
               delete
               from BKC_POOL
-              where BPL_ID in (select TMP_ID from TMP_ID)"""
+              where BPL_ID in ( select TMP_ID
+                                from TMP_ID )"""
 
         return self.execute_none(sql)
 
