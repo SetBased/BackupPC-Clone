@@ -662,6 +662,7 @@ class DataLayer:
                                , bob_number
                                , 1 as src
                           from BKC_ORIGINAL_BACKUP
+                          where bob_type in ('full', 'incr')
 
                           union all
 
