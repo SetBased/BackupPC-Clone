@@ -115,7 +115,7 @@ class BackupScanner:
 
         with open(csv_filename, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line(f' Scanning <fso>{backup_dir}</fso>')
             self.__io.write_line('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
             self.progress.finish()
@@ -134,7 +134,7 @@ class BackupScanner:
 
         backup_dir = Config.instance.backup_dir_original(host, backup_no)
 
-        csv_filename1 = os.path.join(Config.instance.tmp_dir_clone, '.backup-{}-{}.csv'.format(host, backup_no))
+        csv_filename1 = os.path.join(Config.instance.tmp_dir_clone, f'.backup-{host}-{backup_no}.csv')
         csv_filename2 = os.path.join(backup_dir, 'backuppc-clone.csv')
 
         file_count = int(BackupInfoScanner.get_backup_info(backup_dir, 'nFiles'))
@@ -142,14 +142,14 @@ class BackupScanner:
 
         with open(csv_filename1, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            self.__io.write_line(' Scanning <fso>{}</fso>'.format(backup_dir))
+            self.__io.write_line(f' Scanning <fso>{backup_dir}</fso>')
             self.__io.write_line('')
             self.__scan_directory_helper(backup_dir, '', csv_writer)
             self.progress.finish()
 
         shutil.move(csv_filename1, csv_filename2)
         self.__io.write_line('')
-        self.__io.write_line(' Wrote <fso>{}</fso>'.format(csv_filename2))
+        self.__io.write_line(f' Wrote <fso>{csv_filename2}</fso>')
         self.__io.write_line('')
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -45,13 +45,13 @@ class AuxiliaryFiles:
         file_count = 0
         for file in obsolete:
             path = os.path.join(Config.instance.top_dir_clone, 'pc', file['host'], file['name'])
-            self.__io.log_very_verbose('Removing <fso>{}</fso>'.format(path))
+            self.__io.log_very_verbose(f'Removing <fso>{path}</fso>')
             os.unlink(path)
             file_count += 1
             total_size += file['size']
 
-        self.__io.write_line(' Number of files removed: {}'.format(file_count))
-        self.__io.write_line(' Total bytes freed      : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line(f' Number of files removed: {file_count}')
+        self.__io.write_line(f' Total bytes freed      : {sizeof_fmt(total_size)} ({total_size}B) ')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class AuxiliaryFiles:
             path_clone = os.path.join(host_dir_clone, file['name'])
             path_original = os.path.join(host_dir_original, file['name'])
 
-            self.__io.log_very_verbose('Coping <fso>{}</fso> to <fso>{}</fso>'.format(path_original, path_clone))
+            self.__io.log_very_verbose(f'Coping <fso>{path_original}</fso> to <fso>{path_clone}</fso>')
 
             if not os.path.exists(host_dir_clone):
                 os.makedirs(host_dir_clone)
@@ -88,8 +88,8 @@ class AuxiliaryFiles:
             file_count += 1
             total_size += file['size']
 
-        self.__io.write_line(' Number of files copied: {}'.format(file_count))
-        self.__io.write_line(' Total bytes copied    : {} ({}B) '.format(sizeof_fmt(total_size), total_size))
+        self.__io.write_line(f' Number of files copied: {file_count}')
+        self.__io.write_line(f' Total bytes copied    : {sizeof_fmt(total_size)} ({total_size}B) ')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------

@@ -91,7 +91,7 @@ class PoolScanner:
         """
         dir_target = os.path.join(parent_dir, dir_name)
 
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(dir_target))
+        self.__io.write_line(f' Scanning <fso>{dir_target}</fso>')
         self.__io.write_line('')
 
         dir_count = self.__get_number_of_pool_dirs(dir_target)

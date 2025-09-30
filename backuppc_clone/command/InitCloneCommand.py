@@ -32,7 +32,7 @@ class InitCloneCommand(BaseCommand):
         for dir_name in dir_names:
             path = os.path.join(top_dir_clone, dir_name)
             if not os.path.isdir(path):
-                self._io.log_verbose('Creating directory <fso>{}</fso>'.format(dir_name))
+                self._io.log_verbose(f'Creating directory <fso>{dir_name}</fso>')
                 os.mkdir(path, 0o700)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ class InitCloneCommand(BaseCommand):
 
         self._io.title('Creating metadata database')
 
-        self._io.write_line(' Initializing <fso>{}</fso>'.format(db_path))
+        self._io.write_line(f' Initializing <fso>{db_path}</fso>')
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.executescript(sql)
@@ -78,7 +78,7 @@ class InitCloneCommand(BaseCommand):
         @param str name_clone: The name of the clone.
         @param str name_master: The name of the master.
         """
-        self._io.write_line(' Writing <fso>{}</fso>'.format(config_filename_clone))
+        self._io.write_line(f' Writing <fso>{config_filename_clone}</fso>')
 
         config = configparser.ConfigParser()
         config['BackupPC Clone'] = {'role': 'clone',
@@ -108,8 +108,7 @@ class InitCloneCommand(BaseCommand):
         config_filename_original = os.path.join(top_dir_original, 'original.cfg')
 
         if not os.path.isfile(config_filename_original):
-            raise BackupPcCloneException(
-                    'Configuration file {} of original not found'.format(config_filename_original))
+            raise BackupPcCloneException(f'Configuration file {config_filename_original} of original not found')
 
         config_original = configparser.ConfigParser()
         config_original.read(config_filename_original)
@@ -123,7 +122,7 @@ class InitCloneCommand(BaseCommand):
         config_filename_clone = os.path.join(top_dir_clone, 'clone.cfg')
 
         if os.path.isfile(config_filename_clone):
-            create = self.confirm('Overwrite {}'.format(config_filename_clone), False)
+            create = self.confirm(f'Overwrite {config_filename_clone}', False)
         else:
             create = True
 

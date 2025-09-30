@@ -44,7 +44,7 @@ class PoolSync:
             for row in rows:
                 try:
                     path = os.path.join(top_dir_clone, row['bpl_dir'], row['bpl_name'])
-                    self.__io.log_very_verbose('Removing <fso>{}</fso>'.format(path))
+                    self.__io.log_very_verbose(f'Removing <fso>{path}</fso>')
                     os.remove(path)
                     count += 1
                 except FileNotFoundError:
@@ -57,7 +57,7 @@ class PoolSync:
         progress.finish()
 
         self.__io.write_line('')
-        self.__io.write_line(' Files removed: {}'.format(count))
+        self.__io.write_line(f' Files removed: {count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ class PoolSync:
         scanner = PoolScanner(self.__io)
         scanner.scan_directory(Config.instance.top_dir_original, ['pool', 'cpool'], csv_filename)
 
-        self.__io.write_line(' Files found: {}'.format(scanner.count))
+        self.__io.write_line(f' Files found: {scanner.count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ class PoolSync:
         scanner = PoolScanner(self.__io)
         scanner.scan_directory(Config.instance.top_dir_clone, ['pool', 'cpool'], csv_filename)
 
-        self.__io.write_line(' Files found: {}'.format(scanner.count))
+        self.__io.write_line(f' Files found: {scanner.count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ class PoolSync:
 
         @param str csv_filename: The name of the CSV file.
         """
-        self.__io.log_verbose(' Importing <fso>{}</fso> into <dbo>IMP_POOL</dbo>'.format(csv_filename))
+        self.__io.log_verbose(f' Importing <fso>{csv_filename}</fso> into <dbo>IMP_POOL</dbo>')
 
         DataLayer.instance.import_csv('IMP_POOL', ['imp_inode', 'imp_dir', 'imp_name'], csv_filename)
 
@@ -122,7 +122,7 @@ class PoolSync:
 
         row_count = DataLayer.instance.clone_pool_delete_missing()
 
-        self.__io.write_line(' Rows removed: {}'.format(row_count))
+        self.__io.write_line(f' Rows removed: {row_count}')
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------

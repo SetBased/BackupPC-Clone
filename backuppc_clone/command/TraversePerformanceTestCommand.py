@@ -79,10 +79,10 @@ class TraversePerformanceTestCommand(Command):
         @param float end_time: The timestamp of the end of the performance test.
         """
         self._io.write_line('')
-        self._io.write_line('number of directories: {}'.format(self.__dir_count))
-        self._io.write_line('number of files      : {}'.format(self.__file_count))
-        self._io.write_line('get status           : {}'.format('yes' if self.__stat else 'no'))
-        self._io.write_line('duration             : {0:.1f}s'.format(end_time - self.__start_time))
+        self._io.write_line(f'number of directories: {self.__dir_count}')
+        self._io.write_line(f'number of files      : {self.__file_count}')
+        self._io.write_line(f'get status           : {'yes' if self.__stat else 'no'}')
+        self._io.write_line(f'duration             : {end_time - self.__start_time:.1f}s')
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute(self, io: IO) -> int:
@@ -107,7 +107,7 @@ class TraversePerformanceTestCommand(Command):
 
         dir_name = self.argument('dir')
 
-        self._io.write_line('Traversing <fso>{}</fso>'.format(dir_name))
+        self._io.write_line(f'Traversing <fso>{dir_name}</fso>')
         self.__traverse(dir_name)
         self.__report(time.time())
 

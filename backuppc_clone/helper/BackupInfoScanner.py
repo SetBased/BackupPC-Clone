@@ -42,7 +42,7 @@ class BackupInfoScanner:
         if os.path.isfile(path):
             with open(path) as file:
                 content = file.read()
-                result = re.search(r"'{}' => '(.*?)'".format(param_name), content)
+                result = re.search(rf"'{param_name}' => '(.*?)'", content)
                 if result:
                     ret = result.group(1)
 
@@ -60,7 +60,7 @@ class BackupInfoScanner:
         """
         pc_dir_original = Config.instance.pc_dir_original
 
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir_original))
+        self.__io.write_line(f' Scanning <fso>{pc_dir_original}</fso>')
 
         backups = []
         for host in os.scandir(pc_dir_original):
@@ -98,7 +98,7 @@ class BackupInfoScanner:
         stats = DataLayer.instance.original_backup_get_stats()
 
         self.__io.write_line('')
-        self.__io.write_line(' Found {} hosts and {} backups'.format(stats['#hosts'], stats['#backups']))
+        self.__io.write_line(f" Found {stats['#hosts']} hosts and {stats['#backups']} backups")
         self.__io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------

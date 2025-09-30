@@ -25,7 +25,7 @@ class HostDeleteCommand(BaseCommand):
         """
         host = self.argument('host')
 
-        self._io.title('Deleting Host {}'.format(host))
+        self._io.title(f'Deleting Host {host}')
 
         helper = HostDelete(self._io)
         helper.delete_host(host)

@@ -23,7 +23,7 @@ class BackupDeleteCommand(BaseCommand):
         host = self.argument('host')
         backup_no = int(self.argument('backup#'))
 
-        self._io.title('Deleting Backup {}/{}'.format(host, backup_no))
+        self._io.title(f'Deleting Backup {host}/{backup_no}')
 
         helper = BackupDelete(self._io)
         helper.delete_backup(host, backup_no)

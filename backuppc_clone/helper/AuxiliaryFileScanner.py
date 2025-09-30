@@ -29,7 +29,7 @@ class AuxiliaryFileScanner:
 
         @param str pc_dir: The PC dir, i.e. the directory where the host backups are stored.
         """
-        self.__io.write_line(' Scanning <fso>{}</fso>'.format(pc_dir))
+        self.__io.write_line(f' Scanning <fso>{pc_dir}</fso>')
 
         hosts = []
         files = []

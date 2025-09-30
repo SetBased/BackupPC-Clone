@@ -53,10 +53,10 @@ class AutoCommand(BaseCommand):
         """
         stats = DataLayer.instance.overview_get_stats()
 
-        self._io.write_line(' # backups                : {}'.format(stats['n_backups']))
-        self._io.write_line(' # cloned backups         : {}'.format(stats['n_cloned_backups']))
-        self._io.write_line(' # backups still to clone : {}'.format(stats['n_not_cloned_backups']))
-        self._io.write_line(' # obsolete cloned backups: {}'.format(stats['n_obsolete_cloned_backups']))
+        self._io.write_line(f' # backups                : {stats['n_backups']}')
+        self._io.write_line(f' # cloned backups         : {stats['n_cloned_backups']}')
+        self._io.write_line(f' # backups still to clone : {stats['n_not_cloned_backups']}')
+        self._io.write_line(f' # obsolete cloned backups: {stats['n_obsolete_cloned_backups']}')
         self._io.write_line('')
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Hosts')
 
             for host in hosts:
-                self._io.sub_title('Removing host {}'.format(host['hst_name']))
+                self._io.sub_title(f"Removing host {host['hst_name']}")
 
                 helper = HostDelete(self._io)
                 helper.delete_host(host['hst_name'])
@@ -98,7 +98,7 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Obsolete Host Backups')
 
             for backup in backups:
-                self._io.sub_title('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+                self._io.sub_title("Removing backup {backup['hst_name']}/{backup['bck_number']}")
 
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
@@ -117,7 +117,7 @@ class AutoCommand(BaseCommand):
             self._io.title('Removing Partially Cloned Host Backups')
 
             for backup in backups:
-                self._io.sub_title('Removing backup {}/{}'.format(backup['hst_name'], backup['bck_number']))
+                self._io.sub_title(f"Removing backup {backup['hst_name']}/{backup['bck_number']}")
 
                 helper = BackupDelete(self._io)
                 helper.delete_backup(backup['hst_name'], backup['bck_number'])
@@ -160,7 +160,7 @@ class AutoCommand(BaseCommand):
 
         @param backup: The metadata of the backup.
         """
-        self._io.title('Cloning Backup {}/{}'.format(backup['bob_host'], backup['bob_number']))
+        self._io.title(f"Cloning Backup {backup['bob_host']}/{backup['bob_number']}")
 
         helper = BackupClone(self._io)
         helper.clone_backup(backup['bob_host'], backup['bob_number'])

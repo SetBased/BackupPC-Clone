@@ -23,9 +23,9 @@ class NagiosCommand(Command):
         Prints the status of BackupPC Clone.
         """
         if perf_data:
-            print('BackupPC Clone {} - {} | {}'.format(status, message, perf_data))
+            print(f'BackupPC Clone {status} - {message} | {perf_data}')
         else:
-            print('BackupPC Clone {} - {}'.format(status, message, perf_data))
+            print(f'BackupPC Clone {status} - {message}')
 
     # ------------------------------------------------------------------------------------------------------------------
     def __get_performance_data(self, stats: Dict[str, any]) -> str:
@@ -36,11 +36,10 @@ class NagiosCommand(Command):
 
         :rtype: str
         """
-        return 'backups={} cloned_backups={} not_cloned_backups={} obsolete_cloned_backups={}' \
-            .format(stats['n_backups'],
-                    stats['n_cloned_backups'],
-                    stats['n_not_cloned_backups'],
-                    stats['n_obsolete_cloned_backups'])
+        return f'backups={stats["n_backups"]} '\
+               f'cloned_backups={stats["n_cloned_backups"]} '\
+               f'not_cloned_backups={stats["n_not_cloned_backups"]} '\
+               f'obsolete_cloned_backups={stats["n_obsolete_cloned_backups"]}'
 
     # ------------------------------------------------------------------------------------------------------------------
     def handle(self) -> int:

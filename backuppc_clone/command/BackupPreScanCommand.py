@@ -23,7 +23,7 @@ class BackupPreScanCommand(BaseCommand):
         host = self.argument('host')
         backup_no = int(self.argument('backup#'))
 
-        self._io.title('Pre-Scanning Backup {}/{}'.format(host, backup_no))
+        self._io.title(f'Pre-Scanning Backup {host}/{backup_no}')
 
         helper = BackupScanner(self._io)
         helper.pre_scan_directory(host, backup_no)

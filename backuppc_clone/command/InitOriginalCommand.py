@@ -28,7 +28,7 @@ class InitOriginalCommand(BaseCommand):
         code = file.read()
 
         code += '\n'
-        code += 'print $Conf{{{}}};'.format(parameter_name)
+        code += f'print $Conf{{{parameter_name}}};'
 
         pipe = subprocess.Popen([perl], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         value = pipe.communicate(bytes(code, 'utf-8'))
@@ -68,12 +68,12 @@ class InitOriginalCommand(BaseCommand):
         config_filename_original = os.path.join(top_dir, 'original.cfg')
 
         if os.path.isfile(config_filename_original):
-            create = self.confirm('Overwrite {}'.format(config_filename_original), False)
+            create = self.confirm(f'Overwrite {config_filename_original}', False)
         else:
             create = True
 
         if create:
-            self._io.write_line('Writing <fso>{}</fso>'.format(config_filename_original))
+            self._io.write_line(f'Writing <fso>{config_filename_original}</fso>')
 
             config = configparser.ConfigParser()
             config['BackupPC Clone'] = {'role': 'original',

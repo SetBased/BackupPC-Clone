@@ -54,9 +54,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
             config_original.read(config_clone['Original']['config'])
 
             if config_clone['Original']['name'] != config_original['BackupPC Clone']['name']:
-                raise BackupPcCloneException(
-                        'Clone {} is not a clone of original {}'.format(config_clone['Original']['name'],
-                                                                        config_original['BackupPC Clone']['name']))
+                raise BackupPcCloneException(f"Clone {config_clone['Original']['name']} "
+                                             f"is not a clone of original {config_original['BackupPC Clone']['name']}")
 
     # ------------------------------------------------------------------------------------------------------------------
     def ask(self, question: str, default: str | None = None) -> str | None:
@@ -83,7 +82,8 @@ class BaseCommand(Command, metaclass=abc.ABCMeta):
         Initializes the singleton objects.
         """
         Config(self.argument('clone.cfg'))
-        DataLayer(os.path.join(Config.instance.top_dir_clone, 'clone.db'))
+        ### DataLayer(os.path.join(Config.instance.top_dir_clone, 'clone.db'))
+        DataLayer('./clone.db')
 
     # ------------------------------------------------------------------------------------------------------------------
     @abc.abstractmethod

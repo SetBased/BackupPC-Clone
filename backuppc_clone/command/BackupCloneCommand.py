@@ -23,7 +23,7 @@ class BackupCloneCommand(BaseCommand):
         host = self.argument('host')
         backup_no = int(self.argument('backup#'))
 
-        self._io.title('Cloning Backup {}/{}'.format(host, backup_no))
+        self._io.title(f'Cloning Backup {host}/{backup_no}')
 
         helper = BackupClone(self._io)
         helper.clone_backup(host, backup_no)
